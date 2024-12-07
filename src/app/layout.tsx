@@ -43,7 +43,6 @@ export default function RootLayout({
           crossOrigin="anonymous"
           strategy="lazyOnload"
         />
-        <h1>Hola soy el layout más externo</h1>
         {children}
       </body>
     </html>
