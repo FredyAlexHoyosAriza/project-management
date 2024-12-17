@@ -9,13 +9,18 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@apollo/client": "^3.12.3",
+    "@apollo/server": "^4.11.2",
+    "@as-integrations/next": "^3.2.0",
+    "@graphql-tools/schema": "^10.0.13",
+    "graphql": "^16.10.0",
     "mongoose": "^8.8.4",
     "next": "15.0.3",
     "react": "19.0.0-rc-66855b96-20241106",
     "react-dom": "19.0.0-rc-66855b96-20241106"
   },
   "devDependencies": {
-    "@types/node": "^20",
+    "@types/node": "^22.10.2",
     "@types/react": "^18",
     "@types/react-dom": "^18",
     "autoprefixer": "^10.4.20",

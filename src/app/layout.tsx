@@ -1,7 +1,10 @@
-import type { Metadata } from "next";
-import localFont from "next/font/local";
-import "../styles/globals.css";
-import Script from "next/script";
+"use client"; // Importa solo en el lado del cliente
+
+import { ApolloClient, InMemoryCache, ApolloProvider } from '@apollo/client';
+import localFont from 'next/font/local';
+import Script from 'next/script';
+import "../styles/globals.css"; // Asegúrate de que este archivo exista y contenga las configuraciones de tu aplicación.
+import { Metadata } from 'next';
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -14,27 +17,26 @@ const geistMono = localFont({
   weight: "100 900",
 });
 
+const client = new ApolloClient({
+  uri: '/api/graphql', // URL de tu servidor GraphQL
+  cache: new InMemoryCache(),
+});
+
 export const metadata: Metadata = {
   // Si estás trabajando en el modo de aplicaciones (app/), los metadatos se inyectan automáticamente en el <head>.
   title: "Home | Project Management",
   description: "Página principal para la gestión de proyectos.",
 };
 
-export default function RootLayout({
-  children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
+export default function RootLayout({ children }: Readonly<{ children: React.ReactNode; }>) {
   return (
     <html lang="en">
       <head>
-      {/* El <head> en Next.js se utiliza principalmente para metadatos y enlaces estáticos como <link>
-      o <meta>. Para scripts externos dinámicos o de carga optimizada, utiliza el componente Script. */}
+        {/* El <head> en Next.js se utiliza principalmente para metadatos y enlaces estáticos como <link>
+        o <meta>. Para scripts externos dinámicos o de carga optimizada, utiliza el componente Script. */}
         {/* <link rel="next-icon" href="/next.svg" /> */}
       </head>
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased bg-red-300`}
-      >
+      <body className={`${geistSans.variable} ${geistMono.variable} antialiased bg-red-300`}>
         {/* Next.js automáticamente inyectará el script en el <head> del HTML generado.
         lazyOnload: Carga el script solo cuando la página haya terminado de cargar completamente.
         crossOrigin: Indica que el recurso externo permite solicitudes cruzadas. */}
@@ -43,7 +45,9 @@ export default function RootLayout({
           crossOrigin="anonymous"
           strategy="lazyOnload"
         />
-        {children}
+        <ApolloProvider client={client}>
+          {children}
+        </ApolloProvider>
       </body>
     </html>
   );

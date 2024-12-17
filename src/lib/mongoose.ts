@@ -7,7 +7,7 @@ if (!cached) {
 // cached se inicializa con el valor de global.mongoose, si es undefined, se inicializa como un objeto con:
 // conn: null (no hay conexión activa).
 // promise: null (no hay promesa activa).
-// Tanto global.mongoose como cached apuntan al mismo objeto, actuando como un caché compartido
+// Tanto global.mongoose como cached apuntan al mismo objeto, actuando como un caché compartido<<
   cached = global.mongoose = { conn: null, promise: null };
 }
 
