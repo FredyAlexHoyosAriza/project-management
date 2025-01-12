@@ -4,7 +4,7 @@ import { gql } from "graphql-tag";
 export const advanceTypeDefs = gql`
   # Tipo principal Advance
   type Advance {
-    id: ID!
+    _id: ID!
     description: String!
     leaderRemarks: String
     project: ID!          # Relación con Project
@@ -16,7 +16,7 @@ export const advanceTypeDefs = gql`
   # Inputs para mutaciones (creación y actualización)
   input CreateAdvanceInput {
     description: String!
-    leaderRemarks: String
+    # leaderRemarks: String
     project: ID!
     student: ID!
   }

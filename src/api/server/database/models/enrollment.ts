@@ -1,6 +1,6 @@
 import { Schema, models, model, Document, Types } from "mongoose";
 
-export interface IEnrollmentRequest {
+export interface ICreateEnrollment {
   project: string | Types.ObjectId;
   student: string | Types.ObjectId;//string y Types.ObjectId son tipos identificadores MongoDB desde el front-end
   isAccepted?: boolean;
@@ -8,7 +8,13 @@ export interface IEnrollmentRequest {
   exitDate: Date;
 }
 
-export interface IEnrollment extends IEnrollmentRequest, Document {
+export interface IUpdateEnrollment {
+  isAccepted?: boolean;
+  entryDate?: Date,
+  exitDate?: Date;
+}
+
+export interface IEnrollment extends ICreateEnrollment, Document {
   _id: Types.ObjectId; // string
   createdAt: Date;
   updatedAt: Date;

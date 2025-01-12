@@ -1,10 +1,8 @@
-"use client"; // Importa solo en el lado del cliente
-
-import { ApolloClient, InMemoryCache, ApolloProvider } from '@apollo/client';
-import localFont from 'next/font/local';
-import Script from 'next/script';
-import "../styles/globals.css"; // Asegúrate de que este archivo exista y contenga las configuraciones de tu aplicación.
-import { Metadata } from 'next';
+import localFont from "next/font/local";
+import Script from "next/script";
+import "../styles/globals.css";
+import { Metadata } from "next";
+import { ApolloWrapper } from "@/providers/apollo-wrapper";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -15,11 +13,6 @@ const geistMono = localFont({
   src: "./fonts/GeistMonoVF.woff",
   variable: "--font-geist-mono",
   weight: "100 900",
-});
-
-const client = new ApolloClient({
-  uri: '/api/graphql', // URL de tu servidor GraphQL
-  cache: new InMemoryCache(),
 });
 
 export const metadata: Metadata = {
@@ -45,9 +38,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
           crossOrigin="anonymous"
           strategy="lazyOnload"
         />
-        <ApolloProvider client={client}>
-          {children}
-        </ApolloProvider>
+        <ApolloWrapper>{children}</ApolloWrapper>
       </body>
     </html>
   );

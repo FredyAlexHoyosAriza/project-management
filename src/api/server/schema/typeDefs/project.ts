@@ -1,24 +1,35 @@
 import { gql } from "graphql-tag";
 
 export const projectTypeDefs = gql`
-  enum ProjectPhase {
-    started
-    development
-    finished
-    empty
+  enum EProjectPhase {
+    STARTED
+    DEVELOPMENT
+    FINISHED
+    NULL
   }
 
-  enum ObjectiveType {
-    general
-    specific
+  enum EObjectiveType {
+    GENERAL
+    SPECIFIC
   }
 
   type Objective {
     _id: ID!
     description: String!
-    type: ObjectiveType!
+    type: EObjectiveType!
     createdAt: String!
     updatedAt: String!
+  }
+
+  input CreateObjectiveInput {
+    description: String!
+    type: EObjectiveType!
+  }
+
+  input UpdateObjectiveInput {
+    _id: ID
+    description: String
+    type: EObjectiveType
   }
 
   type Project {
@@ -26,41 +37,36 @@ export const projectTypeDefs = gql`
     name: String!
     leader: ID!
     budget: Float!
-    isActive: Boolean
-    phase: ProjectPhase
-    advances: [ID!]
-    enrollments: [ID!]
-    objectives: [Objective!]
+    isActive: Boolean!
+    phase: EProjectPhase!
+    objectives: [Objective!]!
+    advances: [ID!]!
+    enrollments: [ID!]!
     startDate: String
     finishDate: String
     createdAt: String!
     updatedAt: String!
   }
 
-  input ObjectiveInput {
-    description: String!
-    type: ObjectiveType!
-  }
-
-  input ProjectInput {
+  input CreateProjectInput {
     name: String!
     leader: ID!
     budget: Float!
     isActive: Boolean
-    phase: ProjectPhase
+    phase: EProjectPhase
+    objectives: [CreateObjectiveInput!]
     advances: [ID!]
     enrollments: [ID!]
-    objectives: [ObjectiveInput!]
     startDate: String
     finishDate: String
   }
 
-  input ProjectUpdateInput {
+  input UpdateProjectInput {
     name: String
     budget: Float
     isActive: Boolean
-    phase: ProjectPhase
-    objectives: [ObjectiveInput!]
+    phase: EProjectPhase
+    objectives: [UpdateObjectiveInput!]
     startDate: String
     finishDate: String
   }
@@ -71,8 +77,8 @@ export const projectTypeDefs = gql`
   }
 
   type Mutation {
-    createProject(input: ProjectInput!): Project!
-    updateProject(id: ID!, input: ProjectUpdateInput!): Project
+    createProject(input: CreateProjectInput!): Project!
+    updateProject(id: ID!, input: UpdateProjectInput!): Project!
     deleteProject(id: ID!): Boolean!
   }
 `;

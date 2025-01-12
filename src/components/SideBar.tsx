@@ -5,6 +5,9 @@ import Logo from "./Logo";
 import { ReactNode } from "react";
 import Link from "next/link";
 import useActiveRoute from "@/hooks/useActiveRoute";
+// import { useQuery } from "@apollo/client";
+// import { characterQuery } from "@/graphql/client/queries/characterQuery";
+// import { useSuspenseQuery } from "@apollo/client";
 
 // Tipos explícitos para las props
 // href: string; Ruta a la que apunta el enlace
@@ -18,6 +21,11 @@ type CustomNavLinkProps =
 const CustomNavLink = (props: CustomNavLinkProps) => {
   const { href, className = "link" } = props;
   const isActive = useActiveRoute(href); // Determina si la ruta es activa
+  // const { data } = useSuspenseQuery<CharacterQueryResponse>(characterQuery);//forma 1
+
+  // const { data, loading, error } = useQuery(characterQuery);//forma 2
+  // if (loading) return <p>Loading...</p>;
+  // if (error) return <p>Error: {error.message}</p>;
 
   return (
     <Link

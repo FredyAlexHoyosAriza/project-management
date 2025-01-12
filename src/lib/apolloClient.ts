@@ -1,8 +1,21 @@
-import { ApolloClient, InMemoryCache } from '@apollo/client';
+"use server";// Componente servidor de React
 
-const client = new ApolloClient({
-  uri: '/api/graphql', // Endpoint del backend
-  cache: new InMemoryCache(),
+// import { characterQuery } from "@/graphql/client/queries/characterQuery";
+import { ApolloClient, InMemoryCache, HttpLink } from "@apollo/client";
+import { registerApolloClient } from "@apollo/experimental-nextjs-app-support";
+
+// Configura Apollo Client para React Server Components. Salidas: { getClient, query, PreloadQuery }
+export const { getClient } = registerApolloClient(() => {
+  return new ApolloClient({
+    cache: new InMemoryCache({ addTypename: false }),
+    link: new HttpLink({
+      uri: "/api/graphql", // Cambia por tu URI GraphQL
+      // fetchOptions: { // Método HTTP POST por omisión, también hay soporte para GET
+      //   method: "POST", // Cambia a "GET" si lo prefieres
+      // },
+      // credentials: "same-origin", // Opcional: incluye cookies en solicitudes
+    }),
+  });
 });
 
-export default client;
+// const { data } = await getClient().query({ query: characterQuery });

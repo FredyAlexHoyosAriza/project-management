@@ -1,30 +1,39 @@
 import { Schema, models, model, Document, Types } from "mongoose";
-import { IProject } from "./project";
+// import { IProject } from "./project";
 
 enum ERole {
-  student = "student",
-  leader = "leader",
-  manager = "manager",
+  STUDENT = "STUDENT",
+  LEADER = "LEADER",
+  MANAGER = "MANAGER",
 }
 
 enum EState {
-  pending = "pending",
-  authorized = "authorized",
-  unauthorized = "unauthorized",
+  PENDING = "PENDING",
+  AUTHORIZED = "AUTHORIZED",
+  UNAUTHORIZED = "UNAUTHORIZED",
 }
 
 // Quizá debe de existir atributo projects: string[] | Types.ObjectId[]; Ref: 'Project'
-export interface IUserRequest {
+export interface ICreateUser {
   email: string;
   idCard: string;
   name: string;
   surname: string;
   role: ERole;
-  // state?: EState;
+  state?: EState;
+}
+
+export interface IUpdateUser {
+  email?: string;
+  idCard?: string;
+  name?: string;
+  surname?: string;
+  role?: ERole;
+  state?: EState;
 }
 
 // Definimos la interfaz para el modelo de usuario
-export interface IUser extends IUserRequest, Document {
+export interface IUser extends ICreateUser, Document {
   _id: Types.ObjectId;
   createdAt: Date;
   updatedAt: Date;
@@ -32,7 +41,7 @@ export interface IUser extends IUserRequest, Document {
   // projects: IProject[]
 }
 // const usuario = await UserModel.find({_id; id});
-// ucuario.state = EState.student;
+// ucuario.state = EState.STUDENT;
 // await usuario.save();
 
 const validateEmail = function (email: string): boolean {
@@ -79,14 +88,14 @@ const UserSchema = new Schema<IUser>(
     role: {
       type: String,
       required: true,
-      lowercase: true,
+      uppercase: true,
       enum: ERole,
     },
     state: {
       type: String,
-      lowercase: true,
+      uppercase: true,
       enum: EState,
-      default: EState.pending,
+      default: EState.PENDING,
     },
     // projects: {// Cada que user se asigna a un proyecto con cualquier role aqui se pone _id
     //   type: [{ type: Schema.Types.ObjectId, ref: "Project" }],

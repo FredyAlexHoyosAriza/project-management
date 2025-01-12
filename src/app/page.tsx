@@ -1,7 +1,9 @@
 import Button from "@/components/Button";
+// import { getClient } from "@/lib/apolloClient";
 import Link from "next/link";
 
-export default function Home() {
+export default function Home() { // async
+  // const { data } = await getClient().query<CharacterQueryResponse>({ query: characterQuery });
   return (
     <div className="container">
       <h1>Welcome to project Management!!</h1>

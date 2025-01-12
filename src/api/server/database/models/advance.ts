@@ -1,15 +1,19 @@
 import { Schema, models, model, Document, Types } from "mongoose";
 
 // Request interface (sin campos de Mongoose, útil para recibir datos en peticiones)
-export interface IAdvanceRequest {
+export interface ICreateAdvance {
   project: string | Types.ObjectId; // string en lo que se recibe en las request
   student: string | Types.ObjectId;
   description: string;
   // createdAt?: Date;
 }
+export interface IUpdateAdvance {
+  description?: string;
+  leaderRemarks?: string;
+}
 
 // Interface completa para documentos almacenados en MongoDB
-export interface IAdvance extends IAdvanceRequest, Document {
+export interface IAdvance extends ICreateAdvance, Document {
   project: Types.ObjectId; // ObjectId porque en la base de datos es una referencia
   student: Types.ObjectId; // ObjectId por el mismo motivo
   leaderRemarks: string;

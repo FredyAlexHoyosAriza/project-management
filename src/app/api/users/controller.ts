@@ -1,11 +1,13 @@
-import { UserModel, IUser, IUserRequest } from "@/lib/models/user";
+import { UserModel, IUser, ICreateUser } from "@/api/server/database/models/user";
 import { NextRequest, NextResponse } from "next/server";
 import mongoose from "mongoose";
+import { dbConnect } from "@/api/server/database/mongoose";
 
 export const addUser = async (req: NextRequest): Promise<NextResponse> => {
   try {
+    await dbConnect();
 
-    const body: IUserRequest = await req.json(); // Parseamos el JSON del body
+    const body: ICreateUser = await req.json(); // Parseamos el JSON del body
     const user: IUser = await UserModel.create(body);
 
     return NextResponse.json(user, { status: 201 })
@@ -24,6 +26,7 @@ export const addUser = async (req: NextRequest): Promise<NextResponse> => {
 
 export async function list(req: NextRequest): Promise<NextResponse> {
   try {
+    await dbConnect();
     // Extraer el valor de filtro de la URL
     const { searchFilter } = Object.fromEntries(req.nextUrl.searchParams);
     const searchValue = searchFilter?.toString() || '';

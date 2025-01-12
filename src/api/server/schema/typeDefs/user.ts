@@ -1,16 +1,16 @@
 import { gql } from "graphql-tag";
 
 export const userTypeDefs = gql`
-  enum Role {
-    student
-    leader
-    manager
+  enum ERole {
+    STUDENT
+    LEADER
+    MANAGER
   }
 
-  enum State {
-    pending
-    authorized
-    unauthorized
+  enum EState {
+    PENDING
+    AUTHORIZED
+    UNAUTHORIZED
   }
 
   type User {
@@ -19,28 +19,28 @@ export const userTypeDefs = gql`
     idCard: String!
     name: String!
     surname: String!
-    role: Role!
-    state: State!
+    role: ERole!
+    state: EState!
     createdAt: String!
     updatedAt: String!
   }
 
-  input UserInput {
+  input CreateUserInput {
     email: String!
     idCard: String!
     name: String!
     surname: String!
-    role: Role!
-    state: State
+    role: ERole!
+    state: EState
   }
 
-  input UserUpdateInput {
+  input UpdateUserInput {
     email: String
     idCard: String
     name: String
     surname: String
-    role: Role
-    state: State
+    role: ERole
+    state: EState
   }
 
   type Query {
@@ -49,8 +49,8 @@ export const userTypeDefs = gql`
   }
 
   type Mutation {
-    createUser(input: UserInput!): User!
-    updateUser(id: ID!, input: UserUpdateInput!): User
+    createUser(input: CreateUserInput!): User!
+    updateUser(id: ID!, input: UpdateUserInput!): User!
     deleteUser(id: ID!): Boolean!
   }
 `;

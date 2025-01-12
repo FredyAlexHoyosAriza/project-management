@@ -1,28 +1,29 @@
 import { Schema, models, model, Document, Types } from "mongoose";
 import {
-  EObjectiveType,
+  // EObjectiveType,
   IObjective,
-  IObjectiveRequest,
+  ICreateObjective,
+  IUpdateObjective,
   ObjectiveSchema,
 } from "./objective";
 
 enum EProjectPhase {
-  started = "started",
-  development = "development",
-  finished = "finished",
-  empty = "",
+  STARTED = "STARTED",
+  DEVELOPMENT = "DEVELOPMENT",
+  FINISHED = "FINISHED",
+  NULL = "NULL",
 }
 
 // enum EProjectState {
-//   active = 'active',
-//   inactive = 'inactive',
+//   ACTIVE = 'ACTIVE',
+//   INACTIVE = 'INACTIVE',
 // }
 
-export interface IProjectRequest {
+export interface ICreateProject {
   name: string;
   leader: string | Types.ObjectId;
   budget: number;
-  objectives?: IObjectiveRequest[]; // IObjective[] ||
+  objectives?: ICreateObjective[]; // IObjective[] ||
   isActive?: boolean;
   phase?: EProjectPhase;
   advances?: string[] | Types.ObjectId[]; // Referencia a la colección "Avance"
@@ -31,7 +32,17 @@ export interface IProjectRequest {
   finishDate?: Date;
 }
 
-export interface IProject extends IProjectRequest, Document {
+export interface IUpdateProject {
+  name?: string;
+  budget?: number;
+  isActive?: boolean;
+  phase?: EProjectPhase;
+  objectives?: IUpdateObjective[];//ICreateObjective
+  startDate?: Date;
+  finishDate?: Date;
+}
+
+export interface IProject extends ICreateProject, Document {
   _id: Types.ObjectId; // string
   createdAt: Date;
   updatedAt: Date;
@@ -70,7 +81,7 @@ const ProjectSchema = new Schema<IProject>(
       type: String,
       lowercase: true,
       enum: EProjectPhase,
-      default: EProjectPhase.empty,
+      default: EProjectPhase.NULL,
     },
     // objectives: {
     //   type: [
@@ -100,7 +111,7 @@ const ProjectSchema = new Schema<IProject>(
     // state: {
     //   type: String,
     //   enum: EProjectState,
-    //   default: EProjectState.inactive,
+    //   default: EProjectState.INACTIVE,
     // },
     objectives: {
       type: [ObjectiveSchema],
@@ -125,9 +136,9 @@ export const ProjectModel =
 // const project: IProject[] = await ProjectModel.find({
 //   _id: "123456789012123456789012",
 // });
-// (project[0].objectives as IObjectiveRequest[]).push({ description: "Soy un objetivo general", type: EObjectiveType.general });
+// (project[0].objectives as ICreateObjective[]).push({ description: "Soy un objetivo general", type: EObjectiveType.general });
 // await project[0].save();
-// (project[0].objectives as IObjectiveRequest[]) = [
+// (project[0].objectives as ICreateObjective[]) = [
 //   { description: "Soy un objetivo general", type: EObjectiveType.general },
 //   { description: "Soy un objetivo especifico", type: EObjectiveType.specific },
 // ];

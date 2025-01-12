@@ -18,9 +18,13 @@ const typeDefs = mergeTypeDefs([userTypeDefs, enrollmentTypeDefs, projectTypeDef
 const resolvers = mergeResolvers([userResolvers, enrollmentResolvers, projectResolvers, advanceResolvers]);
 
 // Crear el esquema ejecutable
+// Permite crear Mocks (para simular datos en el esquema).
 export const schema = makeExecutableSchema({
   typeDefs,
   resolvers,
 });
 
-export { typeDefs, resolvers};
+// Un esquema ejecutable es la implementación completa de la API GraphQL que une la descripción
+// de los datos (typeDefs) con las funciones que resuelven las operaciones (resolvers). Es el
+// corazón de cualquier servidor GraphQL, ya que define qué datos están disponibles, cómo se
+// acceden y qué operaciones son posibles.
