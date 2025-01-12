@@ -85,10 +85,17 @@ export const userResolvers = {
     },
 
     // Eliminar un usuario
-    deleteUser: async (_: any, { id }: { id: string }): Promise<boolean> => {
+    deleteUser: async (_: any, { id, email }: { id: string, email: string }): Promise<boolean> => {
       try {
         await dbConnect();
-        const deletedUser = await UserModel.findByIdAndDelete(id);
+        const deletedUser = {};
+        if (id) {
+          const deletedUser: IUser | null = await UserModel.findByIdAndDelete(id);
+        } else if (email) {
+          const deletedUser: IUser | null = await UserModel.findOneAndDelete({ email: email });
+        } else {
+          throw new Error("El objeto de eliminación esta vacío.");
+        }
         if (!deletedUser) {
           throw new Error(`User with ID ${id} not found.`);
         }
