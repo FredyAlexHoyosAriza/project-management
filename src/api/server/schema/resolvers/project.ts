@@ -8,17 +8,38 @@ import {
 // import { IResolvers } from "@graphql-tools/utils";
 import {
   ICreateObjective,
-  IObjective,
   IUpdateObjective,
 } from "@/api/server/database/models/objective";
+import { AdvanceModel } from "../../database/models/advance";
+import { EnrollmentModel } from "../../database/models/enrollment";
+import { UserModel, roleAndId, ERole } from "../../database/models/user";
+import { verifyRole } from "../services/userServices";
 
 export const projectResolvers = {
   Query: {
     // Obtener todos los proyectos
-    getProjects: async () => {
+    getProjects: async (): Promise<IProject[]> => {
       try {
         await dbConnect();
-        return await ProjectModel.find().populate("leader").lean();
+        return await ProjectModel.find()
+          .populate("leader", "name surname idCard email state")
+          .populate({
+            path: "advances",
+            select: "description leaderRemarks updatedAt",
+            populate: {
+              path: "student",
+              select: "name surname",
+            },
+          })
+          .populate({
+            path: "enrollments",
+            select: "isAccepted entryDate exitDate",
+            populate: {
+              path: "student",
+              select: "name surname",
+            },
+          })
+          .lean<IProject[]>();
       } catch (error) {
         console.error(error);
         if (error instanceof Error)
@@ -28,12 +49,31 @@ export const projectResolvers = {
     },
 
     // Obtener un proyecto por ID
-    getProjectById: async (_: any, { id }: { id: string }) => {
+    getProjectById: async (
+      _: any,
+      { id }: { id: string }
+    ): Promise<IProject> => {
       try {
         await dbConnect();
         const project = await ProjectModel.findById(id)
-          .populate("leader")
-          .lean();
+          .populate("leader", "name surname idCard email state")
+          .populate({
+            path: "advances",
+            select: "description leaderRemarks createdAt updatedAt",
+            populate: {
+              path: "student",
+              select: "name surname",
+            },
+          })
+          .populate({
+            path: "enrollments",
+            select: "isAccepted entryDate exitDate",
+            populate: {
+              path: "student",
+              select: "name surname",
+            },
+          })
+          .lean<IProject>();
         if (!project) {
           throw new Error(`Project with ID ${id} not found`);
         }
@@ -49,12 +89,35 @@ export const projectResolvers = {
 
   Mutation: {
     // Crear un nuevo proyecto
-    createProject: async (_: any, { input }: { input: ICreateProject }) => {
+    createProject: async (
+      _: any,
+      { input }: { input: ICreateProject }
+    ): Promise<IProject> => {
       try {
         await dbConnect();
-        const newProject: IProject = new ProjectModel(input);
-        await newProject.save();
-        return newProject;
+        let newProject: IProject = new ProjectModel(input);
+        await verifyRole(<string>input.leader, ERole.LEADER);
+        const session = await ProjectModel.startSession();
+        session.startTransaction();
+        try {
+          newProject = await newProject.save({ session }); //.lean() solo puede usarse con funciones: find, findOne
+          await UserModel.updateOne(
+            { _id: input.leader },
+            { $push: { assignedProjects: newProject._id } },
+            { session }
+          );
+          await session.commitTransaction();
+          return newProject;
+        } catch (error) {
+          await session.abortTransaction();
+          throw new Error(
+            error instanceof Error
+              ? `Transaction aborted: ${error.message}`
+              : "Transaction aborted due to an unknown error."
+          );
+        } finally {
+          session.endSession();
+        }
       } catch (error) {
         console.error(error);
         if (error instanceof Error)
@@ -66,20 +129,20 @@ export const projectResolvers = {
     updateProject: async (
       _: any,
       { id, input }: { id: string; input: IUpdateProject }
-    ) => {
+    ): Promise<IProject> => {
       try {
         if (Object.keys(input).length === 0) {
           throw new Error("El objeto de actualización está vacío.");
         }
         await dbConnect();
-    
+
         // Verificar si el proyecto existe
-        //Para tener acceso completo a los métodos de documento y subdocumentos de mongoose 
-        //no se debe tipar manualmente la variable que recibe el documento de mongoose; tal que
-        //esta posteriormente sea reconocida por TypeScript como un documento de mongoose y no
-        //como un objeto del tipo especificado, ejemplo:
+        //Para tener acceso completo no solo a los métodos de documento sino también a los de
+        //subdocumentos de mongoose no se debe tipar manualmente la variable que recibe el
+        //documento de mongoose; tal que esta posteriormente sea reconocida por TypeScript como
+        //un documento de mongoose y no como un objeto del tipo especificado, ejemplo:
         // const project = await ProjectModel.findById(id);
-        const project: IProject | null = await ProjectModel.findById(id).lean<IProject>();
+        const project = await ProjectModel.findById(id).lean<IProject>();
         if (!project) {
           throw new Error(`Project with id ${id} not found`);
         }
@@ -93,7 +156,7 @@ export const projectResolvers = {
         const updates: { [key: string]: any } = {};
         const newObjectives: ICreateObjective[] = [];
         const objectivesToRemove: string[] = [];
-    
+
         if (input.objectives) {
           input.objectives.forEach((objective: IUpdateObjective) => {
             if (objective._id) {
@@ -107,11 +170,12 @@ export const projectResolvers = {
                   `Objective with id ${objective._id} not found in project`
                 );
               }
-    
+
               if (objective.description || objective.type) {
                 // Actualizar los campos del objetivo; se agregan campos dinámicamente a updates
                 updates[`objectives.${index}.description`] =
-                  objective.description ?? project.objectives[index].description;
+                  objective.description ??
+                  project.objectives[index].description;
                 updates[`objectives.${index}.type`] =
                   objective.type ?? project.objectives[index].type;
               } else {
@@ -133,7 +197,7 @@ export const projectResolvers = {
             }
           });
         }
-    
+
         // Actualizar otros campos
         const updatableFields: (keyof IUpdateProject)[] = [
           "name",
@@ -142,66 +206,173 @@ export const projectResolvers = {
           "phase",
           "startDate",
           "finishDate",
+          "leader",
         ];
-    
+
         updatableFields.forEach((key) => {
-          if (key in input) {//En updates se agregan claves y valores dinámicamente
+          if (key in input) {
+            //En updates se agregan claves y valores dinámicamente
             updates[key] = input[key];
           }
         });
+        const hasObjectivesToUpdate = Object.keys(updates).length > 0 ? 1 : 0;
+        const hasNewObjectives = newObjectives.length > 0 ? 1 : 0;
+        const hasObjectivesToRemove = objectivesToRemove.length > 0 ? 1 : 0;
 
-        //{ [key: string]: any } -> tipo de dato objeto js para el que las key son string y
-        // los value son any    
-        // Construir la operación de actualización
-        // $set, $push, $pull no son arbitrarios, son operadores MongoDB; MongoDB utiliza una
-        // sintaxis flexible para sus operaciones (como $set, $push, $pull), y el tipo
-        // { [key: string]: any } permite construir esos objetos de manera programática.
-        const updateOperation: { [key: string]: any } = { $set: updates };
+        if (
+          hasObjectivesToUpdate + hasNewObjectives + hasObjectivesToRemove <
+          2
+        ) {
+          //{ [key: string]: any } -> tipo de dato objeto js para el que las key son string y
+          // los value son any
+          // Construir la operación de actualización
+          // $set, $push, $pull no son arbitrarios, son operadores MongoDB; MongoDB utiliza una
+          // sintaxis flexible para sus operaciones (como $set, $push, $pull), y el tipo
+          // { [key: string]: any } permite construir esos objetos de manera programática.
+          const updateOperation: { [key: string]: any } = {};
+          if (Object.keys(updates).length > 0) updateOperation.$set = updates;
 
-        //Posible mejora
-        // type MongoUpdateOperation = {
-        //   $set?: { [key: string]: any };
-        //   $push?: { [key: string]: any };
-        //   $pull?: { [key: string]: any };
-        // };        
-        // const updateOperation: MongoUpdateOperation = { $set: updates };
-    
-        if (newObjectives.length > 0) {//Se agrega operador $push dinámicamente
-          updateOperation.$push = { objectives: { $each: newObjectives } };
+          if (hasNewObjectives) {
+            //Se agrega operador $push dinámicamente
+            updateOperation.$push = { objectives: { $each: newObjectives } };
+          }
+
+          if (hasObjectivesToRemove) {
+            //Se agrega operador $pull dinámicamente
+            updateOperation.$pull = {
+              objectives: { _id: { $in: objectivesToRemove } },
+            };
+          }
+
+          const session = await ProjectModel.startSession();
+          session.startTransaction();
+          try {
+            const updatedProject = (await ProjectModel.findByIdAndUpdate(
+              id,
+              updateOperation,
+              { session }
+            ).lean<IProject>()) as IProject;
+            
+            if (input.leader) {
+              await verifyRole(<string>input.leader, ERole.LEADER);
+              await UserModel.updateOne(
+                { _id: input.leader },
+                { $addToSet: { assignedProjects: id } },
+                { session }
+              );
+            }
+            await session.commitTransaction();
+            return updatedProject;
+          } catch (error) {
+            await session.abortTransaction();
+            throw error;
+          } finally {
+            session.endSession();
+          }
+        } else {
+          // Realizar operaciones simultaneas de eliminación, creación y actualización sobre el
+          // mismo campo de un documento genera un error de mongoDB, puesto que podría causar
+          // conflictos que lleven a error; p. ej. para un proyecto intentar eliminar y actualizar
+          // el mismo objetivo en el mismo acceso a DB
+
+          // Aplicar operaciones en pasos separados
+          const session = await ProjectModel.startSession();
+          session.startTransaction();
+
+          try {
+            // 1. Actualizar los campos y objetivos existentes
+            if (Object.keys(updates).length > 0) {
+              await ProjectModel.updateOne(
+                { _id: id },
+                { $set: updates },
+                { session }
+              );
+            }
+
+            // 2. Agregar nuevos objetivos
+            if (hasNewObjectives) {
+              // updateOne no devuelve el documento actualizado lo cual lo hace más eficiente
+              // que findByIdAndUpdate
+              await ProjectModel.updateOne(
+                { _id: id },
+                { $push: { objectives: { $each: newObjectives } } },
+                { session }
+              );
+            }
+
+            // 3. Eliminar objetivos
+            if (hasObjectivesToRemove) {
+              await ProjectModel.updateOne(
+                { _id: id },
+                { $pull: { objectives: { _id: { $in: objectivesToRemove } } } },
+                { session }
+              );
+            }
+
+            if (input.leader) {
+              await verifyRole(<string>input.leader, ERole.LEADER);
+              await UserModel.updateOne(
+                { _id: input.leader },
+                { $addToSet: { assignedProjects: id } },
+                { session }
+              );
+            }
+
+            await session.commitTransaction();
+            session.endSession();
+
+            // Obtener el documento actualizado
+            return (await ProjectModel.findById(
+              id
+            ).lean<IProject>()) as IProject;
+          } catch (error) {
+            await session.abortTransaction(); //Se abortan todos los cambios en DB
+            session.endSession();
+            throw error;
+          }
         }
-    
-        if (objectivesToRemove.length > 0) {//Se agrega operador $pull dinámicamente
-          updateOperation.$pull = {
-            objectives: { _id: { $in: objectivesToRemove } },
-          };
-        }
-    
-        // Ejecutar una sola operación de actualización
-        const updatedProject = await ProjectModel.findByIdAndUpdate(
-          id,
-          updateOperation,
-          { new: true, runValidators: true }
-        ).lean();
-    
-        return updatedProject;
       } catch (error) {
         console.error(error);
         if (error instanceof Error)
           throw new Error(`Failed to update project: ${error.message}`);
         throw new Error("Failed to update project due to an unknown error.");
       }
-    }, 
+    },
 
     // Eliminar un proyecto
-    deleteProject: async (_: any, { id }: { id: string }) => {
+    deleteProject: async (_: any, { id }: { id: string }): Promise<IProject> => {
       try {
         await dbConnect();
-        const deletedProject: IProject | null =
-          await ProjectModel.findByIdAndDelete(id);
-        if (!deletedProject) {
-          throw new Error(`Project with id ${id} not found`);
+        const session = await ProjectModel.startSession();
+        session.startTransaction();
+        try {
+          const deletedProject = await ProjectModel.findByIdAndDelete(id, {
+            session,
+          }).lean<IProject>();
+          if (!deletedProject) {
+            throw new Error(`Project with id ${id} not found`);
+          }
+          await AdvanceModel.deleteMany({ project: deletedProject._id });
+          await EnrollmentModel.deleteMany({ project: deletedProject._id });
+          await UserModel.updateMany(
+            //Al ser un arreglo de referencias (ObjectId), no se necesita utilizar { _id: ... }
+            { assignedProjects: deletedProject._id },
+            { $pull: { assignedProjects: deletedProject._id } }, // Elimina el ObjectId del arreglo
+            { session }
+          );
+
+          await session.commitTransaction();
+          return deletedProject;
+        } catch (error) {
+          await session.abortTransaction();
+          throw new Error(
+            error instanceof Error
+              ? `Transaction aborted: ${error.message}`
+              : "Transaction aborted due to an unknown error."
+          );
+        } finally {
+          await session.endSession();
         }
-        return true;
       } catch (error) {
         console.error(error);
         if (error instanceof Error)

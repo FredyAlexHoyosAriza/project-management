@@ -5,7 +5,7 @@ export const projectTypeDefs = gql`
     STARTED
     DEVELOPMENT
     FINISHED
-    NULL
+    EMPTY
   }
 
   enum EObjectiveType {
@@ -17,8 +17,8 @@ export const projectTypeDefs = gql`
     _id: ID!
     description: String!
     type: EObjectiveType!
-    createdAt: String!
-    updatedAt: String!
+    createdAt: Date!
+    updatedAt: Date!
   }
 
   input CreateObjectiveInput {
@@ -32,20 +32,24 @@ export const projectTypeDefs = gql`
     type: EObjectiveType
   }
 
+  # startDate y finishDate son opcionales ya que tienen valor por defecto null, que para
+  # graphql implicaría que no existen, y por ende un retorno tipo Project que presente
+  # p. ej. finishDate: null no cumpliría con el campo obligatorio finishDate: Date!
+
   type Project {
     _id: ID!
     name: String!
-    leader: ID!
+    leader: User!
     budget: Float!
     isActive: Boolean!
     phase: EProjectPhase!
     objectives: [Objective!]!
-    advances: [ID!]!
-    enrollments: [ID!]!
-    startDate: String
-    finishDate: String
-    createdAt: String!
-    updatedAt: String!
+    advances: [Advance!]!
+    enrollments: [Enrollment!]!
+    startDate: Date
+    finishDate: Date
+    createdAt: Date!
+    updatedAt: Date!
   }
 
   input CreateProjectInput {
@@ -55,20 +59,21 @@ export const projectTypeDefs = gql`
     isActive: Boolean
     phase: EProjectPhase
     objectives: [CreateObjectiveInput!]
-    advances: [ID!]
-    enrollments: [ID!]
-    startDate: String
-    finishDate: String
+    # advances: [ID!] se agregan automáticamente al crear un avance
+    # enrollments: [ID!] se agregan automáticamente al crear una inscripción
+    startDate: Date
+    finishDate: Date
   }
 
   input UpdateProjectInput {
     name: String
+    leader: ID
     budget: Float
     isActive: Boolean
     phase: EProjectPhase
     objectives: [UpdateObjectiveInput!]
-    startDate: String
-    finishDate: String
+    startDate: Date
+    finishDate: Date
   }
 
   type Query {

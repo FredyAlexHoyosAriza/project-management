@@ -32,9 +32,9 @@ export const AdvanceSchema = new Schema<IAdvance>(
     },
     leaderRemarks: {
       type: String,
-      minlength: 20,
+      minlength: 16,
       maxlength: 500,
-      default: '',
+      default: 'Comming soon ...',
     },
     project: {
       type: Schema.Types.ObjectId,

@@ -11,7 +11,7 @@ enum EProjectPhase {
   STARTED = "STARTED",
   DEVELOPMENT = "DEVELOPMENT",
   FINISHED = "FINISHED",
-  NULL = "NULL",
+  EMPTY = "EMPTY",
 }
 
 // enum EProjectState {
@@ -34,6 +34,7 @@ export interface ICreateProject {
 
 export interface IUpdateProject {
   name?: string;
+  leader?: string;
   budget?: number;
   isActive?: boolean;
   phase?: EProjectPhase;
@@ -50,6 +51,8 @@ export interface IProject extends ICreateProject, Document {
   objectives: IObjective[]; //Usa IObjective[] porque es el estado real de los subdocumentos en tiempo de ejecución.
   advances: Types.ObjectId[]; // IDs de avances relacionados
   enrollments: Types.ObjectId[];
+  startDate: Date;
+  finishDate: Date;
 } //Types.ObjectId.isValid()
 
 const ProjectSchema = new Schema<IProject>(
@@ -67,7 +70,7 @@ const ProjectSchema = new Schema<IProject>(
       type: Schema.Types.ObjectId,
       ref: "User", // Se hace referencia al modelo "User"
       required: true,
-      match: [/^[0-9a-fA-F]{24}$/, "El id debe cumpler el formato de mongo db"],
+      match: [/^[0-9a-fA-F]{24}$/, "El id debe cumplir el formato de mongo db"],
     },
     budget: {
       type: Number,
@@ -79,9 +82,9 @@ const ProjectSchema = new Schema<IProject>(
     },
     phase: {
       type: String,
-      lowercase: true,
+      uppercase: true,
       enum: EProjectPhase,
-      default: EProjectPhase.NULL,
+      default: EProjectPhase.EMPTY,
     },
     // objectives: {
     //   type: [

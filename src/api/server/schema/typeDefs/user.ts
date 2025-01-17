@@ -1,6 +1,7 @@
 import { gql } from "graphql-tag";
 
 export const userTypeDefs = gql`
+
   enum ERole {
     STUDENT
     LEADER
@@ -15,14 +16,15 @@ export const userTypeDefs = gql`
 
   type User {
     _id: ID!
-    email: String!
-    idCard: String!
     name: String!
     surname: String!
+    idCard: String!
+    email: String!
     role: ERole!
     state: EState!
-    createdAt: String!
-    updatedAt: String!
+    assignedProjects: [Project!]!
+    createdAt: Date!
+    updatedAt: Date!
   }
 
   input CreateUserInput {
@@ -51,6 +53,6 @@ export const userTypeDefs = gql`
   type Mutation {
     createUser(input: CreateUserInput!): User!
     updateUser(id: ID!, input: UpdateUserInput!): User!
-    deleteUser(id: ID, email: string): Boolean!
+    setUserState(id: ID!, state: EState): User!
   }
 `;

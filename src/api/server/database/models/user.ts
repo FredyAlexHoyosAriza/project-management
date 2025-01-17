@@ -1,13 +1,19 @@
 import { Schema, models, model, Document, Types } from "mongoose";
+import { IProject } from "./project";
 // import { IProject } from "./project";
 
-enum ERole {
+export type roleAndId = {
+  _id: Types.ObjectId;  
+  role: ERole;
+}
+
+export enum ERole {
   STUDENT = "STUDENT",
   LEADER = "LEADER",
   MANAGER = "MANAGER",
 }
 
-enum EState {
+export enum EState {
   PENDING = "PENDING",
   AUTHORIZED = "AUTHORIZED",
   UNAUTHORIZED = "UNAUTHORIZED",
@@ -38,7 +44,8 @@ export interface IUser extends ICreateUser, Document {
   createdAt: Date;
   updatedAt: Date;
   state: EState;
-  // projects: IProject[]
+  assignedProjects: IProject[];//próposito solo consulta (query no mutation)
+  // deleted: boolean;
 }
 // const usuario = await UserModel.find({_id; id});
 // ucuario.state = EState.STUDENT;
@@ -97,10 +104,14 @@ const UserSchema = new Schema<IUser>(
       enum: EState,
       default: EState.PENDING,
     },
-    // projects: {// Cada que user se asigna a un proyecto con cualquier role aqui se pone _id
-    //   type: [{ type: Schema.Types.ObjectId, ref: "Project" }],
-    //   default: [],
-    // },
+    assignedProjects: {// Cada que user se asigna a un proyecto con cualquier role aqui se pone _id
+      type: [{ type: Schema.Types.ObjectId, ref: "Project" }],
+      default: [],
+    },
+    // deleted: {
+    //   type: Boolean,
+    //   default: false,
+    // }
     // createdAt: {
     //   type: Date,
     //   default: Date.now,

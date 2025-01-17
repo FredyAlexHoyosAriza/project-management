@@ -3,17 +3,21 @@ import { gql } from "graphql-tag";
 
 export const advanceTypeDefs = gql`
   # Tipo principal Advance
+  # type se usa para definir tipos de retorno; sus tipos internos (que incluyen enum,
+  # String, Int, Float, ID, Boolean, etc) son nativos de graphql o definidos con type
   type Advance {
     _id: ID!
     description: String!
-    leaderRemarks: String
-    project: ID!          # Relación con Project
-    student: ID!          # Relación con User
-    createdAt: String!
-    updatedAt: String!
+    leaderRemarks: String!
+    project: Project!          # Relación con Project
+    student: User!          # Relación con User
+    createdAt: Date
+    updatedAt: Date
   }
 
   # Inputs para mutaciones (creación y actualización)
+  # input se usa para definir tipos de input (argumento de entrada); sus tipos internos (que
+  # incluyen enum, String, Int, Float, ID, Boolean) son nativos de graphql o definidos con input
   input CreateAdvanceInput {
     description: String!
     # leaderRemarks: String

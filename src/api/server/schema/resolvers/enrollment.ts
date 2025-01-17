@@ -1,17 +1,27 @@
 import { dbConnect } from "@/api/server/database/mongoose";
 import { EnrollmentModel, IUpdateEnrollment } from "@/api/server/database/models/enrollment";
 import { IEnrollment, ICreateEnrollment } from "@/api/server/database/models/enrollment";
+import { ProjectModel } from "../../database/models/project";
+import { ERole, UserModel } from "../../database/models/user";
+import { verifyRole } from "../services/userServices";
 
 export const enrollmentResolvers = {
   Query: {
     // Obtener todas las inscripciones
-    getEnrollments: async () => {
+    getEnrollments: async (): Promise<IEnrollment[]> => {
       try {
         await dbConnect();
         return await EnrollmentModel.find()
-          .populate("project", "name")
-          .populate("student", "name")
-          .lean();
+          .populate({
+            path: "project",
+            select: "name",
+            populate: {
+              path: "leader",
+              select: "name surname",
+            },
+          })
+          .populate("student", "name surname")
+          .lean<IEnrollment[]>();
       } catch (error) {
         console.error(error);
         if (error instanceof Error)
@@ -21,13 +31,20 @@ export const enrollmentResolvers = {
     },
 
     // Obtener una inscripción por ID
-    getEnrollmentById: async (_: any, { id }: { id: string }) => {
+    getEnrollmentById: async (_: any, { id }: { id: string }): Promise<IEnrollment> => {
       try {
         await dbConnect();
         const enrollment = await EnrollmentModel.findById(id)
-          .populate("project", "name")
-          .populate("student", "name")
-          .lean();
+          .populate({
+            path: "project",
+            select: "name",
+            populate: {
+              path: "leader",
+              select: "name surname",
+            },
+          })
+          .populate("student", "name surname")
+          .lean<IEnrollment>();
         if (!enrollment) {
           throw new Error(`Enrollment with ID ${id} not found`);
         }
@@ -43,12 +60,34 @@ export const enrollmentResolvers = {
 
   Mutation: {
     // Crear una nueva inscripción
-    createEnrollment: async (_: any, { input }: { input: ICreateEnrollment }) => {
+    createEnrollment: async (_: any, { input }: { input: ICreateEnrollment }): Promise<IEnrollment> => {
       try {
         await dbConnect();
-        const newEnrollment: IEnrollment = new EnrollmentModel(input);
-        await newEnrollment.save();
-        return newEnrollment
+        await verifyRole(<string>input.student, ERole.STUDENT);
+        let newEnrollment: IEnrollment = new EnrollmentModel(input);
+        // Aplicar operaciones en pasos separados
+        const session = await EnrollmentModel.startSession();
+        session.startTransaction();
+        try {
+          newEnrollment =  await newEnrollment.save({ session });
+          await ProjectModel.updateOne(
+            {_id: input.project },
+            { $addToSet: { enrollments: newEnrollment._id } },
+            { session }
+          );
+          await UserModel.updateOne(
+            {_id: input.student },
+            { $addToSet: { assignedProjects: newEnrollment._id } },
+            { session }
+          );
+          await session.commitTransaction();// transacción aprobada para DB
+          return newEnrollment;
+        } catch (error) {
+          await session.abortTransaction(); //Se abortan todos los cambios en DB
+          throw error;
+        } finally {          
+          session.endSession();// Finalizar la sesión
+        }
       } catch (error) {
         console.error(error);
         if (error instanceof Error) 
@@ -61,17 +100,17 @@ export const enrollmentResolvers = {
     updateEnrollment: async (
       _: any,
       { id, input }: { id: string; input: IUpdateEnrollment }//: Partial<IEnrollment>
-    ) => {
+    ): Promise<IEnrollment> => {
       try {
         if (Object.keys(input).length === 0) {
-          throw new Error("El objeto de actualización esta vacío.");
+          throw new Error("the update object is empty.");
         }
         await dbConnect();
-        const updatedEnrollment = await EnrollmentModel.findByIdAndUpdate(
+        const updatedEnrollment = await EnrollmentModel.findByIdAndUpdate<IEnrollment>(
           id,
           input,
           { new: true, runValidators: true } // Asegura validaciones al actualizar
-        ).lean();
+        ).lean<IEnrollment>();
         
         if (!updatedEnrollment) {
           throw new Error(`Enrollment with ID ${id} not found.`);
@@ -86,14 +125,38 @@ export const enrollmentResolvers = {
     },
 
     // Eliminar una inscripción
-    deleteEnrollment: async (_: any, { id }: { id: string }) => {
+    deleteEnrollment: async (_: any, { id }: { id: string }): Promise<IEnrollment> => {
       try {
         await dbConnect();
-        const deletedEnrollment = await EnrollmentModel.findByIdAndDelete(id);
-        if (!deletedEnrollment) {
-          throw new Error(`Enrollment with ID ${id} not found`);
+        const session = await EnrollmentModel.startSession();
+        session.startTransaction();
+        try {
+          const deletedEnrollment = await EnrollmentModel.findByIdAndDelete(id, { session }).lean<IEnrollment>();
+          if (!deletedEnrollment) {
+            throw new Error(`Enrollment with ID ${id} not found`);
+          }
+          await ProjectModel.updateOne(
+            {_id: deletedEnrollment.project },
+            { $pull: { enrollments: { _id: id } } },
+            { session }
+          );
+          await UserModel.updateOne(
+            {_id: deletedEnrollment.student },
+            { $pull: { assignedProjects: { _id: id } } },
+            { session }
+          );
+          await session.commitTransaction();
+          return deletedEnrollment;
+        } catch (error) {
+          await session.abortTransaction();
+          throw new Error(
+            error instanceof Error
+              ? `Error in atomic operaticon; transaction aborted: ${error.message}`
+              : "Transaction aborted due to an unknown error."
+          );
+        } finally {
+          session.endSession();
         }
-        return true;
       } catch (error) {
         console.error(error);
         if (error instanceof Error)

@@ -6,16 +6,18 @@ import { userTypeDefs } from "./typeDefs/user";
 import { enrollmentTypeDefs } from "./typeDefs/enrollment";
 import { projectTypeDefs } from "./typeDefs/project";
 import { advanceTypeDefs } from "./typeDefs/advance";
+import { dateTypeDefs }  from "./typeDefs/dateScalar";
 
 // Importar los resolvers
 import { userResolvers } from "./resolvers/user";
 import { enrollmentResolvers } from "./resolvers/enrollment";
 import { projectResolvers } from "./resolvers/project";
 import { advanceResolvers } from "./resolvers/advance";
+import { dateResolvers } from "./resolvers/dateScalar";
 
 // Fusionar todos los typeDefs y resolvers
-const typeDefs = mergeTypeDefs([userTypeDefs, enrollmentTypeDefs, projectTypeDefs, advanceTypeDefs]);
-const resolvers = mergeResolvers([userResolvers, enrollmentResolvers, projectResolvers, advanceResolvers]);
+const typeDefs = mergeTypeDefs([dateTypeDefs, userTypeDefs, enrollmentTypeDefs, projectTypeDefs, advanceTypeDefs]);
+const resolvers = mergeResolvers([dateResolvers, userResolvers, enrollmentResolvers, projectResolvers, advanceResolvers]);
 
 // Crear el esquema ejecutable
 // Permite crear Mocks (para simular datos en el esquema).

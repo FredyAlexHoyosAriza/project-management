@@ -16,10 +16,11 @@ export interface IUpdateEnrollment {
 
 export interface IEnrollment extends ICreateEnrollment, Document {
   _id: Types.ObjectId; // string
-  createdAt: Date;
-  updatedAt: Date;
+  isAccepted: boolean;
   project: Types.ObjectId;
   student: Types.ObjectId;
+  createdAt: Date;
+  updatedAt: Date;
 }
 
 const EnrollmentSchema = new Schema<IEnrollment>({

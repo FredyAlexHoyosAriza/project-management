@@ -4,13 +4,13 @@ export const enrollmentTypeDefs = gql`
   # Definición del tipo Enrollment
   type Enrollment {
     _id: ID!
-    project: ID!
-    student: ID!
-    isAccepted: Boolean
-    entryDate: String!
-    exitDate: String!
-    createdAt: String!
-    updatedAt: String!
+    project: Project!
+    student: User!
+    isAccepted: Boolean!
+    entryDate: Date
+    exitDate: Date
+    createdAt: Date!
+    updatedAt: Date!
   }
 
   # Input para crear una nueva inscripción
@@ -18,15 +18,15 @@ export const enrollmentTypeDefs = gql`
     project: ID!
     student: ID!
     isAccepted: Boolean
-    entryDate: String!
-    exitDate: String!
+    entryDate: Date!
+    exitDate: Date!
   }
 
   # Input para actualizar una inscripción
   input UpdateEnrollmentInput {
     isAccepted: Boolean
-    entryDate: String
-    exitDate: String
+    entryDate: Date
+    exitDate: Date
   }
 
   # Consultas disponibles
@@ -39,7 +39,7 @@ export const enrollmentTypeDefs = gql`
   type Mutation {
     createEnrollment(input: CreateEnrollmentInput!): Enrollment!
     updateEnrollment(id: ID!, input: UpdateEnrollmentInput!): Enrollment!
-    deleteEnrollment(id: ID!): Enrollment
+    deleteEnrollment(id: ID!): Boolean!
   }
 `;
 
