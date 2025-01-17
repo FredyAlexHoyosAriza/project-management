@@ -8,7 +8,7 @@ interface MongooseCache {
 
 // Declaración global de `mongoose` con el tipo `MongooseCache`
 declare global {
-  let mongoose: MongooseCache | undefined;//Antes de definirse o sino se define mongoose es tipo undefined
+  var mongoose: MongooseCache | undefined;//Antes de definirse o sino se define mongoose es tipo undefined
 }
 
 // declare global {
@@ -18,4 +18,6 @@ declare global {
 //   } | undefined;
 // }
 
-export {}; // Necesario para evitar conflictos con otros módulos.
+ // Necesario para evitar conflictos con otros módulos
+ // y para convertir el archivo en un módulo
+export {};
