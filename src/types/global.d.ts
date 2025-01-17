@@ -8,7 +8,7 @@ interface MongooseCache {
 
 // Declaración global de `mongoose` con el tipo `MongooseCache`
 declare global {
-  var mongoose: MongooseCache | undefined;//Antes de definirse o sino se define mongoose es tipo undefined
+  let mongoose: MongooseCache | undefined;//Antes de definirse o sino se define mongoose es tipo undefined
 }
 
 // declare global {

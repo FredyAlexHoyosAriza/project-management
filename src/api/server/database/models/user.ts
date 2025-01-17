@@ -1,6 +1,5 @@
 import { Schema, models, model, Document, Types } from "mongoose";
 import { IProject } from "./project";
-// import { IProject } from "./project";
 
 export type roleAndId = {
   _id: Types.ObjectId;  

@@ -31,7 +31,7 @@ export const enrollmentResolvers = {
     },
 
     // Obtener una inscripción por ID
-    getEnrollmentById: async (_: any, { id }: { id: string }): Promise<IEnrollment> => {
+    getEnrollmentById: async (_: unknown, { id }: { id: string }): Promise<IEnrollment> => {
       try {
         await dbConnect();
         const enrollment = await EnrollmentModel.findById(id)
@@ -60,7 +60,7 @@ export const enrollmentResolvers = {
 
   Mutation: {
     // Crear una nueva inscripción
-    createEnrollment: async (_: any, { input }: { input: ICreateEnrollment }): Promise<IEnrollment> => {
+    createEnrollment: async (_: unknown, { input }: { input: ICreateEnrollment }): Promise<IEnrollment> => {
       try {
         await dbConnect();
         await verifyRole(<string>input.student, ERole.STUDENT);
@@ -98,7 +98,7 @@ export const enrollmentResolvers = {
 
     // Actualizar una inscripción existente
     updateEnrollment: async (
-      _: any,
+      _: unknown,
       { id, input }: { id: string; input: IUpdateEnrollment }//: Partial<IEnrollment>
     ): Promise<IEnrollment> => {
       try {
@@ -125,7 +125,7 @@ export const enrollmentResolvers = {
     },
 
     // Eliminar una inscripción
-    deleteEnrollment: async (_: any, { id }: { id: string }): Promise<IEnrollment> => {
+    deleteEnrollment: async (_: unknown, { id }: { id: string }): Promise<IEnrollment> => {
       try {
         await dbConnect();
         const session = await EnrollmentModel.startSession();

@@ -12,7 +12,7 @@ import {
 } from "@/api/server/database/models/objective";
 import { AdvanceModel } from "../../database/models/advance";
 import { EnrollmentModel } from "../../database/models/enrollment";
-import { UserModel, roleAndId, ERole } from "../../database/models/user";
+import { UserModel, ERole } from "../../database/models/user";
 import { verifyRole } from "../services/userServices";
 
 export const projectResolvers = {
@@ -50,7 +50,7 @@ export const projectResolvers = {
 
     // Obtener un proyecto por ID
     getProjectById: async (
-      _: any,
+      _: unknown,
       { id }: { id: string }
     ): Promise<IProject> => {
       try {
@@ -90,7 +90,7 @@ export const projectResolvers = {
   Mutation: {
     // Crear un nuevo proyecto
     createProject: async (
-      _: any,
+      _: unknown,
       { input }: { input: ICreateProject }
     ): Promise<IProject> => {
       try {
@@ -127,7 +127,7 @@ export const projectResolvers = {
     },
 
     updateProject: async (
-      _: any,
+      _: unknown,
       { id, input }: { id: string; input: IUpdateProject }
     ): Promise<IProject> => {
       try {
@@ -150,10 +150,10 @@ export const projectResolvers = {
         //Sintaxis específica para definir objetos dinámicos con claves de tipo string y
         //valores de cualquier tipo. En esta definición de tipo de objeto no se define de forma
         //explicita las keys y los tipos de sus value sino que se da una definición genérica en
-        //la que se establece que el objeto contendrá keys de tipo string con values tipo any;
+        //la que se establece que el objeto contendrá keys de tipo string con values tipo unknown;
         //Permite agregar claves y valores dinámicamente a los objetos sin restringir las
         //claves a nombres específicos.
-        const updates: { [key: string]: any } = {};
+        const updates: { [key: string]: unknown } = {};
         const newObjectives: ICreateObjective[] = [];
         const objectivesToRemove: string[] = [];
 
@@ -223,13 +223,13 @@ export const projectResolvers = {
           hasObjectivesToUpdate + hasNewObjectives + hasObjectivesToRemove <
           2
         ) {
-          //{ [key: string]: any } -> tipo de dato objeto js para el que las key son string y
-          // los value son any
+          //{ [key: string]: unknown } -> tipo de dato objeto js para el que las key son string y
+          // los value son unknown
           // Construir la operación de actualización
           // $set, $push, $pull no son arbitrarios, son operadores MongoDB; MongoDB utiliza una
           // sintaxis flexible para sus operaciones (como $set, $push, $pull), y el tipo
-          // { [key: string]: any } permite construir esos objetos de manera programática.
-          const updateOperation: { [key: string]: any } = {};
+          // { [key: string]: unknown } permite construir esos objetos de manera programática.
+          const updateOperation: { [key: string]: unknown } = {};
           if (Object.keys(updates).length > 0) updateOperation.$set = updates;
 
           if (hasNewObjectives) {
@@ -340,7 +340,7 @@ export const projectResolvers = {
     },
 
     // Eliminar un proyecto
-    deleteProject: async (_: any, { id }: { id: string }): Promise<IProject> => {
+    deleteProject: async (_: unknown, { id }: { id: string }): Promise<IProject> => {
       try {
         await dbConnect();
         const session = await ProjectModel.startSession();

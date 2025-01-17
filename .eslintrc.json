@@ -1,3 +1,5 @@
 {
   "extends": ["next/core-web-vitals", "next/typescript"]
 }
+
+// Para usar ESling ejecutar en terminal: yarn eslint --ext ".ts,.tsx" .

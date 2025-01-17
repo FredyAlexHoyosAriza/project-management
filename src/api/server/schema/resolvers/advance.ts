@@ -5,7 +5,7 @@ import {
   ICreateAdvance,
   IUpdateAdvance,
 } from "@/api/server/database/models/advance";
-import { IProject, ProjectModel } from "../../database/models/project";
+import { ProjectModel } from "../../database/models/project";
 import { Types } from "mongoose";
 
 export const advanceResolvers = {
@@ -34,7 +34,7 @@ export const advanceResolvers = {
     },
     // Obtener un avance por su ID
     getAdvanceById: async (
-      _: any,
+      _: unknown,
       { id }: { id: string }
     ): Promise<IAdvance> => {
       try {
@@ -65,7 +65,7 @@ export const advanceResolvers = {
   Mutation: {
     // Crear un nuevo avance
     createAdvance: async (
-      _: any,
+      _: unknown,
       { input }: { input: ICreateAdvance }
     ): Promise<IAdvance> => {
       try {
@@ -125,7 +125,7 @@ export const advanceResolvers = {
 
     // Actualizar un avance existente // Partial<IAdvance>
     updateAdvance: async (
-      _: any,
+      _: unknown,
       { id, input }: { id: string; input: IUpdateAdvance }
     ): Promise<IAdvance> => {
       try {
@@ -152,7 +152,7 @@ export const advanceResolvers = {
 
     // Eliminar un avance
     deleteAdvance: async (
-      _: any,
+      _: unknown,
       { id }: { id: string }
     ): Promise<IAdvance> => {
       try {

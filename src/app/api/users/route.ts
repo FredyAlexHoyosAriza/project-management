@@ -1,13 +1,13 @@
 // VISTA
 import { NextResponse, NextRequest } from 'next/server';
 
-type ControllerResponse = { data?: any; error?: string; status: number };
-// Función para manejar el request, ejecutar el controlador y enviar respuesta al front
-const handleRequest = (controller: (req: Request) => Promise<ControllerResponse>) => 
-    async (req: Request) => {      
-      const response = await controller(req);
-      return NextResponse.json(response.data || { error: response.error }, { status: response.status });
-};
+// type ControllerResponse = { data?: unknown; error?: string; status: number };
+// // Función para manejar el request, ejecutar el controlador y enviar respuesta al front
+// const handleRequest = (controller: (req: Request) => Promise<ControllerResponse>) => 
+//     async (req: Request) => {      
+//       const response = await controller(req);
+//       return NextResponse.json(response.data || { error: response.error }, { status: response.status });
+// };
 
 // src/app/api/users/route.ts
 

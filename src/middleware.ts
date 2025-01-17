@@ -32,7 +32,7 @@ function isValidToken(token: string): boolean {
     // Ejemplo de validación ficticia
     const payload = JSON.parse(atob(token.split(".")[1]));
     return payload && payload.exp > Date.now() / 1000;
-  } catch (error) {
+  } catch {// (error)
     return false;
   }
 }

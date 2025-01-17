@@ -45,7 +45,7 @@ export const userResolvers = {
     },
 
     // Obtener un usuario por ID
-    getUserById: async (_: any, { id }: { id: string }): Promise<IUser> => {
+    getUserById: async (_: unknown, { id }: { id: string }): Promise<IUser> => {
       try {
         await dbConnect();
         const user = await UserModel.findById(id)
@@ -91,7 +91,7 @@ export const userResolvers = {
 
   Mutation: {
     // Crear un nuevo usuario
-    createUser: async (_: any, { input }: { input: ICreateUser }): Promise<IUser> => {
+    createUser: async (_: unknown, { input }: { input: ICreateUser }): Promise<IUser> => {
       try {
         await dbConnect();
         const newUser: IUser = new UserModel(input);
@@ -109,7 +109,7 @@ export const userResolvers = {
 
     // Actualizar un usuario existente
     updateUser: async (
-      _: any,
+      _: unknown,
       { id, input }: { id: string; input: IUpdateUser }//Partial<IUser>
     ): Promise<IUser> => {
       await dbConnect();
@@ -138,7 +138,7 @@ export const userResolvers = {
     },
 
     // Eliminar un usuario deleted: false
-    setUserState: async (_: any, { id, state }: { id: string, state: EState }): Promise<IUser> => {
+    setUserState: async (_: unknown, { id, state }: { id: string, state: EState }): Promise<IUser> => {
       try {
         await dbConnect();//UserModel.updateOne({_id: id}, ...)
 
