@@ -1,0 +1,3 @@
+APOLLO_KEY=service:PM-Graph-tpx3dh:mNtQfZCLYIZIf4VTGV4Lbg \
+  rover graph publish PM-Graph-tpx3dh@current \
+  --schema ./schema.graphql
