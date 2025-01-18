@@ -3,6 +3,8 @@ import { startServerAndCreateNextHandler } from '@as-integrations/next';
 import { schema } from '@/api/server/schema';
 import { NextRequest } from 'next/server';
 import cors from "cors";
+import { ApolloServerPluginUsageReporting } from '@apollo/server/plugin/usageReporting';
+import { ApolloServerPluginLandingPageLocalDefault } from '@apollo/server/plugin/landingPage/default';
 
 // En la arquitectura MVC este archivo representaría una VISTA de un solo endpoint
 // Inicialización del servidor Apollo
@@ -14,7 +16,11 @@ import cors from "cors";
 //   ],
 // });
 const server = new ApolloServer({ schema,
-  introspection: true
+  introspection: true,//permite uso apollo sandbox
+    plugins: [
+      ApolloServerPluginUsageReporting(),//permite registro de métricas; estadística
+      ApolloServerPluginLandingPageLocalDefault({ embed: true }), // Activa el sandbox incluso en producción; vercel despliegue
+    ],
  });
 // const handler = startServerAndCreateNextHandler(server);
 const allowedOrigins = ['https://studio.apollographql.com']; // Dominios permitidos
