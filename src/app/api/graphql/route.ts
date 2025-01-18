@@ -2,6 +2,7 @@ import { ApolloServer } from '@apollo/server';
 import { startServerAndCreateNextHandler } from '@as-integrations/next';
 import { schema } from '@/api/server/schema';
 import { NextRequest } from 'next/server';
+import cors from "cors";
 
 // En la arquitectura MVC este archivo representaría una VISTA de un solo endpoint
 // Inicialización del servidor Apollo
@@ -15,8 +16,20 @@ import { NextRequest } from 'next/server';
 const server = new ApolloServer({ schema,
   introspection: true
  });
-const handler = startServerAndCreateNextHandler(server);
+// const handler = startServerAndCreateNextHandler(server);
+const allowedOrigins = ['https://studio.apollographql.com']; // Dominios permitidos
 
+const handler = startServerAndCreateNextHandler(server, {
+  context: async (req, res) => {
+    // Configurar CORS
+    cors({
+      origin: allowedOrigins, // Solo Apollo Studio
+      methods: ['GET', 'POST', 'OPTIONS'], // Métodos permitidos
+      allowedHeaders: ['Content-Type', 'Authorization'], // Encabezados permitidos
+    })(req, res, () => {});
+    return { req, res };
+  },
+});
 // Rutas GET y POST para el endpoint GraphQL
 // Ir a la ruta http://localhost:3000/api/graphql implica hacer un GET al endpoint:
 // El metodo GET se requiere para abrir el Apollo SANDBOX
