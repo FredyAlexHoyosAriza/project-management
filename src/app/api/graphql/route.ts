@@ -12,7 +12,9 @@ import { NextRequest } from 'next/server';
 //     ApolloServerPluginLandingPageLocalDefault({ embed: true }), // Activa el sandbox incluso en producción; vercel despliegue
 //   ],
 // });
-const server = new ApolloServer({ schema });
+const server = new ApolloServer({ schema,
+  introspection: true
+ });
 const handler = startServerAndCreateNextHandler(server);
 
 // Rutas GET y POST para el endpoint GraphQL

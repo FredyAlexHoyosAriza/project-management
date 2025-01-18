@@ -1,0 +1,21 @@
+{
+    "rewrites": [
+      {
+        "source": "/api/graphql",
+        "destination": "/api/graphql"
+      }
+    ],
+    "headers": [
+      {
+        "source": "/api/graphql",
+        "headers": [
+          {
+            "key": "Access-Control-Allow-Origin",
+            "value": "*"
+          }
+        ]
+      }
+    ],
+    "regions": ["iad1"]
+  }
+  
