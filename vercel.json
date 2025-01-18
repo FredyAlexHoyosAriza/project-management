@@ -5,6 +5,7 @@
         "destination": "/api/graphql"
       }
     ],
+    
     "headers": [
       {
         "source": "/api/graphql",

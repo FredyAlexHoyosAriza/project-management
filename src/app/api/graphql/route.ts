@@ -16,38 +16,7 @@ const server = new ApolloServer({ schema
     ],
  });
 const handler = startServerAndCreateNextHandler(server);
-// const allowedOrigins = ['https://studio.apollographql.com']; // Dominios permitidos
-// const corsOptions = {
-//   origin: allowedOrigins,
-//   methods: ['GET', 'POST', 'OPTIONS'],
-//   allowedHeaders: ['Content-Type', 'Authorization'],
-// };
 
-// // Inicializa CORS correctamente
-// const corsMiddleware = cors(corsOptions);
-
-// const handler = startServerAndCreateNextHandler(server, {
-//   context: async (req, res) => {
-//     return new Promise((resolve, reject) => {
-//       corsMiddleware(req, res, (err) => {
-//         if (err) return reject(err);
-//         resolve({ req, res });
-//       });
-//     });
-//   },
-// });
-
-// const handler = startServerAndCreateNextHandler(server, {
-//   context: async (req, res) => {
-//     // Configurar CORS
-//     cors({
-//       origin: allowedOrigins, // Solo Apollo Studio
-//       methods: ['GET', 'POST', 'OPTIONS'], // Métodos permitidos
-//       allowedHeaders: ['Content-Type', 'Authorization'], // Encabezados permitidos
-//     })(req, res, () => {});
-//     return { req, res };
-//   },
-// });
 // Rutas GET y POST para el endpoint GraphQL
 // Ir a la ruta http://localhost:3000/api/graphql implica hacer un GET al endpoint:
 // El metodo GET se requiere para abrir el Apollo SANDBOX
