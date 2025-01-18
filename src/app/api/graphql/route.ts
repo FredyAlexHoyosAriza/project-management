@@ -2,16 +2,14 @@ import { ApolloServer } from '@apollo/server';
 import { startServerAndCreateNextHandler } from '@as-integrations/next';
 import { schema } from '@/api/server/schema';
 import { NextRequest } from 'next/server';
-import { ApolloServerPluginUsageReporting } from '@apollo/server/plugin/usageReporting';
-import { ApolloServerPluginLandingPageLocalDefault } from '@apollo/server/plugin/landingPage/default';
 
 // En la arquitectura MVC este archivo representaría una VISTA de un solo endpoint
 // Inicialización del servidor Apollo
 // const server = new ApolloServer({ schema,
-//   introspection: true,
+//   introspection: true,//permite uso apollo sandbox
 //   plugins: [
-//     ApolloServerPluginUsageReporting(),
-//     ApolloServerPluginLandingPageLocalDefault({ embed: true }), // Activa el sandbox
+//     ApolloServerPluginUsageReporting(),//permite registro de métricas; estadística
+//     ApolloServerPluginLandingPageLocalDefault({ embed: true }), // Activa el sandbox incluso en producción; vercel despliegue
 //   ],
 // });
 const server = new ApolloServer({ schema });
