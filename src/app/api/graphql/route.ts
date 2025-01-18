@@ -11,7 +11,7 @@ import { ApolloServerPluginLandingPageLocalDefault } from '@apollo/server/plugin
 const server = new ApolloServer({ schema,
   introspection: true,//permite uso apollo sandbox
     plugins: [
-      ApolloServerPluginUsageReporting(),//permite registro de métricas; estadística
+      // ApolloServerPluginUsageReporting(),//permite registro de métricas; estadística
       ApolloServerPluginLandingPageLocalDefault({ embed: true }), // Activa el sandbox incluso en producción; vercel despliegue
     ],
  });
