@@ -2,7 +2,7 @@ import { ApolloServer } from '@apollo/server';
 import { startServerAndCreateNextHandler } from '@as-integrations/next';
 import { schema } from '@/api/server/schema';
 import { NextRequest } from 'next/server';
-import cors from "cors";
+// import cors from "cors";
 // import { ApolloServerPluginUsageReporting } from '@apollo/server/plugin/usageReporting';
 // import { ApolloServerPluginLandingPageLocalDefault } from '@apollo/server/plugin/landingPage/default';
 
