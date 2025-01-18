@@ -16,7 +16,7 @@ const server = new ApolloServer({ schema
   //   ],
  });
 // const handler = startServerAndCreateNextHandler(server);
-const allowedOrigins = ['https://studio.apollographql.com']; // Dominios permitidos
+// const allowedOrigins = ['https://studio.apollographql.com']; // Dominios permitidos
 // const corsOptions = {
 //   origin: allowedOrigins,
 //   methods: ['GET', 'POST', 'OPTIONS'],
