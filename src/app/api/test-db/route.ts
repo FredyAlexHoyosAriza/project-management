@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { dbConnect } from '@/api/server/database/mongoose'; // Asegúrate de que esta ruta apunta correctamente al archivo mongoose.ts
+import { dbConnect } from '@/api/database/mongoose'; // Asegúrate de que esta ruta apunta correctamente al archivo mongoose.ts
 import mongoose from 'mongoose';
 
 // Declaramos el esquema y modelo fuera de la función GET para evitar crear un nuevo modelo en cada solicitud.

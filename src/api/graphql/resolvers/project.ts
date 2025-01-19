@@ -1,15 +1,15 @@
-import { dbConnect } from "@/api/server/database/mongoose";
+import { dbConnect } from "@/api/database/mongoose";
 import {
   IProject,
   ICreateProject,
   IUpdateProject,
   ProjectModel,
-} from "@/api/server/database/models/project";
+} from "@/api/database/models/project";
 // import { IResolvers } from "@graphql-tools/utils";
 import {
   ICreateObjective,
   IUpdateObjective,
-} from "@/api/server/database/models/objective";
+} from "@/api/database/models/objective";
 import { AdvanceModel } from "../../database/models/advance";
 import { EnrollmentModel } from "../../database/models/enrollment";
 import { UserModel, ERole } from "../../database/models/user";

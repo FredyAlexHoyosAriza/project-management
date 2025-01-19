@@ -1,10 +1,10 @@
-import { dbConnect } from "@/api/server/database/mongoose";
-import { AdvanceModel } from "@/api/server/database/models/advance";
+import { dbConnect } from "@/api/database/mongoose";
+import { AdvanceModel } from "@/api/database/models/advance";
 import {
   IAdvance,
   ICreateAdvance,
   IUpdateAdvance,
-} from "@/api/server/database/models/advance";
+} from "@/api/database/models/advance";
 import { ProjectModel } from "../../database/models/project";
 import { Types } from "mongoose";
 

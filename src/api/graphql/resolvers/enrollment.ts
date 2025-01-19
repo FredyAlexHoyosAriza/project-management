@@ -1,6 +1,6 @@
-import { dbConnect } from "@/api/server/database/mongoose";
-import { EnrollmentModel, IUpdateEnrollment } from "@/api/server/database/models/enrollment";
-import { IEnrollment, ICreateEnrollment } from "@/api/server/database/models/enrollment";
+import { dbConnect } from "@/api/database/mongoose";
+import { EnrollmentModel, IUpdateEnrollment } from "@/api/database/models/enrollment";
+import { IEnrollment, ICreateEnrollment } from "@/api/database/models/enrollment";
 import { ProjectModel } from "../../database/models/project";
 import { ERole, UserModel } from "../../database/models/user";
 import { verifyRole } from "../services/userServices";
