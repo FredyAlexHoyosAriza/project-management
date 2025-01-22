@@ -2,7 +2,7 @@ import { dbConnect } from "@/api/database/mongoose";
 import { EnrollmentModel, IUpdateEnrollment } from "@/api/database/models/enrollment";
 import { IEnrollment, ICreateEnrollment } from "@/api/database/models/enrollment";
 import { ProjectModel } from "../../database/models/project";
-import { ERole, UserModel } from "../../database/models/user";
+import { ERole } from "../../database/models/user";
 import { verifyRole } from "../services/userServices";
 
 export const enrollmentResolvers = {

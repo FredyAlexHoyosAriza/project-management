@@ -12,7 +12,7 @@ import {
 } from "@/api/database/models/objective";
 import { AdvanceModel } from "../../database/models/advance";
 import { EnrollmentModel } from "../../database/models/enrollment";
-import { UserModel, ERole } from "../../database/models/user";
+import { ERole } from "../../database/models/user";
 import { verifyRole } from "../services/userServices";
 
 export const projectResolvers = {
