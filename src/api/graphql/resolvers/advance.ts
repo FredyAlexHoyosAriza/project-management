@@ -5,8 +5,8 @@ import {
   ICreateAdvance,
   IUpdateAdvance,
 } from "@/api/database/models/advance";
-import { ProjectModel } from "../../database/models/project";
-import { Types } from "mongoose";
+import { IProjectEnrollments, ProjectModel } from "../../database/models/project";
+import { EState } from "@/api/database/models/user";
 
 export const advanceResolvers = {
   Query: {
@@ -42,13 +42,14 @@ export const advanceResolvers = {
         const advance = await AdvanceModel.findById(id)
           .populate({
             path: "project",
-            select: "name",
+            select:
+              "name objectives budget isActive phase startDate finishDate updatedAt",
             populate: {
               path: "leader",
-              select: "name surname",
+              select: "name surname email idCard state updatedAt",
             },
           })
-          .populate("student", "name surname")
+          .populate("student", "name surname email idCard state updatedAt")
           .lean<IAdvance>();
         if (!advance) {
           throw new Error(`Advance with ID ${id} not found`);
@@ -72,28 +73,55 @@ export const advanceResolvers = {
         await dbConnect();
         // el estudiante debe estar inscrito y aceptado en el proyecto para el que hace el avance
         // query = { _id: projectId, enrollments: [{ _id: enrollmentId, student: studentId, isAccpeted: true }] }
-        const { enrollments } = await ProjectModel.findById(input.project)
-          .select("enrollments")
-          .populate("enrollments", "student isAccepted");
-        if (enrollments) {
-          // al encontrar, some retorna true
-          if (
-            !enrollments.some(
-              ({
-                student,
-                isAccepted,
-              }: {
-                student: Types.ObjectId;
-                isAccepted: boolean;
-              }) => student.toString() === input.student && isAccepted
-            )
-          ) {
-            throw new Error(
-              `Student ID ${input.student} not enrolled or not accepted in project ID ${input.project}`
-            );
-          }
-        } else {
-          throw new Error("The project does no exist in DB");
+        // const { enrollments } = await ProjectModel.findById(input.project)
+        //   .select("enrollments")
+        //   .populate({
+        //     path: "enrollments",
+        //     select: "isAccepted",
+        //     populate: {
+        //       path: "student",
+        //       select: "state",
+        //     },
+        //   });
+        // if (enrollments) {
+        //   // al encontrar, some retorna true
+        //   if (
+        //     !enrollments.some(
+        //       ({ student, isAccepted }: {
+        //         student: { _id: Types.ObjectId; state: EState };
+        //         isAccepted: boolean;
+        //       }) =>
+        //         student.toString() === input.student &&
+        //         isAccepted &&
+        //         student.state === EState.AUTHORIZED
+        //     )
+        //   ) {
+        //     throw new Error(
+        //       `Student ID ${input.student} not enrolled or not accepted in project ID ${input.project}`
+        //     );
+        //   }
+        // } else {
+        //   throw new Error(`Project ID ${input.project} does not exist in the database.`);
+        // }
+
+        const project = await ProjectModel.findById(input.project)
+        .select("enrollments")
+        .populate({
+          path: "enrollments",
+          match: { isAccepted: true }, // Filtra solo inscripciones aceptadas
+          select: "_id",// solo se trae _id
+          populate: {// students que incumplan filtro serán null
+            path: "student",
+            match: { _id: input.student, state: EState.AUTHORIZED }, // Filtra estudiantes autorizados
+            select: "_id", // Solo recupera el ID del estudiante
+          },
+        }).lean<IProjectEnrollments>();
+        if (!project) {
+          throw new Error(`Project ID ${input.project} does not exist in the database.`);
+        }
+        const { enrollments } = project;
+        if (!enrollments.some(({ student }) => student)) {
+          throw new Error(`Student ID ${input.student} not enrolled or not accepted in project ID ${input.project} or simply not authorized in app`)
         }
 
         let newAdvance: IAdvance = new AdvanceModel(input);

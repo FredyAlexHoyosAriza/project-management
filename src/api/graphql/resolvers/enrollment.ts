@@ -37,13 +37,13 @@ export const enrollmentResolvers = {
         const enrollment = await EnrollmentModel.findById(id)
           .populate({
             path: "project",
-            select: "name",
+            select: "name objectives budget isActive phase startDate finishDate updatedAt",
             populate: {
               path: "leader",
-              select: "name surname",
+              select: "name surname email idCard state updatedAt",
             },
           })
-          .populate("student", "name surname")
+          .populate("student", "name surname email idCard state updatedAt")
           .lean<IEnrollment>();
         if (!enrollment) {
           throw new Error(`Enrollment with ID ${id} not found`);
@@ -75,11 +75,11 @@ export const enrollmentResolvers = {
             { $addToSet: { enrollments: newEnrollment._id } },
             { session }
           );
-          await UserModel.updateOne(
-            {_id: input.student },
-            { $addToSet: { assignedProjects: newEnrollment._id } },
-            { session }
-          );
+          // await UserModel.updateOne(
+          //   {_id: input.student },
+          //   { $addToSet: { assignedProjects: newEnrollment._id } },
+          //   { session }
+          // );
           await session.commitTransaction();// transacción aprobada para DB
           return newEnrollment;
         } catch (error) {
@@ -140,11 +140,11 @@ export const enrollmentResolvers = {
             { $pull: { enrollments: { _id: id } } },
             { session }
           );
-          await UserModel.updateOne(
-            {_id: deletedEnrollment.student },
-            { $pull: { assignedProjects: { _id: id } } },
-            { session }
-          );
+          // await UserModel.updateOne(
+          //   {_id: deletedEnrollment.student },
+          //   { $pull: { assignedProjects: { _id: id } } },
+          //   { session }
+          // );
           await session.commitTransaction();
           return deletedEnrollment;
         } catch (error) {

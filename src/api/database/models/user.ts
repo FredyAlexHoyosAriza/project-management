@@ -1,10 +1,12 @@
 import { Schema, models, model, Document, Types } from "mongoose";
 import { IProject } from "./project";
+import { IEnrollment } from "./enrollment";
 
-export type roleAndId = {
-  _id: Types.ObjectId;  
-  role: ERole;
-}
+// export type roleStateId = {
+//   _id: Types.ObjectId;
+//   state: EState;
+//   role: ERole;
+// }
 
 export enum ERole {
   STUDENT = "STUDENT",
@@ -43,7 +45,10 @@ export interface IUser extends ICreateUser, Document {
   createdAt: Date;
   updatedAt: Date;
   state: EState;
-  assignedProjects: IProject[];//próposito solo consulta (query no mutation)
+  // assignedProjects: IProject[];//próposito solo consulta (query no mutation)
+  // virtuals:
+  leaderships?: Types.ObjectId[] | IProject[];
+  inscriptions?: Types.ObjectId[] | IEnrollment[];
   // deleted: boolean;
 }
 // const usuario = await UserModel.find({_id; id});
@@ -103,10 +108,10 @@ const UserSchema = new Schema<IUser>(
       enum: EState,
       default: EState.PENDING,
     },
-    assignedProjects: {// Cada que user se asigna a un proyecto con cualquier role aqui se pone _id
-      type: [{ type: Schema.Types.ObjectId, ref: "Project" }],
-      default: [],
-    },
+    // assignedProjects: {// Cada que user se asigna a un proyecto con cualquier role aqui se pone _id
+    //   type: [{ type: Schema.Types.ObjectId, ref: "Project" }],
+    //   default: [],
+    // },
     // deleted: {
     //   type: Boolean,
     //   default: false,
@@ -116,10 +121,31 @@ const UserSchema = new Schema<IUser>(
     //   default: Date.now,
     // }
   },
-  { timestamps: true },
+  {
+    timestamps: true,
+    // Configuramos que los virtuals se incluyan en el resultado JSON
+    toJSON: { virtuals: true },
+    toObject: { virtuals: true } // Opcional si necesitas objetos planos
+  },
   // { collection: "users" }
 );
 
+UserSchema.virtual('leaderships', {
+  ref: 'Project',
+  localField: '_id',
+  foreignField: 'leader',
+  justOne: false
+});
+
+UserSchema.virtual('inscriptions', {
+  ref: 'Enrollment',
+  localField: '_id',
+  foreignField: 'student',
+  justOne: false
+});
+
+// Configuramos que los virtuals se incluyan en el resultado JSON
+// UserSchema.set('toJSON', { virtuals: true });
 // const StudentSchema = new Schema<IUser>().add(UserSchema.obj);
 // const LeaderSchema = new Schema<IUser>().add(UserSchema.obj);
 // const ManagerSchema = new Schema<IUser>().add(UserSchema.obj);

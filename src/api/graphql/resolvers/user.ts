@@ -10,13 +10,9 @@ export const userResolvers = {
         await dbConnect();
         return await UserModel.find()
         .populate({
-          path: "assignedProjects",
+          path: "leaderships",
           select: "name budget isActive phase startDate finishDate objectives",
           populate: [
-            {
-              path: "leader",
-              select: "name surname",
-            },
             {
               path: "advances",
               select: "description leaderRemarks updatedAt",
@@ -34,6 +30,28 @@ export const userResolvers = {
               },
             },
           ],
+        })
+        .populate({
+          path: "inscriptions",
+          select: "isAccepted entryDate exitDate",
+          populate: {
+            path: "project",
+            select: "name budget isActive phase startDate finishDate objectives",
+            populate: [
+              {
+                path: "leader",
+                select: "name surname",
+              },
+              {
+                path: "advances",
+                select: "description leaderRemarks updatedAt",
+                populate: {
+                  path: "student",
+                  select: "name surname",
+                },
+              },
+            ],
+          }
         })
         .lean<IUser[]>();
       } catch (error) {
@@ -54,26 +72,44 @@ export const userResolvers = {
           select: "name budget isActive phase startDate finishDate objectives",
           populate: [
             {
-              path: "leader",
-              select: "name surname",
-            },
-            {
               path: "advances",
-              select: "description leaderRemarks updatedAt",
+              select: "description leaderRemarks createdAt updatedAt",
               populate: {
                 path: "student",
-                select: "name surname",
+                select: "name surname idCard email state updatedAt",
               },
             },
             {
               path: "enrollments",
-              select: "isAccepted entryDate exitDate",
+              select: "isAccepted entryDate exitDate updatedAt",
               populate: {
                 path: "student",
-                select: "name surname",
+                select: "name surname idCard email state updatedAt",
               },
             },
           ],
+        })
+        .populate({
+          path: "inscriptions",
+          select: "isAccepted entryDate exitDate updatedAt",
+          populate: {
+            path: "project",
+            select: "name budget isActive phase startDate finishDate objectives",
+            populate: [
+              {
+                path: "leader",
+                select: "name surname idCard email state updatedAt",
+              },
+              {
+                path: "advances",
+                select: "description leaderRemarks createdAt updatedAt",
+                populate: {
+                  path: "student",
+                  select: "name surname idCard email state updatedAt",
+                },
+              },
+            ],
+          }
         })
         .lean<IUser>();
         if (!user) {

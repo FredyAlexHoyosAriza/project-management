@@ -3,14 +3,14 @@ import { GraphQLScalarType, Kind } from "graphql";
 const dateScalar = new GraphQLScalarType({
   name: "Date",
   description: "Custom scalar for handling Date objects",
-  serialize(value: unknown) {
+  serialize(value: unknown) {//Cuando fecha va al front
     if (!(value instanceof Date)) {
       throw new Error("Date scalar can only serialize Date objects");
     }
     return value.toISOString(); // Convert Date to ISO string
   },
 
-  parseValue(value: unknown) {
+  parseValue(value: unknown) {//Cuando fecha viene del front
     // if (value instanceof Date) return value;
     if (typeof value !== "string") {
       throw new Error("Date scalar can only parse string values");

@@ -7,6 +7,16 @@ import {
   ObjectiveSchema,
 } from "./objective";
 
+
+export interface IProjectEnrollments {
+  _id: string,
+  enrollments: [
+    {
+      _id: string,
+      student: { _id: string } | null,
+    }
+  ]
+}
 enum EProjectPhase {
   STARTED = "STARTED",
   DEVELOPMENT = "DEVELOPMENT",

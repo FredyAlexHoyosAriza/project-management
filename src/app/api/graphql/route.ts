@@ -7,8 +7,8 @@ import { ApolloServerPluginLandingPageLocalDefault, ApolloServerPluginLandingPag
 
 // En la arquitectura MVC este archivo representaría una VISTA de un solo endpoint
 // Inicialización del servidor Apollo
-const server = new ApolloServer({ schema
-  ,introspection: true,//permite uso apollo sandbox
+const server = new ApolloServer({ schema,
+   introspection: true,//permite uso apollo sandbox
     // plugins: [
     //   ApolloServerPluginUsageReporting(),//permite registro de métricas; estadística
     //   ApolloServerPluginLandingPageLocalDefault({ embed: true }), // Activa el sandbox incluso en producción; vercel despliegue
@@ -17,11 +17,11 @@ const server = new ApolloServer({ schema
       ApolloServerPluginUsageReporting(),
       // Install a landing page plugin based on NODE_ENV
       process.env.NODE_ENV === 'production'
-        ? ApolloServerPluginLandingPageProductionDefault({
-            graphRef: 'PMG-7o2qaf@current',
+        ? ApolloServerPluginLandingPageProductionDefault({//landing page de producción que
+            graphRef: 'PMG-7o2qaf@current',//se puede redirigir a este grafo en apollo studio
             footer: false,
           })
-        : ApolloServerPluginLandingPageLocalDefault({ footer: false }),
+        : ApolloServerPluginLandingPageLocalDefault({ footer: false }),//landing page de desarrollo -> apollo sandbox
     ],
  });
 const handler = startServerAndCreateNextHandler(server);

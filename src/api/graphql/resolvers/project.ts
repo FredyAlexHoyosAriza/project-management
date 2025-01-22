@@ -22,7 +22,7 @@ export const projectResolvers = {
       try {
         await dbConnect();
         return await ProjectModel.find()
-          .populate("leader", "name surname idCard email state")
+          .populate("leader", "name surname idCard email state updatedAt")
           .populate({
             path: "advances",
             select: "description leaderRemarks updatedAt",
@@ -33,7 +33,7 @@ export const projectResolvers = {
           })
           .populate({
             path: "enrollments",
-            select: "isAccepted entryDate exitDate",
+            select: "isAccepted entryDate exitDate updatedAt",
             populate: {
               path: "student",
               select: "name surname",
@@ -56,21 +56,21 @@ export const projectResolvers = {
       try {
         await dbConnect();
         const project = await ProjectModel.findById(id)
-          .populate("leader", "name surname idCard email state")
+          .populate("leader", "name surname idCard email state updatedAt")
           .populate({
             path: "advances",
             select: "description leaderRemarks createdAt updatedAt",
             populate: {
               path: "student",
-              select: "name surname",
+              select: "name surname email idCard state updatedAt",
             },
           })
           .populate({
             path: "enrollments",
-            select: "isAccepted entryDate exitDate",
+            select: "isAccepted entryDate exitDate updatedAt",
             populate: {
               path: "student",
-              select: "name surname",
+              select: "name surname email idCard state updatedAt",
             },
           })
           .lean<IProject>();
@@ -97,27 +97,13 @@ export const projectResolvers = {
         await dbConnect();
         let newProject: IProject = new ProjectModel(input);
         await verifyRole(<string>input.leader, ERole.LEADER);
-        const session = await ProjectModel.startSession();
-        session.startTransaction();
-        try {
-          newProject = await newProject.save({ session }); //.lean() solo puede usarse con funciones: find, findOne
-          await UserModel.updateOne(
-            { _id: input.leader },
-            { $push: { assignedProjects: newProject._id } },
-            { session }
-          );
-          await session.commitTransaction();
-          return newProject;
-        } catch (error) {
-          await session.abortTransaction();
-          throw new Error(
-            error instanceof Error
-              ? `Transaction aborted: ${error.message}`
-              : "Transaction aborted due to an unknown error."
-          );
-        } finally {
-          session.endSession();
-        }
+        newProject = await newProject.save(); //.lean() solo puede usarse con funciones: find, findOne
+        // await UserModel.updateOne(
+        //   { _id: input.leader },
+        //   { $push: { assignedProjects: newProject._id } },
+        //   { session }
+        // );
+        return newProject;
       } catch (error) {
         console.error(error);
         if (error instanceof Error)
@@ -255,11 +241,11 @@ export const projectResolvers = {
             
             if (input.leader) {
               await verifyRole(<string>input.leader, ERole.LEADER);
-              await UserModel.updateOne(
-                { _id: input.leader },
-                { $addToSet: { assignedProjects: id } },
-                { session }
-              );
+              // await UserModel.updateOne(
+              //   { _id: input.leader },
+              //   { $addToSet: { assignedProjects: id } },
+              //   { session }
+              // );
             }
             await session.commitTransaction();
             return updatedProject;
@@ -311,11 +297,11 @@ export const projectResolvers = {
 
             if (input.leader) {
               await verifyRole(<string>input.leader, ERole.LEADER);
-              await UserModel.updateOne(
-                { _id: input.leader },
-                { $addToSet: { assignedProjects: id } },
-                { session }
-              );
+              // await UserModel.updateOne(
+              //   { _id: input.leader },
+              //   { $addToSet: { assignedProjects: id } },
+              //   { session }
+              // );
             }
 
             await session.commitTransaction();
@@ -348,18 +334,18 @@ export const projectResolvers = {
         try {
           const deletedProject = await ProjectModel.findByIdAndDelete(id, {
             session,
-          }).lean<IProject>();
+          }).select('_id').lean<IProject>();
           if (!deletedProject) {
             throw new Error(`Project with id ${id} not found`);
           }
           await AdvanceModel.deleteMany({ project: deletedProject._id });
           await EnrollmentModel.deleteMany({ project: deletedProject._id });
-          await UserModel.updateMany(
-            //Al ser un arreglo de referencias (ObjectId), no se necesita utilizar { _id: ... }
-            { assignedProjects: deletedProject._id },
-            { $pull: { assignedProjects: deletedProject._id } }, // Elimina el ObjectId del arreglo
-            { session }
-          );
+          // await UserModel.updateMany(
+          //   //Al ser un arreglo de referencias (ObjectId), no se necesita utilizar { _id: ... }
+          //   { assignedProjects: deletedProject._id },
+          //   { $pull: { assignedProjects: deletedProject._id } }, // Elimina el ObjectId del arreglo
+          //   { session }
+          // );
 
           await session.commitTransaction();
           return deletedProject;
