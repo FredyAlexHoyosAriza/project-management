@@ -2,7 +2,7 @@ import { ApolloServer } from '@apollo/server';
 import { startServerAndCreateNextHandler } from '@as-integrations/next';
 import { schema } from '@/api/graphql';
 import { NextRequest } from 'next/server';
-import { ApolloServerPluginUsageReporting } from '@apollo/server/plugin/usageReporting';
+// import { ApolloServerPluginUsageReporting } from '@apollo/server/plugin/usageReporting';
 import { ApolloServerPluginLandingPageLocalDefault, ApolloServerPluginLandingPageProductionDefault } from '@apollo/server/plugin/landingPage/default';
 
 // En la arquitectura MVC este archivo representaría una VISTA de un solo endpoint
@@ -14,7 +14,7 @@ const server = new ApolloServer({ schema,
     //   ApolloServerPluginLandingPageLocalDefault({ embed: true }), // Activa el sandbox incluso en producción; vercel despliegue
     // ],
     plugins: [
-      ApolloServerPluginUsageReporting(),
+      // ApolloServerPluginUsageReporting(),
       // Install a landing page plugin based on NODE_ENV
       process.env.NODE_ENV === 'production'
         ? ApolloServerPluginLandingPageProductionDefault({//landing page de producción que
