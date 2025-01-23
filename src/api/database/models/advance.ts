@@ -32,6 +32,7 @@ export const AdvanceSchema = new Schema<IAdvance>(
     },
     leaderRemarks: {
       type: String,
+      required: true,
       minlength: 16,
       maxlength: 500,
       default: 'Comming soon ...',

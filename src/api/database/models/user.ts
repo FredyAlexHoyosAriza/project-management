@@ -1,6 +1,7 @@
 import { Schema, models, model, Document, Types } from "mongoose";
 import { IProject } from "./project";
 import { IEnrollment } from "./enrollment";
+import { IAdvance } from "./advance";
 
 // export type roleStateId = {
 //   _id: Types.ObjectId;
@@ -49,6 +50,7 @@ export interface IUser extends ICreateUser, Document {
   // virtuals:
   leaderships?: Types.ObjectId[] | IProject[];
   inscriptions?: Types.ObjectId[] | IEnrollment[];
+  ownAdvances?: Types.ObjectId[] | IAdvance[];
   // deleted: boolean;
 }
 // const usuario = await UserModel.find({_id; id});
@@ -104,6 +106,7 @@ const UserSchema = new Schema<IUser>(
     },
     state: {
       type: String,
+      required: true,
       uppercase: true,
       enum: EState,
       default: EState.PENDING,
@@ -139,6 +142,13 @@ UserSchema.virtual('leaderships', {
 
 UserSchema.virtual('inscriptions', {
   ref: 'Enrollment',
+  localField: '_id',
+  foreignField: 'student',
+  justOne: false
+});
+
+UserSchema.virtual('ownAdvances', {
+  ref: 'Advance',
   localField: '_id',
   foreignField: 'student',
   justOne: false

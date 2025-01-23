@@ -18,14 +18,14 @@ export const enrollmentTypeDefs = gql`
     project: ID!
     student: ID!
     isAccepted: Boolean
-    entryDate: Date!
-    exitDate: Date!
+    # entryDate: Date //Se establece fecha de momento en que se acepta
+    exitDate: Date
   }
 
   # Input para actualizar una inscripción
   input UpdateEnrollmentInput {
     isAccepted: Boolean
-    entryDate: Date
+    # entryDate: Date //Se establece fecha de momento en que se acepta
     exitDate: Date
   }
 

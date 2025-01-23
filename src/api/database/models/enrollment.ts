@@ -1,24 +1,26 @@
 import { Schema, models, model, Document, Types } from "mongoose";
 
 export interface ICreateEnrollment {
-  project: string | Types.ObjectId;
-  student: string | Types.ObjectId;//string y Types.ObjectId son tipos identificadores MongoDB desde el front-end
+  project: string;
+  student: string;//string y Types.ObjectId son tipos identificadores MongoDB desde el front-end
   isAccepted?: boolean;
-  entryDate: Date,
-  exitDate: Date;
+  // entryDate: Date, //automática
+  exitDate?: Date;//debe ser posterior a entryDate (comparar)
 }
 
 export interface IUpdateEnrollment {
   isAccepted?: boolean;
-  entryDate?: Date,
+  // entryDate: Date, //automática
   exitDate?: Date;
 }
 
-export interface IEnrollment extends ICreateEnrollment, Document {
+export interface IEnrollment extends Document {
   _id: Types.ObjectId; // string
   isAccepted: boolean;
   project: Types.ObjectId;
   student: Types.ObjectId;
+  exitDate: Date | null;
+  entryDate: Date | null;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -26,15 +28,18 @@ export interface IEnrollment extends ICreateEnrollment, Document {
 const EnrollmentSchema = new Schema<IEnrollment>({
   isAccepted: {
     type: Boolean,
+    required: true,
     default: false,
   },
   entryDate: {
     type: Date,
     required: true,
+    default: null,
   },
   exitDate: {
       type: Date,
       required: true,
+      default: null,
   },
   project: {
     type: Schema.Types.ObjectId,

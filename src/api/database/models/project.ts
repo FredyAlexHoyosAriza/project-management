@@ -31,13 +31,13 @@ enum EProjectPhase {
 
 export interface ICreateProject {
   name: string;
-  leader: string | Types.ObjectId;
+  leader: string;
   budget: number;
-  objectives?: ICreateObjective[]; // IObjective[] ||
   isActive?: boolean;
   phase?: EProjectPhase;
-  advances?: string[] | Types.ObjectId[]; // Referencia a la colección "Avance"
-  enrollments?: string[] | Types.ObjectId[];
+  objectives?: ICreateObjective[]; // IObjective[] ||
+  advances?: string[]; // Referencia a la colección "Avance"
+  enrollments?: string[];
   startDate?: Date;
   finishDate?: Date;
 }
@@ -53,16 +53,20 @@ export interface IUpdateProject {
   finishDate?: Date;
 }
 
-export interface IProject extends ICreateProject, Document {
-  _id: Types.ObjectId; // string
-  createdAt: Date;
-  updatedAt: Date;
+export interface IProject extends Document {
+  _id: Types.ObjectId;
+  name: string;//
   leader: Types.ObjectId;
+  budget: number;//
+  isActive: boolean;//
+  phase: EProjectPhase;//
   objectives: IObjective[]; //Usa IObjective[] porque es el estado real de los subdocumentos en tiempo de ejecución.
   advances: Types.ObjectId[]; // IDs de avances relacionados
   enrollments: Types.ObjectId[];
-  startDate: Date;
-  finishDate: Date;
+  startDate: Date | null;
+  finishDate: Date | null;
+  createdAt: Date;
+  updatedAt: Date;
 } //Types.ObjectId.isValid()
 
 const ProjectSchema = new Schema<IProject>(
@@ -88,10 +92,12 @@ const ProjectSchema = new Schema<IProject>(
     },
     isActive: {
       type: Boolean,
+      required: true,
       default: false,
     },
     phase: {
       type: String,
+      required: true,
       uppercase: true,
       enum: EProjectPhase,
       default: EProjectPhase.EMPTY,
@@ -115,10 +121,12 @@ const ProjectSchema = new Schema<IProject>(
     // },
     advances: {
       type: [{ type: Schema.Types.ObjectId, ref: "Advance" }],
+      required: true,
       default: [],
     },
     enrollments: {
       type: [{ type: Schema.Types.ObjectId, ref: "Enrollment" }],
+      required: true,
       default: [],
     },
     // state: {
@@ -128,14 +136,17 @@ const ProjectSchema = new Schema<IProject>(
     // },
     objectives: {
       type: [ObjectiveSchema],
+      required: true,
       default: [],
     },
     startDate: {
       type: Date,
+      required: true,
       default: null,
     },
     finishDate: {
       type: Date,
+      required: true,
       default: null,
     },
   },

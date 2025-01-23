@@ -25,6 +25,7 @@ export const userTypeDefs = gql`
     # assignedProjects: [Project!]!
     leaderships: [Project!]!
     inscriptions: [Enrollment!]!
+    ownAdvances: [Advance!]
     createdAt: Date!
     updatedAt: Date!
   }
@@ -50,6 +51,8 @@ export const userTypeDefs = gql`
   type Query {
     getUsers: [User!]!
     getUserById(id: ID!): User
+    getUsersWithAdvances: [User!]!
+    getUserWithAdvancesById(id: ID!): User
   }
 
   type Mutation {

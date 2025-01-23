@@ -62,13 +62,63 @@ export const userResolvers = {
       }
     },
 
+    getUsersWithAdvances: async (): Promise<IUser[]> => {
+      try {
+        await dbConnect();
+        return await UserModel.find().populate({
+          path: 'ownAdvances',
+          select: 'description leaderRemarks updatedAt',
+          populate: {
+            path: 'project',
+            select: 'name budget isActive phase',
+            populate: {
+              path: 'leader',
+              select: 'name surname'
+            },
+          }
+        }).lean<IUser[]>();
+      } catch (error) {
+        console.error(error);
+        if (error instanceof Error)
+          throw new Error(`Error fetching users: ${error.message}`);
+        throw new Error("Failed to fetch users due to an unknown error.");
+      }
+    },
+
+    getUserWithAdvancesById: async (_: unknown, { id }: { id: string }): Promise<IUser> => {
+      try {
+        await dbConnect();
+        const user = await UserModel.findById(id).populate({
+          path: 'ownAdvances',
+          select: 'description leaderRemarks updatedAt',
+          populate: {
+            path: 'project',
+            select: 'name budget isActive phase startDate finishDate',
+            populate: {
+              path: 'leader',
+              select: 'name surname idCard email state'
+            },
+          }
+        }).lean<IUser>();
+        if (!user) {
+          throw new Error(`User with ID ${id} not found`);
+        }
+        return user;
+      } catch (error) {
+        console.error(error);
+        if (error instanceof Error)
+          throw new Error(`Error fetching users: ${error.message}`);
+        throw new Error("Failed to fetch users due to an unknown error.");
+      }
+    },
+
     // Obtener un usuario por ID
     getUserById: async (_: unknown, { id }: { id: string }): Promise<IUser> => {
       try {
         await dbConnect();
         const user = await UserModel.findById(id)
         .populate({
-          path: "project",
+          path: "leaderships",
           select: "name budget isActive phase startDate finishDate objectives",
           populate: [
             {
@@ -102,11 +152,8 @@ export const userResolvers = {
               },
               {
                 path: "advances",
-                select: "description leaderRemarks createdAt updatedAt",
-                populate: {
-                  path: "student",
-                  select: "name surname idCard email state updatedAt",
-                },
+                // match: { student: id },
+                select: "description leaderRemarks updatedAt",
               },
             ],
           }

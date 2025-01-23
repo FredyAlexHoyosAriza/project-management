@@ -4,6 +4,7 @@ import { IEnrollment, ICreateEnrollment } from "@/api/database/models/enrollment
 import { ProjectModel } from "../../database/models/project";
 import { ERole } from "../../database/models/user";
 import { verifyRole } from "../services/userServices";
+import { handleAcceptance } from "../services/enrollmentServices";
 
 export const enrollmentResolvers = {
   Query: {
@@ -64,7 +65,7 @@ export const enrollmentResolvers = {
       try {
         await dbConnect();
         await verifyRole(<string>input.student, ERole.STUDENT);
-        let newEnrollment: IEnrollment = new EnrollmentModel(input);
+        let newEnrollment: IEnrollment = new EnrollmentModel(handleAcceptance(input, true));
         // Aplicar operaciones en pasos separados
         const session = await EnrollmentModel.startSession();
         session.startTransaction();
@@ -105,10 +106,11 @@ export const enrollmentResolvers = {
         if (Object.keys(input).length === 0) {
           throw new Error("the update object is empty.");
         }
-        await dbConnect();
+        await dbConnect();        
+
         const updatedEnrollment = await EnrollmentModel.findByIdAndUpdate<IEnrollment>(
           id,
-          input,
+          handleAcceptance(input, false),
           { new: true, runValidators: true } // Asegura validaciones al actualizar
         ).lean<IEnrollment>();
         
