@@ -19,7 +19,7 @@ export const userTypeDefs = gql`
     name: String!
     surname: String!
     idCard: String!
-    email: String!
+    email: String
     role: ERole!
     state: EState!
     leaderships: [Project!]
