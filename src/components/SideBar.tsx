@@ -96,9 +96,9 @@ const SideBar = () => {
           <CustomNavLink href="" label={<Logo />} />
           <CustomNavLink href="profile" icon="user" />
           <CustomNavLink href="users" icon="users" />
-          <CustomNavLink href="vehicles" icon="car" />
-          <CustomNavLink href="clients" icon="mug-hot" />
-          <CustomNavLink href="sales" icon="cash-register" />
+          <CustomNavLink href="projects" icon="university" />
+          <CustomNavLink href="enrollments" icon="mug-hot" />
+          <CustomNavLink href="advances" icon="trailer" />
         </ul>
       </nav>
     </div>

@@ -22,9 +22,8 @@ export const userTypeDefs = gql`
     email: String!
     role: ERole!
     state: EState!
-    # assignedProjects: [Project!]!
-    leaderships: [Project!]!
-    inscriptions: [Enrollment!]!
+    leaderships: [Project!]
+    inscriptions: [Enrollment!]
     ownAdvances: [Advance!]
     createdAt: Date!
     updatedAt: Date!

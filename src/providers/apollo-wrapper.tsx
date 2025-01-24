@@ -11,7 +11,7 @@ import {
 
 function makeClient() {
   const httpLink = new HttpLink({
-    uri: "/api/graphql",
+    uri: "/api/graphql",//https://dev-project-management.vercel.app/api/graphql
   });
 
   return new ApolloClient({
