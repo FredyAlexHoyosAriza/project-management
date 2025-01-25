@@ -21,7 +21,9 @@ export const metadata: Metadata = {
   description: "Página principal para la gestión de proyectos.",
 };
 
-export default function RootLayout({ children }: Readonly<{ children: React.ReactNode; }>) {
+export default function RootLayout({
+  children,
+}: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="en">
       <head>
@@ -29,17 +31,21 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
         o <meta>. Para scripts externos dinámicos o de carga optimizada, utiliza el componente Script. */}
         {/* <link rel="next-icon" href="/next.svg" /> */}
       </head>
-      <body className={`${geistSans.variable} ${geistMono.variable} antialiased bg-red-300`}>
-        {/* Next.js automáticamente inyectará el script en el <head> del HTML generado.
+      <ApolloWrapper>
+        <body
+          className={`${geistSans.variable} ${geistMono.variable} antialiased bg-red-300`}
+        >
+          {/* Next.js automáticamente inyectará el script en el <head> del HTML generado.
         lazyOnload: Carga el script solo cuando la página haya terminado de cargar completamente.
         crossOrigin: Indica que el recurso externo permite solicitudes cruzadas. */}
-        <Script
-          src="https://kit.fontawesome.com/cb32582639.js"
-          crossOrigin="anonymous"
-          strategy="lazyOnload"
-        />
-        <ApolloWrapper>{children}</ApolloWrapper>
-      </body>
+          <Script
+            src="https://kit.fontawesome.com/cb32582639.js"
+            crossOrigin="anonymous"
+            strategy="lazyOnload"
+          />
+          {children}
+        </body>
+      </ApolloWrapper>
     </html>
   );
 }
