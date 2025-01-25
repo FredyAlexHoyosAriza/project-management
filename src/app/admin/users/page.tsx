@@ -10,7 +10,7 @@ export default async function Users() {
     <div>
       <h1>Usuarios</h1>
       <ul>
-        {data.getUsers.map(({ _id, name, surname, email }: any) => (
+        {data.getUsers.map(({ _id, name, surname, email }: { _id: string, name: string, surname: string, email: string }) => (
           <li key={_id}>{`${name} ${surname}. email: ${email}`}</li>
         ))}
       </ul>
