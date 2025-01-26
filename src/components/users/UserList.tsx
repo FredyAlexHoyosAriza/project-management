@@ -1,7 +1,7 @@
 "use client";
 
 import { useQuery } from "@apollo/client";
-import { GET_USERS } from "@/graphql/queries/getUsers";
+import { GET_USERS } from "@/graphql/user/queries";
 import { User } from "@/types/user";
 
 export default function UserList({ initialUsers }: { initialUsers: User[] }) {

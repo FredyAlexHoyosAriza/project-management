@@ -1,5 +1,5 @@
-import { GET_USERS } from '@/graphql/queries/getUsers';
-import { CREATE_USER } from '@/graphql/mutations/createUser';
+import { GET_USERS } from '@/graphql/user/queries';
+import { CREATE_USER } from '@/graphql/user/mutations';
 import { getClient } from '@/lib/apolloClient';
 
 export const fetchUsers = async () => {

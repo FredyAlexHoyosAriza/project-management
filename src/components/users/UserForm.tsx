@@ -1,7 +1,7 @@
 'use client';
 
 import { useMutation } from '@apollo/client';
-import { CREATE_USER } from '@/graphql/mutations/createUser';
+import { CREATE_USER } from '@/graphql/user/mutations';
 import { useState } from 'react';
 
 export default function UserForm() {
