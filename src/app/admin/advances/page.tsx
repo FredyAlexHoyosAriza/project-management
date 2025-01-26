@@ -1,9 +1,7 @@
 import React from 'react'
 
-const Advances = () => {
+export default function Advances() {
   return (
     <div>Página de avances</div>
   )
 }
-
-export default Advances

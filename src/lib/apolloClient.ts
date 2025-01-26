@@ -1,4 +1,4 @@
-// import { characterQuery } from "@/graphql/client/queries/characterQuery";
+// PARA SERVER COMPONENTS (ROUTER COMPONENTS)
 import { ApolloClient, InMemoryCache, HttpLink } from "@apollo/client";
 import { registerApolloClient } from "@apollo/experimental-nextjs-app-support";
 
@@ -8,11 +8,14 @@ export const { getClient } = registerApolloClient(() => {
     //Automaticamente toma data de caché, entre tanto busca la info en back y al obtenerla actualiza caché
     cache: new InMemoryCache({ addTypename: false }), 
     link: new HttpLink({
-      uri: "https://dev-project-management.vercel.app/api/graphql",
+      uri: process.env.NEXT_PUBLIC_GRAPHQL_ENDPOINT,
       // fetchOptions: { // Método HTTP POST por omisión, también hay soporte para GET
       //   method: "POST", // Cambia a "GET" si lo prefieres
       // },
-      // credentials: "same-origin", // Opcional: incluye cookies en solicitudes
+      // Solo envía cookies o credenciales si la solicitud se realiza al mismo origen.
+      // No permite el envío de credenciales a dominios cruzados (CORS).
+      // Aplicaciones donde el frontend y el backend están alojados en el mismo dominio.
+      credentials: "same-origin", // Opcional: incluye cookies en solicitudes
     }),
   });
 });

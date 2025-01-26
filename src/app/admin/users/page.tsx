@@ -1,19 +1,8 @@
-import { GET_USERS } from '@/graphql/users/queries';
-import { getClient } from '@/lib/apolloClient';
+import { fetchUsers } from '@/services/userService';
+import UserPage from './UserPage';
 
-export default async function Users() {
-  // Ejecuta la consulta directamente
-  const { data } = await getClient().query({ query: GET_USERS });
+export default async function UsersPage() {
+  const users = await fetchUsers();
 
-  // Puedes usar los datos obtenidos para renderizar contenido
-  return (
-    <div>
-      <h1>Usuarios</h1>
-      <ul>
-        {data.getUsers.map(({ _id, name, surname, email }: { _id: string, name: string, surname: string, email: string }) => (
-          <li key={_id}>{`${name} ${surname}. email: ${email}`}</li>
-        ))}
-      </ul>
-    </div>
-  );
+  return <UserPage initialUsers={users} />;
 }
