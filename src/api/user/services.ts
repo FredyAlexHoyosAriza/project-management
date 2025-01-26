@@ -1,4 +1,4 @@
-import { ERole, EState, UserModel } from "../../database/models/user";
+import { ERole, EState, UserModel } from "../database/models/user";
 
 export const verifyRole = async (userId: string, role: ERole) => {
   const user = await UserModel.findOne({

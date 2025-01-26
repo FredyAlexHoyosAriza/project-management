@@ -1,6 +1,6 @@
 import { dbConnect } from "@/api/database/mongoose";
 import { IUser, ICreateUser, IUpdateUser, UserModel, EState, ERole } from "@/api/database/models/user";
-import { EnrollmentModel } from "../../database/models/enrollment";
+import { EnrollmentModel } from "../database/models/enrollment";
 
 export const userResolvers = {
   Query: {
