@@ -1,12 +1,5 @@
 import { fetchUsers } from '@/services/userService';
 import { User } from '@/types/user';
-// import UserPage from './UserPage';
-// // import UserPage from './ManageUsers';
-
-// export default async function UsersPage() {
-//   const users: User[] = await fetchUsers();
-//   return <UserPage initialUsers={users} />;
-// }
 
 import ManageUsers from '@/components/users/ManageUsers';
 
