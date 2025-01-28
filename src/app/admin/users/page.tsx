@@ -10,7 +10,7 @@ import { User } from '@/types/user';
 
 import ManageUsers from '@/components/users/ManageUsers';
 
-export default async function UsersPage() {
+export default async function Users() {
   const users: User[] = await fetchUsers();
   return (
     <div>
