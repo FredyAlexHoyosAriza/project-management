@@ -15,7 +15,7 @@ export const { getClient } = registerApolloClient(() => {
       // Solo envía cookies o credenciales si la solicitud se realiza al mismo origen.
       // No permite el envío de credenciales a dominios cruzados (CORS).
       // Aplicaciones donde el frontend y el backend están alojados en el mismo dominio.
-      // credentials: "same-origin", // Opcional: incluye cookies en solicitudes
+      credentials: "same-origin", // Opcional: incluye cookies en solicitudes
     }),
   });
 });

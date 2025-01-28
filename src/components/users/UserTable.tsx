@@ -1,7 +1,4 @@
 import React, { useEffect, useState } from "react";
-// import { editRec, patchRec } from "utils/api";
-// import useToken from "auth/useToken";
-// import { useUser } from "context/UserProvider";
 import { UserRowProps, UserTableProps } from "@/types/user";
 
 //React.FC (Function Component): Es un tipo que se usa para tipar componentes funcionales en React.
@@ -85,7 +82,7 @@ const UserTable: React.FC<UserTableProps> = ({
 };
 
 const UserRow: React.FC<UserRowProps> = ({ user, setShouldGetUsers }) => {
-  setShouldGetUsers(false);
+  if (false) setShouldGetUsers(false);
 
   //---------------------------------------------------------------------
   return (

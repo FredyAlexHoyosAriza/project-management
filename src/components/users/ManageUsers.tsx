@@ -1,9 +1,7 @@
 'use client';
-// import UserForm from '@/components/users/UserForm';
-// import UserList from '@/components/users/UserList';
 import { User } from '@/types/user';
 import Loading from '@/components/Loading';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
 import { useQuery } from '@apollo/client';
 import { GET_USERS } from '@/graphql/user/queries';
@@ -17,15 +15,15 @@ export default function ManageUsers({ initialUsers }: { initialUsers: User[] }) 
   const [users, setUsers] = useState<User[]>(initialUsers);
 
   // Hook para obtener los usuarios desde el servidor
-  const { data, loading, error, refetch } = useQuery(GET_USERS, {
+  const { loading, refetch } = useQuery(GET_USERS, {
     fetchPolicy: 'cache-and-network',
     skip: true, // Evita que la query se ejecute automáticamente al montar el componente
   });
   // Actualización de usuarios cuando cambia `shouldGetUsers`
-  React.useEffect(() => {
+  useEffect(() => {
     if (shouldGetUsers) {
       refetch()
-        .then(() => {
+        .then(({ data }) => {
           if (data) {
             setUsers(data.getUsers);
             toast.success('Tabla actualizada con éxito!!!');
@@ -33,7 +31,7 @@ export default function ManageUsers({ initialUsers }: { initialUsers: User[] }) 
             toast.error('La tabla no pudo ser actualizada');
           }
         })
-        .catch(() => {
+        .catch((error) => {
           console.error(error);
           toast.error('Ocurrió un error al actualizar los usuarios:');
         })
@@ -41,7 +39,7 @@ export default function ManageUsers({ initialUsers }: { initialUsers: User[] }) 
           setShouldGetUsers(false); // Restablece el estado para evitar múltiples llamadas
         });
     }
-  }, [shouldGetUsers, data, error, refetch]);
+  }, [shouldGetUsers, refetch]);
 
   return (
     <div>
