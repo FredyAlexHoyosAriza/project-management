@@ -3,7 +3,7 @@ import { User } from "@/types/user";
 
 import ManageUsers from "@/components/users/ManageUsers";
 
-export default async function Users({ params }: { params: { slug?: string[] }}) {
+export default async function Users({ params }: { params: Promise<{ slug?: string[] }> }) {
   const { slug } = await params;
   // Manejo de casos
   if (slug && slug[0].startsWith("edit%3A")) {
@@ -15,6 +15,7 @@ export default async function Users({ params }: { params: { slug?: string[] }}) 
     const users: User[] = await fetchUsers();
     return (
       <div>
+        {/* <h1>Gestión de Usuarios</h1> */}
         <ManageUsers initialUsers={users} />
       </div>
     );
