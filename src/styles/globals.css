@@ -49,3 +49,59 @@
 .menu__list > *:hover {
   box-shadow: 0 0 1px 2px rgb(161, 151, 194);
 }
+
+/* ESTILOS DE TABLA */
+
+/* ESTILOS VehicleTable*/
+
+.tabla table {
+  background-color: #cef4f9;
+}
+
+.tabla td, .tabla th {
+  padding: 0.1em 0.2em;
+  border: 1px solid rgb(31, 30, 30)
+}
+
+.tabla th{
+  background-color: rgb(99, 54, 248);
+  color: white;
+  padding: 0.35em auto;
+  text-align: left;
+}
+
+.tabla tr:nth-child(even) {
+  background-color: #f2f2f2;
+}
+
+.tabla tr:hover {
+  background-color: #ddd;
+  /* cursor: pointer; */
+}
+
+/* .tabla .eliminar {
+  border: 3px solid #EF4444;
+}
+
+.tabla .editar {
+  border: 3px solid #22c55e
+} */
+
+.fa-trash:hover, .fa-pencil-alt:hover, .fa-times:hover, .fa-check:hover {
+  cursor: pointer;
+}
+
+/* Estilos ShoppingCart*/
+
+/* .tabla .lastTr > *:not(:first-child):not(:last-child) {
+  border-left: 0;
+  border-right: 0;
+}
+
+.tabla .lastTr > :first-child {
+  border-right: 0;
+}
+
+.tabla .lastTr > :last-child {
+  border-left: 0;
+} */

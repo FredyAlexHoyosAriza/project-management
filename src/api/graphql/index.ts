@@ -6,14 +6,14 @@ import { userTypeDefs } from "../user/typeDefs";
 import { enrollmentTypeDefs } from "./enrollment/typeDefs";
 import { projectTypeDefs } from "./project/typeDefs";
 import { advanceTypeDefs } from "./advance/typeDefs";
-import { dateTypeDefs }  from "./typeDefs/dateScalar";
+import { dateTypeDefs }  from "./dateScalar/typeDefs";
 
 // Importar los resolvers
-import { userResolvers } from "../user/user";
+import { userResolvers } from "../user/resolvers";
 import { enrollmentResolvers } from "./enrollment/resolvers";
 import { projectResolvers } from "./project/resolvers";
 import { advanceResolvers } from "./advance/resolvers";
-import { dateResolvers } from "./resolvers/dateScalar";
+import { dateResolvers } from "./dateScalar/resolvers";
 
 // Fusionar todos los typeDefs y resolvers
 const typeDefs = mergeTypeDefs([dateTypeDefs, userTypeDefs, enrollmentTypeDefs, projectTypeDefs, advanceTypeDefs]);

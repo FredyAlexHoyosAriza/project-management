@@ -268,3 +268,35 @@ export const userResolvers = {
     },
   },
 };
+
+
+// import { userService } from "./services";
+
+// export const userResolvers = {
+//   Query: {
+//     getUsers: async (): Promise<IUser[]> => {
+//       return await userService.getUsers();
+//     },
+//     getUsersWithAdvances: async (): Promise<IUser[]> => {
+//       return await userService.getUsersWithAdvances();
+//     },
+//     getUserWithAdvancesById: async (_: unknown, { id }: { id: string }): Promise<IUser> => {
+//       return await userService.getUserWithAdvancesById(id);
+//     },
+//     getUserById: async (_: unknown, { id }: { id: string }): Promise<IUser> => {
+//       return await userService.getUserById(id);
+//     },
+//   },
+
+//   Mutation: {
+//     createUser: async (_: unknown, { input }: { input: ICreateUser }): Promise<IUser> => {
+//       return await userService.createUser(input);
+//     },
+//     updateUser: async (_: unknown, { id, input }: { id: string; input: IUpdateUser }): Promise<IUser> => {
+//       return await userService.updateUser(id, input);
+//     },
+//     setUserState: async (_: unknown, { id, state }: { id: string; state: EState }): Promise<IUser> => {
+//       return await userService.setUserState(id, state);
+//     },
+//   },
+// };
