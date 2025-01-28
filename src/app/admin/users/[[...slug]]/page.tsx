@@ -15,7 +15,6 @@ export default async function Users({ params }: { params: { slug?: string[] }}) 
     const users: User[] = await fetchUsers();
     return (
       <div>
-        {/* <h1>Gestión de Usuarios</h1> */}
         <ManageUsers initialUsers={users} />
       </div>
     );
