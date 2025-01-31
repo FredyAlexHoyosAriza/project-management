@@ -16,7 +16,7 @@
   padding: 4px 8px;
 }
 
-.link.active {
+.link.active {/*Aplica a elementos con ambas clases*/
   font-weight: bold;
   color: blue;
 }
@@ -51,9 +51,6 @@
 }
 
 /* ESTILOS DE TABLA */
-
-/* ESTILOS VehicleTable*/
-
 .tabla table {
   background-color: #cef4f9;
 }
