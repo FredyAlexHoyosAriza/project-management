@@ -1,36 +1,138 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Project Management
 
-## Getting Started
+Project Management es una aplicación monolítica desarrollada con tecnologías modernas para la gestión eficiente de proyectos. Permite crear tareas, asignarlas a miembros del equipo y visualizar el progreso en tiempo real, utilizando GraphQL y Apollo tanto en el frontend como en el backend.
 
-First, run the development server:
+Este proyecto está en continua evolución y es susceptible a cambios. Actualmente, la rama `dev` es la principal en desarrollo y está desplegada en Vercel.
+
+## Características
+
+- **Gestión de Proyectos**: Crea y organiza múltiples proyectos.
+- **Tareas y Asignaciones**: Define tareas y asigna responsables.
+- **Interfaz Reactiva**: Diseño moderno y responsivo con Next.js y Tailwind CSS.
+- **GraphQL con Apollo**: Backend basado en GraphQL con Apollo Server y frontend que consume datos con Apollo Client.
+- **Autenticación y Seguridad**: Manejo de usuarios y permisos (si aplica).
+
+## Tecnologías Utilizadas
+
+### Frontend
+
+- **Next.js 2025** - Framework de React con App Router.
+- **React** - Biblioteca para construir interfaces dinámicas.
+- **TypeScript** - Tipado estático para mayor robustez.
+- **Apollo Client** - Gestión eficiente de estado con GraphQL.
+- **Tailwind CSS** - Estilos modernos y reutilizables.
+
+### Backend (GraphQL API)
+
+- **Node.js** - Entorno de ejecución en el servidor.
+- **Apollo Server** - Implementación de GraphQL.
+- **MongoDB + Mongoose** - Base de datos NoSQL para almacenamiento.
+
+## Instalación y Configuración
+
+En el directorio del proyecto, sigue estos pasos:
+
+### 1. Clonar el repositorio
+
+```bash
+git clone https://github.com/FredyAlexHoyosAriza/project-management.git
+cd project-management
+```
+
+### 2. Instalar dependencias
+
+```bash
+npm install
+# o con Yarn
+yarn install
+```
+
+### 3. Configurar variables de entorno
+
+Crea un archivo `.env` en la raíz del proyecto con el siguiente contenido:
+
+```env
+MONGODB_URI=your_mongodb_connection_string
+JWT_SECRET=your_secret_key
+NEXT_PUBLIC_GRAPHQL_ENDPOINT=http://localhost:4000/graphql
+```
+
+### 4. Ejecutar el backend (GraphQL + Apollo Server)
+
+```bash
+npm run dev:server
+# o con Yarn
+yarn dev:server
+```
+
+El servidor estará disponible en [http://localhost:4000/graphql](http://localhost:4000/graphql).
+
+### 5. Ejecutar el frontend (Next.js + Apollo Client)
 
 ```bash
 npm run dev
-# or
+# o con Yarn
 yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+El frontend estará disponible en [http://localhost:3000](http://localhost:3000).
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Estructura del Proyecto
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```plaintext
+project-management/
+│── src/
+│   ├── app/            # Rutas y lógica del frontend (App Router de Next.js 2025)
+│   ├── api/            # Backend (Apollo Server, resolvers, schemas)
+│   ├── components/     # Componentes reutilizables de React
+│   ├── styles/         # Estilos con Tailwind
+│   ├── utils/          # Funciones auxiliares
+│── public/             # Assets estáticos
+│── .env                # Variables de entorno
+│── package.json        # Dependencias y scripts
+│── README.md           # Este archivo ✨
+```
 
-## Learn More
+## Uso de la API GraphQL
 
-To learn more about Next.js, take a look at the following resources:
+Puedes explorar los endpoints de GraphQL en [http://localhost:4000/graphql](http://localhost:4000/graphql) con Apollo Sandbox o herramientas como Postman.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Ejemplo de una consulta GraphQL para obtener proyectos:
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+```graphql
+query {
+  projects {
+    id
+    name
+    description
+    tasks {
+      title
+      status
+    }
+  }
+}
+```
 
-## Deploy on Vercel
+## Contribuir
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+Las contribuciones son bienvenidas. Para colaborar:
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+1. Haz un fork del repositorio.
+2. Crea una nueva rama: `git checkout -b feature/nueva-funcionalidad`.
+3. Realiza tus cambios y haz commit: `git commit -m 'Añadir nueva funcionalidad'`.
+4. Sube tus cambios: `git push origin feature/nueva-funcionalidad`.
+5. Abre un Pull Request.
+
+## Licencia
+
+Este proyecto está bajo la Licencia MIT. Consulta el archivo LICENSE para más detalles.
+
+## Contacto
+
+- **GitHub**: [FredyAlexHoyosAriza](https://github.com/FredyAlexHoyosAriza)
+- **LinkedIn**: [Fredy Alexander Hoyos Ariza](https://www.linkedin.com/in/fredyalexanderhoyosariza/)
+- **Email**: [fredy.hoyos@example.com](mailto:fredy.hoyos@example.com)
+
+---
+
+✨ ¡Gracias por revisar este proyecto! Espero que te sea útil. 🚀
