@@ -95,7 +95,7 @@ project-management/
 
 ## Uso de la API GraphQL
 
-Puedes explorar los endpoints de GraphQL en [http://localhost:4000/graphql](http://localhost:4000/graphql) con Apollo Sandbox o herramientas como Postman.
+Puedes explorar los endpoints de GraphQL en [https://dev-project-management.vercel.app/api/graphql] con Apollo Sandbox o herramientas como Postman.
 
 Ejemplo de una consulta GraphQL para obtener proyectos:
 
@@ -130,8 +130,7 @@ Este proyecto está bajo la Licencia MIT. Consulta el archivo LICENSE para más 
 ## Contacto
 
 - **GitHub**: [FredyAlexHoyosAriza](https://github.com/FredyAlexHoyosAriza)
-- **LinkedIn**: [Fredy Alexander Hoyos Ariza](https://www.linkedin.com/in/fredyalexanderhoyosariza/)
-- **Email**: [fredy.hoyos@example.com](mailto:fredy.hoyos@example.com)
+- **LinkedIn**: [Fredy Alexander Hoyos Ariza](https://www.linkedin.com/in/fredy-alexander-hoyos-ariza-3b7122167/)
 
 ---
 
