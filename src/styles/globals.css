@@ -88,6 +88,10 @@
   cursor: pointer;
 }
 
+.boton:hover {
+  box-shadow: 0 0 0 0.15em rgb(166, 213, 199);
+}
+
 /* Estilos ShoppingCart*/
 
 /* .tabla .lastTr > *:not(:first-child):not(:last-child) {

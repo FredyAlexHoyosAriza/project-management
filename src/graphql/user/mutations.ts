@@ -1,4 +1,5 @@
 import { gql } from "@apollo/client";
+// Los input y sus tipos son los mismos definidos en los typeDefs
 
 export const CREATE_USER = gql`
   mutation CreateUser($input: CreateUserInput!) {
@@ -14,8 +15,8 @@ export const CREATE_USER = gql`
 `;
 
 export const UPDATE_USER = gql`
-  mutation UpdateUser($input: UpdateUserInput!) {
-    updateUser(input: $input) {
+  mutation UpdateUser($id: ID!, $input: UpdateUserInput!) {
+    updateUser(id: $id, input: $input) {
       name
       surname
       idCard

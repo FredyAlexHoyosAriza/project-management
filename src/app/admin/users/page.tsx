@@ -4,6 +4,7 @@ import { User } from "@/types/user";
 import ManageUsers from "@/components/users/ManageUsers";
 
 export default async function Users() {
+  // console.log('Soy Alex y soy un ganador')
     const users: User[] = await fetchUsers();
     return (
       <div>
