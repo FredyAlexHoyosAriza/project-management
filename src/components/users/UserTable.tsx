@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { UserRowProps, UserTableProps } from "@/types/user";
+import Link from "next/link";
 
 //React.FC (Function Component): Es un tipo que se usa para tipar componentes funcionales en React.
 const UserTable: React.FC<UserTableProps> = ({
@@ -44,6 +45,7 @@ const UserTable: React.FC<UserTableProps> = ({
               <th> Apellido </th>
               <th> Rol </th>
               <th> Estado </th>
+              <th> Editar </th>
             </tr>
           </thead>
           <tbody>
@@ -86,12 +88,20 @@ const UserRow: React.FC<UserRowProps> = ({ user, setShouldGetUsers }) => {
 
   //---------------------------------------------------------------------
   return (
-    <tr className=''>
+    <tr className="">
       <td>{user.email}</td>
       <td>{user.name}</td>
       <td>{user.surname}</td>
       <td>{user.role}</td>
       <td>{user.state}</td>
+      <td className="text-center">
+        <Link href={`/admin/users/edit:${user.name}`}>
+          <i
+            className="fas fa-pencil-alt text-indigo-800 hover:text-indigo-500"
+            title="Edit"
+          />
+        </Link>
+      </td>
     </tr>
   );
 };
