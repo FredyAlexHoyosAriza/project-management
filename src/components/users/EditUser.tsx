@@ -5,10 +5,11 @@ import { useMutation } from "@apollo/client";
 import { UPDATE_USER } from "@/graphql/user/mutations";
 import { toast } from "react-toastify";
 import Link from "next/link";
+import BeatLoader from "react-spinners/BeatLoader";
 
 const EditUser = () => {
   const { userData } = useUser();
-  const [updateUser] = useMutation(UPDATE_USER);
+  const [updateUser, { loading }] = useMutation(UPDATE_USER);
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
@@ -105,8 +106,8 @@ const EditUser = () => {
           <button
             type="submit"
             className="w-full mt-4 min-h-2 rounded-lg border-slate-800 p-2 bg-green-700 text-white boton"
-          >
-            Guardar cambios
+          >{loading ? <BeatLoader color="white" /> : <>Guardar cambios</>}
+            
           </button>
         </fieldset>
       </form>
