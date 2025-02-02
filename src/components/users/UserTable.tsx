@@ -97,7 +97,7 @@ const UserRow: React.FC<UserRowProps> = ({ user, setShouldGetUsers }) => {
       <td>{user.role}</td>
       <td>{user.state}</td>
       <td className="text-center">
-        <Link href={`/admin/users/edit:${user.name}`}>
+        <Link href={`/admin/users/edit:${user.name?.replaceAll(" ", "-")}`}>
           <i
             onClick={() => setUserData(user)}
             className="fas fa-pencil-alt text-indigo-800 hover:text-indigo-500"
