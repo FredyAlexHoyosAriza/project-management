@@ -21,7 +21,7 @@ export interface UpdateUser {
 }
 
 //ReactState es un alias que representa el tipo del setter de estado que gestiona un booleano
-type ReactState = React.Dispatch<React.SetStateAction<boolean>>;
+// type ReactState = React.Dispatch<React.SetStateAction<boolean>>;
 export interface UserTableProps {
   listaUsuarios: User[];
   // setShouldGetUsers: ReactState;

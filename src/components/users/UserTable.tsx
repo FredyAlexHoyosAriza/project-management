@@ -4,9 +4,7 @@ import Link from "next/link";
 import { useUser } from "@/context/UserProvider";
 
 //React.FC (Function Component): Es un tipo que se usa para tipar componentes funcionales en React.
-const UserTable: React.FC<UserTableProps> = ({
-  listaUsuarios
-}) => {
+const UserTable: React.FC<UserTableProps> = ({ listaUsuarios }) => {
   const [busqueda, setBusqueda] = useState("");
   const [usuariosBusqueda, setUsuariosBusqueda] = useState([...listaUsuarios]);
 
@@ -43,6 +41,7 @@ const UserTable: React.FC<UserTableProps> = ({
               <th> Correo </th>
               <th> Nombre </th>
               <th> Apellido </th>
+              <th> Cédula </th>
               <th> Rol </th>
               <th> Estado </th>
               <th> Editar </th>
@@ -51,19 +50,14 @@ const UserTable: React.FC<UserTableProps> = ({
           <tbody>
             {usuariosBusqueda.map((usuario) => {
               //({ ..., _id, name, email, role, state, updatedAt })
-              return (
-                <UserRow
-                  key={usuario._id}
-                  user={usuario}
-                />
-              );
+              return <UserRow key={usuario._id} user={usuario} />;
             })}
           </tbody>
         </table>
       </div>
       <div className="flex flex-wrap justify-around sm:hidden">
-        {usuariosBusqueda.map(({ _id, name, surname, email, role, state }) => {
-          //({ ..., _id, name, email, role, created_at }) // Cards para tamaños pequeños
+        {usuariosBusqueda.map(({ _id, name, surname, idCard, email, role, state }) => {
+          //({ ..., _id, name, email, role, idCard }) // Cards para tamaños pequeños
           return (
             <div
               key={_id}
@@ -71,9 +65,10 @@ const UserTable: React.FC<UserTableProps> = ({
             >
               <span>Correo: {email} </span>
               <span>Nombre: {name} </span>
-              <span>Nombre: {surname} </span>
+              <span>Apellido: {surname} </span>
+              <span>Cédula: {idCard} </span>
               <span>Rol: {role} </span>
-              <span>Rol: {state} </span>
+              <span>State: {state} </span>
             </div>
           );
         })}
@@ -82,7 +77,7 @@ const UserTable: React.FC<UserTableProps> = ({
   );
 };
 
-const UserRow: React.FC<UserRowProps> = ({ user }) => { 
+const UserRow: React.FC<UserRowProps> = ({ user }) => {
   const { setUserData } = useUser();
 
   //---------------------------------------------------------------------
@@ -91,8 +86,21 @@ const UserRow: React.FC<UserRowProps> = ({ user }) => {
       <td>{user.email}</td>
       <td>{user.name}</td>
       <td>{user.surname}</td>
-      <td>{user.role}</td>
-      <td>{user.state}</td>
+      <td>{user.idCard}</td>
+      <td>
+        {user.role === "STUDENT"
+          ? "estudiante"
+          : user.role === "LEADER"
+          ? "líder"
+          : "administrador"}
+      </td>
+      <td>
+        {user.state === "AUTHORIZED"
+          ? "autorizado"
+          : user.state === "UNAUTHORIZED"
+          ? "no autorizado"
+          : "pendiente"}
+      </td>
       <td className="text-center">
         <Link href={`/admin/users/edit:${user.name?.replaceAll(" ", "-")}`}>
           <i
