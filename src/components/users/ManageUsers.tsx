@@ -1,16 +1,18 @@
 'use client';
 import { User } from '@/types/user';
-import Loading from '@/components/Loading';
 import React, { useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
 import { useQuery } from '@apollo/client';
 import { GET_USERS } from '@/graphql/user/queries';
 import UserTable from '@/components/users/UserTable';
+import { useUser } from '@/context/UserProvider';
+import { RingLoader } from 'react-spinners';
 
 export default function ManageUsers({ initialUsers }: { initialUsers: User[] }) {
 
-  // Estado para disparar la actualización de la tabla
-  const [shouldGetUsers, setShouldGetUsers] = useState(false);
+  // Contexto para disparar la actualización de la tabla
+  const { shouldGetUsers, setShouldGetUsers } = useUser(); // Usa el contexto
+
   // Estado local para manejar los usuarios
   const [users, setUsers] = useState<User[]>(initialUsers);
 
@@ -39,7 +41,7 @@ export default function ManageUsers({ initialUsers }: { initialUsers: User[] }) 
           setShouldGetUsers(false); // Restablece el estado para evitar múltiples llamadas
         });
     }
-  }, [shouldGetUsers, refetch]);
+  }, [shouldGetUsers, setShouldGetUsers, refetch]);
 
   return (
     <div>
@@ -47,11 +49,11 @@ export default function ManageUsers({ initialUsers }: { initialUsers: User[] }) 
         Administración de usuarios
       </h2>
       {loading ? (
-        <div className="w-full h-full grid place-items-center">
-          <Loading />
+        <div className="w-full h-full grid place-items-center box-content mt-16">
+          <RingLoader color='white' size={100} />
         </div>
       ) : (
-        <UserTable listaUsuarios={users} setShouldGetUsers={setShouldGetUsers} />
+        <UserTable listaUsuarios={users} />
       )}
     </div>
   );

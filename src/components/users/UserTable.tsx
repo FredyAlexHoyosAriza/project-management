@@ -5,8 +5,7 @@ import { useUser } from "@/context/UserProvider";
 
 //React.FC (Function Component): Es un tipo que se usa para tipar componentes funcionales en React.
 const UserTable: React.FC<UserTableProps> = ({
-  listaUsuarios,
-  setShouldGetUsers,
+  listaUsuarios
 }) => {
   const [busqueda, setBusqueda] = useState("");
   const [usuariosBusqueda, setUsuariosBusqueda] = useState([...listaUsuarios]);
@@ -56,7 +55,6 @@ const UserTable: React.FC<UserTableProps> = ({
                 <UserRow
                   key={usuario._id}
                   user={usuario}
-                  setShouldGetUsers={setShouldGetUsers}
                 />
               );
             })}
@@ -84,8 +82,7 @@ const UserTable: React.FC<UserTableProps> = ({
   );
 };
 
-const UserRow: React.FC<UserRowProps> = ({ user, setShouldGetUsers }) => {
-  if (false) setShouldGetUsers(false);  
+const UserRow: React.FC<UserRowProps> = ({ user }) => { 
   const { setUserData } = useUser();
 
   //---------------------------------------------------------------------

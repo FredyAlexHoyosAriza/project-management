@@ -8,7 +8,7 @@ import Link from "next/link";
 import BeatLoader from "react-spinners/BeatLoader";
 
 const EditUser = () => {
-  const { userData } = useUser();
+  const { userData, setShouldGetUsers } = useUser();
   const [updateUser, { loading }] = useMutation(UPDATE_USER);
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -17,6 +17,7 @@ const EditUser = () => {
     try {
       updateUser({ variables: { id: userData?._id, input: editedUser } });
       toast.success("Usuario actualizado con exito");
+      setShouldGetUsers(true);
     } catch (error) {
       if (error instanceof Error)
         toast.error(`Error actualizando usuario: ${error.message}`);

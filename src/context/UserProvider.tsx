@@ -2,10 +2,12 @@
 import { User } from "@/types/user";
 import { createContext, useState, useContext, ReactNode } from "react";
 
-// Definir el tipo del contexto
+// Definir el tipo del contexto con shouldGetUsers y su setter
 interface UserContextType {
   userData: User | null;
   setUserData: (data: User) => void;
+  shouldGetUsers: boolean;
+  setShouldGetUsers: (value: boolean) => void;
 }
 
 // Crear el contexto con un valor inicial
@@ -16,12 +18,13 @@ interface UserProviderProps {
   children: ReactNode;
 }
 
-// Crear el UserProvider
+// Crear el UserProvider con el nuevo estado
 export const UserProvider = ({ children }: UserProviderProps) => {
-  const [userData, setUserData] = useState<User | null>(null); // Corregido el tipado
+  const [userData, setUserData] = useState<User | null>(null);
+  const [shouldGetUsers, setShouldGetUsers] = useState(false);
 
   return (
-    <UserContext.Provider value={{ userData, setUserData }}>
+    <UserContext.Provider value={{ userData, setUserData, shouldGetUsers, setShouldGetUsers }}>
       {children}
     </UserContext.Provider>
   );
@@ -35,3 +38,4 @@ export const useUser = (): UserContextType => {
   }
   return context;
 };
+
