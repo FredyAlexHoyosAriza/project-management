@@ -74,7 +74,7 @@ const EditUser = () => {
         </legend>
         <fieldset>
           {updatableFields.map((field, i) => (
-            <label key={field} htmlFor={field} className="block">
+            <label key={field} htmlFor={field} className="block mb-1">
               <span className="inline-block pl-2">
                 {esKeys[i]}
                 {/* {field.charAt(0).toUpperCase() + field.slice(1)}:{" "} */}
@@ -90,7 +90,7 @@ const EditUser = () => {
               />
             </label>
           ))}
-          <label htmlFor="state" className="block">
+          <label htmlFor="state" className="block mb-1">
             <span className="inline-block pl-2">Estado: </span>
             <select
               id="state"
@@ -131,7 +131,7 @@ const GoBack = () => {
   return (
     <Link href={"/admin/users"} className="block text-center">
       <i className="fas fa-arrow-left text-white cursor-pointer font-extrabold hover:text-violet-950">
-        Regresar
+      {' Regresar'}
       </i>
     </Link>
   );

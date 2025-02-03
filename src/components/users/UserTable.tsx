@@ -39,8 +39,7 @@ const UserTable: React.FC<UserTableProps> = ({ listaUsuarios }) => {
           <thead>
             <tr>
               <th> Correo </th>
-              <th> Nombre </th>
-              <th> Apellido </th>
+              <th> Nombre Apellido </th>
               <th> Cédula </th>
               <th> Rol </th>
               <th> Estado </th>
@@ -84,8 +83,7 @@ const UserRow: React.FC<UserRowProps> = ({ user }) => {
   return (
     <tr className="">
       <td>{user.email}</td>
-      <td>{user.name}</td>
-      <td>{user.surname}</td>
+      <td>{`${user.name} ${user.surname}`}</td>
       <td>{user.idCard}</td>
       <td>
         {user.role === "STUDENT"
