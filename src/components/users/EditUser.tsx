@@ -11,7 +11,7 @@ import { User } from "@/types/user";
 const EditUser = () => {
   const { userData, setShouldGetUsers } = useUser();
 
-  const [updateUser, { loading }] = useMutation(UPDATE_USER);
+  const [updateUser, { data, error, loading }] = useMutation(UPDATE_USER);
   const [formValues, setFormValues] = useState(
     userData ?? {
       _id: "",
@@ -26,6 +26,19 @@ const EditUser = () => {
     }
   );
   const [hasChanges, setHasChanges] = useState(false);
+
+  useEffect(() => {
+    if (data) {
+      toast.success("Usuario actualizado con éxito");
+      setShouldGetUsers(true);
+    }
+  }, [data]);
+  
+  useEffect(() => {
+    if (error) {
+      toast.error(`Error actualizando usuario: ${error.message}`);
+    }
+  }, [error]);
 
   // Detectar cambios en el formulario
   useEffect(() => {
@@ -42,18 +55,13 @@ const EditUser = () => {
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
     const editedUser = Object.fromEntries(formData.entries());
-    try {
-      updateUser({ variables: { id: userData?._id, input: editedUser } });
-      toast.success("Usuario actualizado con éxito");
-      setShouldGetUsers(true);
-    } catch (error) {
-      toast.error(
-        error instanceof Error
-          ? `Error actualizando usuario: ${error.message}`
-          : "Error desconocido al actualizar usuario"
-      );
-    }
-  };
+
+    updateUser({ variables: { id: userData?._id, input: editedUser } })
+    .catch((err) => {
+      // Esto es solo una capa extra de seguridad en caso de que el error no pase por Apollo
+      toast.error(`Error desconocido al actualizar usuario: ${err.message}`);
+    });
+};
 
   const esKeys = ["Nombre:", "Apellido:", "Cédula:", "Email:"];
 
