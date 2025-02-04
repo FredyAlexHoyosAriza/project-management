@@ -28,9 +28,9 @@ export default function ManageUsers({ initialUsers }: { initialUsers: User[] }) 
         .then(({ data }) => {
           if (data) {
             setUsers(data.getUsers);
-            toast.success('Tabla actualizada con éxito!!!');
+            toast.success('Lista actualizada con éxito!!!');
           } else {
-            toast.error('La tabla no pudo ser actualizada');
+            toast.error('La lista no pudo ser actualizada');
           }
         })
         .catch((error) => {
