@@ -1,12 +1,15 @@
 // src/types/user.ts
+
+// type Role = "STUDENT" | "LEADER" | "ADMINISTRATOR";
+// type State = "AUTHORIZED" | "UNAUTHORIZED" | "PENDING";
 export interface User {
   _id: string;
   name?: string;
   surname?: string;
   idCard?: string;
   email?: string;
-  role?: string;
-  state?: string;
+  role: string;
+  state: string;
   createdAt?: string;
   updatedAt?: string;
 }
@@ -31,3 +34,22 @@ export interface UserRowProps {
   // key: string;
   user: User;
 }
+
+export const Role: Record<string, string> = {
+  STUDENT: 'estudiante',
+  LEADER: 'líder',
+  ADMINISTRATOR: 'administrador',
+}
+
+export const State: Record<string, string> = {
+  AUTHORIZED: 'autorizado',
+  UNAUTHORIZED: 'no autorizado',
+  PENDING: 'pendiente'
+}
+
+// export const stateOptions = [
+//   { value: "", label: "Seleccione un rol", disabled: true },
+//   { value: "AUTHORIZED", label: "autorizado" },
+//   { value: "UNAUTHORIZED", label: "no autorizado" },
+//   { value: "PENDING", label: "pendiente" },
+// ]

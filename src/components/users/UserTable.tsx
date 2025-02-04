@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from "react";
-import { User, UserRowProps, UserTableProps } from "@/types/user";
+import { Role, State, User, UserRowProps, UserTableProps } from "@/types/user";
 import Link from "next/link";
 import { useUser } from "@/context/UserProvider";
 
 //React.FC (Function Component): Es un tipo que se usa para tipar componentes funcionales en React.
-const UserTable: React.FC<UserTableProps> = ({ listaUsuarios }) => {
+const UserList: React.FC<UserTableProps> = ({ listaUsuarios }) => {
   const [busqueda, setBusqueda] = useState("");
   const [usuariosBusqueda, setUsuariosBusqueda] = useState([...listaUsuarios]);
 
@@ -66,8 +66,8 @@ const UserTable: React.FC<UserTableProps> = ({ listaUsuarios }) => {
               <span>Nombre: {user.name} </span>
               <span>Apellido: {user.surname} </span>
               <span>Cédula: {user.idCard} </span>
-              <span>Rol: <RoleParse role={user.role} /> </span>
-              <span>State: <RoleParse role={user.role} /> </span>
+              <span>Rol: {Role[user.role]} </span>
+              <span>Estado: {State[user.state]} </span>
               <span>Editar: <EditUserLink user={user} /> </span>
             </div>
           );
@@ -84,34 +84,10 @@ const UserRow: React.FC<UserRowProps> = ({ user }) => {
       <td>{user.email}</td>
       <td>{`${user.name} ${user.surname}`}</td>
       <td>{user.idCard}</td>
-      <td><RoleParse role={user.role} /></td>
-      <td><StateParse state={user.state} /></td>
+      <td>{Role[user.role]}</td>
+      <td>{State[user.state]}</td>
       <td className="text-center"><EditUserLink user={user} /></td>
     </tr>
-  );
-};
-
-const RoleParse = ({ role }: { role: string | undefined }) => {
-  return (
-    <>
-      {role === "STUDENT"
-        ? "estudiante"
-        : role === "LEADER"
-        ? "líder"
-        : "administrador"}
-    </>
-  );
-};
-
-const StateParse = ({ state }: { state: string | undefined }) => {
-  return (
-    <>
-      {state === "AUTHORIZED"
-        ? "autorizado"
-        : state === "UNAUTHORIZED"
-        ? "no autorizado"
-        : "pendiente"}
-    </>
   );
 };
 
@@ -128,4 +104,4 @@ const EditUserLink = ({ user }: { user: User }) => {
   );
 };
 
-export default UserTable;
+export default UserList;
