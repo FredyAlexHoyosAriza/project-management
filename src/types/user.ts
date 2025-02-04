@@ -1,6 +1,6 @@
 // src/types/user.ts
 
-// type Role = "STUDENT" | "LEADER" | "ADMINISTRATOR";
+// type Role = "STUDENT" | "LEADER" | "MANAGER";
 // type State = "AUTHORIZED" | "UNAUTHORIZED" | "PENDING";
 export interface User {
   _id: string;
@@ -38,7 +38,7 @@ export interface UserRowProps {
 export const Role: Record<string, string> = {
   STUDENT: 'estudiante',
   LEADER: 'líder',
-  ADMINISTRATOR: 'administrador',
+  MANAGER: 'administrador',
 }
 
 export const State: Record<string, string> = {

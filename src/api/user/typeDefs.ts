@@ -43,7 +43,7 @@ export const userTypeDefs = gql`
     idCard: String
     name: String
     surname: String
-    role: ERole
+    # role: ERole
     state: EState
   }
 

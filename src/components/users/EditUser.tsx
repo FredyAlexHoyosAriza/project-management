@@ -156,7 +156,7 @@ import { UPDATE_USER } from "@/graphql/user/mutations";
 import { toast } from "react-toastify";
 import Link from "next/link";
 import BeatLoader from "react-spinners/BeatLoader";
-import { State, User } from "@/types/user";
+import { Role, State, User } from "@/types/user";
 import Input from "../Input";
 import Dropdown from "../Dropdown";
 
@@ -229,7 +229,7 @@ const EditUser = () => {
       <GoBack />
       <form id="user" onSubmit={handleSubmit} className="text-xl lg:w-5/5">
         <legend className="font-bold my-2 text-center">
-          Formulario de edición de usuario
+          Edición de {Role[userData.role]}
         </legend>
         <fieldset>
           {updatableFields.map((field, i) => (
