@@ -34,7 +34,7 @@ const UserTable: React.FC<UserTableProps> = ({ listaUsuarios }) => {
       <legend className="text-center font-extrabold my-2">
         Todas las cuentas de usuario
       </legend>
-      <div className="hidden md:block">
+      <div className="hidden lg:block">
         <table className="w-full min-w-96">
           <thead>
             <tr>
@@ -54,7 +54,7 @@ const UserTable: React.FC<UserTableProps> = ({ listaUsuarios }) => {
           </tbody>
         </table>
       </div>
-      <div className="flex flex-col justify-around md:hidden">
+      <div className="flex flex-col justify-around lg:hidden">
         {usuariosBusqueda.map((user) => {
           //({ ..., _id, name, email, role, idCard }) // Cards para tamaños pequeños
           return (
