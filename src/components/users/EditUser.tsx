@@ -9,7 +9,7 @@ import BeatLoader from "react-spinners/BeatLoader";
 import { User } from "@/types/user";
 
 const EditUser = () => {
-  const { userData, setShouldGetUsers } = useUser();
+  const { userData, setUserData, setShouldGetUsers } = useUser();
 
   const [updateUser, { data, error, loading }] = useMutation(UPDATE_USER);
   const [formValues, setFormValues] = useState(
@@ -21,7 +21,6 @@ const EditUser = () => {
       email: "",
       role: "",
       state: "",
-      createdAt: "",
       updatedAt: "",
     }
   );
@@ -29,10 +28,12 @@ const EditUser = () => {
 
   useEffect(() => {
     if (data) {
+      setUserData(data.updateUser);
+      setFormValues(data.updateUser);
       toast.success("Usuario actualizado con éxito");
       setShouldGetUsers(true);
     }
-  }, [data]);
+  }, [data, setShouldGetUsers, setUserData]);
   
   useEffect(() => {
     if (error) {
@@ -92,7 +93,7 @@ const EditUser = () => {
                 name={field}
                 type="text"
                 className="w-full mt-1 min-h-2 rounded-lg"
-                value={formValues[field] || ""}
+                value={formValues[field]}
                 onChange={handleChange}
                 required
               />
@@ -105,7 +106,7 @@ const EditUser = () => {
               value={formValues.state}
               onChange={handleChange}
               name="state"
-              className="w-full min-h-2 rounded-lg"
+              className="w-full mt-1 min-h-2 rounded-lg"
               required
             >
               <option value={""} disabled>

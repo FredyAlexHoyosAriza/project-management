@@ -7,7 +7,7 @@ const AdminLayout = ({ children }: { children: ReactNode }) => {
   return (
     <div className="flex flex-col w-screen h-screen md:flex-row">
       <SideBar />
-      <main className="flex-grow flex items-start justify-center w-screen h-auto p-4 bg-blue-400 overflow-y-auto">
+      <main className="flex-grow flex items-start justify-center w-screen h-full p-4 bg-blue-400 overflow-y-auto">
         {children}
         <ToastContainer
         position="bottom-right"

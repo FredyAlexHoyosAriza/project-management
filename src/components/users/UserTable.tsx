@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { UserRowProps, UserTableProps } from "@/types/user";
+import { User, UserRowProps, UserTableProps } from "@/types/user";
 import Link from "next/link";
 import { useUser } from "@/context/UserProvider";
 
@@ -34,7 +34,7 @@ const UserTable: React.FC<UserTableProps> = ({ listaUsuarios }) => {
       <legend className="text-center font-extrabold my-2">
         Todas las cuentas de usuario
       </legend>
-      <div className="hidden sm:block">
+      <div className="hidden md:block">
         <table className="w-full min-w-96">
           <thead>
             <tr>
@@ -54,20 +54,21 @@ const UserTable: React.FC<UserTableProps> = ({ listaUsuarios }) => {
           </tbody>
         </table>
       </div>
-      <div className="flex flex-wrap justify-around sm:hidden">
-        {usuariosBusqueda.map(({ _id, name, surname, idCard, email, role, state }) => {
+      <div className="flex flex-col justify-around md:hidden">
+        {usuariosBusqueda.map((user) => {
           //({ ..., _id, name, email, role, idCard }) // Cards para tamaños pequeños
           return (
             <div
-              key={_id}
+              key={user._id}
               className="bg-slate-500 text-white p-2 m-2 rounded-lg flex flex-col"
             >
-              <span>Correo: {email} </span>
-              <span>Nombre: {name} </span>
-              <span>Apellido: {surname} </span>
-              <span>Cédula: {idCard} </span>
-              <span>Rol: {role} </span>
-              <span>State: {state} </span>
+              <span>Correo: {user.email} </span>
+              <span>Nombre: {user.name} </span>
+              <span>Apellido: {user.surname} </span>
+              <span>Cédula: {user.idCard} </span>
+              <span>Rol: <RoleParse role={user.role} /> </span>
+              <span>State: <RoleParse role={user.role} /> </span>
+              <span>Editar: <EditUserLink user={user} /> </span>
             </div>
           );
         })}
@@ -77,38 +78,53 @@ const UserTable: React.FC<UserTableProps> = ({ listaUsuarios }) => {
 };
 
 const UserRow: React.FC<UserRowProps> = ({ user }) => {
-  const { setUserData } = useUser();
-
   //---------------------------------------------------------------------
   return (
     <tr className="">
       <td>{user.email}</td>
       <td>{`${user.name} ${user.surname}`}</td>
       <td>{user.idCard}</td>
-      <td>
-        {user.role === "STUDENT"
-          ? "estudiante"
-          : user.role === "LEADER"
-          ? "líder"
-          : "administrador"}
-      </td>
-      <td>
-        {user.state === "AUTHORIZED"
-          ? "autorizado"
-          : user.state === "UNAUTHORIZED"
-          ? "no autorizado"
-          : "pendiente"}
-      </td>
-      <td className="text-center">
-        <Link href={`/admin/users/edit:${user.name?.replaceAll(" ", "-")}`}>
-          <i
-            onClick={() => setUserData(user)}
-            className="fas fa-pencil-alt text-indigo-800 hover:text-indigo-500"
-            title="Edit"
-          />
-        </Link>
-      </td>
+      <td><RoleParse role={user.role} /></td>
+      <td><StateParse state={user.state} /></td>
+      <td className="text-center"><EditUserLink user={user} /></td>
     </tr>
+  );
+};
+
+const RoleParse = ({ role }: { role: string | undefined }) => {
+  return (
+    <>
+      {role === "STUDENT"
+        ? "estudiante"
+        : role === "LEADER"
+        ? "líder"
+        : "administrador"}
+    </>
+  );
+};
+
+const StateParse = ({ state }: { state: string | undefined }) => {
+  return (
+    <>
+      {state === "AUTHORIZED"
+        ? "autorizado"
+        : state === "UNAUTHORIZED"
+        ? "no autorizado"
+        : "pendiente"}
+    </>
+  );
+};
+
+const EditUserLink = ({ user }: { user: User }) => {
+  const { setUserData } = useUser();
+  return (
+    <Link href={`/admin/users/edit:${user.name?.replaceAll(" ", "-")}`}>
+      <i
+        onClick={() => setUserData(user)}
+        className="fas fa-pencil-alt text-indigo-800 hover:text-indigo-500"
+        title="Edit"
+      />
+    </Link>
   );
 };
 

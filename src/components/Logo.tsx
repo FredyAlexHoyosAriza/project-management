@@ -13,7 +13,7 @@ const Logo = () => {
         height={0} // `h-auto` se maneja configurando solo el ancho.
         style={{ margin: "0 auto", marginBottom: "0.25rem" }} // `mx-auto mb-1`
       />
-      <h3>Project Management</h3>
+      <h3>Management</h3>
     </div>
   );
 };

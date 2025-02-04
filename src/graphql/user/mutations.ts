@@ -17,12 +17,14 @@ export const CREATE_USER = gql`
 export const UPDATE_USER = gql`
   mutation UpdateUser($id: ID!, $input: UpdateUserInput!) {
     updateUser(id: $id, input: $input) {
+      _id
       name
       surname
       idCard
       email
       role
       state
+      updatedAt
     }
   }
 `;
