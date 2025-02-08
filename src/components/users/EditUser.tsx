@@ -1,5 +1,5 @@
 // "use client";
-// import { useUser } from "@/context/UserProvider";
+// import { useUserEditing } from "@/context/UserEditingProvider";
 // import React, { useState, useEffect } from "react";
 // import { useMutation } from "@apollo/client";
 // import { UPDATE_USER } from "@/graphql/user/mutations";
@@ -9,7 +9,7 @@
 // import { User } from "@/types/user";
 
 // const EditUser = () => {
-//   const { userData, setUserData, setShouldGetUsers } = useUser();
+//   const { userData, setUserData, setShouldGetUsers } = useUserEditing ();
 
 //   const [updateUser, { data, error, loading }] = useMutation(UPDATE_USER);
 //   const [formValues, setFormValues] = useState(
@@ -149,7 +149,7 @@
 // export default EditUser;
 
 "use client";
-import { useUser } from "@/context/UserProvider";
+import { useUserEditing } from "@/context/UserEditingProvider";
 import React, { useState, useEffect } from "react";
 import { useMutation } from "@apollo/client";
 import { UPDATE_USER } from "@/graphql/user/mutations";
@@ -161,7 +161,7 @@ import Input from "../Input";
 import Dropdown from "../Dropdown";
 
 const EditUser = () => {
-  const { userData, setUserData, setShouldGetUsers } = useUser();
+  const { userData, setUserData, setShouldGetUsers } = useUserEditing ();
 
   const [updateUser, { data, error, loading }] = useMutation(UPDATE_USER);
   const [formValues, setFormValues] = useState(

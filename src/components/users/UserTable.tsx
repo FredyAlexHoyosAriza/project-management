@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Role, State, User, UserRowProps, UserTableProps } from "@/types/user";
 import Link from "next/link";
-import { useUser } from "@/context/UserProvider";
+import { useUserEditing } from "@/context/UserEditingProvider";
 
 //React.FC (Function Component): Es un tipo que se usa para tipar componentes funcionales en React.
 const UserList: React.FC<UserTableProps> = ({ listaUsuarios }) => {
@@ -92,7 +92,7 @@ const UserRow: React.FC<UserRowProps> = ({ user }) => {
 };
 
 const EditUserLink = ({ user }: { user: User }) => {
-  const { setUserData } = useUser();
+  const { setUserData } = useUserEditing ();
   return (
     <Link href={`/admin/users/edit:${user.name?.replaceAll(" ", "-")}`}>
       <i

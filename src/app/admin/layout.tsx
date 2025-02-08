@@ -3,11 +3,11 @@ import SideBar from "@/components/SideBar";
 import { ToastContainer } from "react-toastify";
 
 // Layout para la sección de administración
-const AdminLayout = ({ children }: { children: ReactNode }) => {
+export function AdminLayout ({ children }: { children: ReactNode }) {
   return (
     <div className="flex flex-col w-screen h-screen md:flex-row">
       <SideBar />
-      <main className="flex-grow flex items-start justify-center w-screen h-auto p-4 bg-blue-400 overflow-y-auto">
+      <main className="flex-grow flex items-start justify-end md:justify-center w-screen h-auto p-4 bg-blue-400 overflow-y-auto">
         {children}
         <ToastContainer
         position="bottom-right"

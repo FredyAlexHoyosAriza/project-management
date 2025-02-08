@@ -1,3 +1,4 @@
+// Este endpoint se encarga de la lógica de negocio.
 import { ApolloServer } from '@apollo/server';
 import { startServerAndCreateNextHandler } from '@as-integrations/next';
 import { schema } from '@/api/graphql';
@@ -24,7 +25,12 @@ const server = new ApolloServer({ schema,
         : ApolloServerPluginLandingPageLocalDefault({ footer: false }),//landing page de desarrollo -> apollo sandbox
     ],
  });
-const handler = startServerAndCreateNextHandler(server);
+const handler = startServerAndCreateNextHandler(server, {
+  context: async () => {
+    // El middleware ya garantiza que el usuario está autenticado
+    return { user: 'Authenticated User' };
+  },
+});
 
 // Rutas GET y POST para el endpoint GraphQL
 // Ir a la ruta http://localhost:3000/api/graphql implica hacer un GET al endpoint:

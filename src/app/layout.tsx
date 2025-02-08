@@ -3,6 +3,7 @@ import Script from "next/script";
 import "../styles/globals.css";
 import { Metadata } from "next";
 import { ApolloWrapper } from "@/lib/apollo-wrapper";
+import { UserProvider } from "@auth0/nextjs-auth0/client";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -31,21 +32,23 @@ export default function RootLayout({
         o <meta>. Para scripts externos dinámicos o de carga optimizada, utiliza el componente Script. */}
         {/* <link rel="next-icon" href="/next.svg" /> */}
       </head>
-      <ApolloWrapper>
-        <body
-          className={`${geistSans.variable} ${geistMono.variable} antialiased bg-red-300`}
-        >
-          {/* Next.js automáticamente inyectará el script en el <head> del HTML generado.
-        lazyOnload: Carga el script solo cuando la página haya terminado de cargar completamente.
-        crossOrigin: Indica que el recurso externo permite solicitudes cruzadas. */}
-          <Script
-            src="https://kit.fontawesome.com/cb32582639.js"
-            crossOrigin="anonymous"
-            strategy="lazyOnload"
-          />
-          {children}
-        </body>
-      </ApolloWrapper>
+      <UserProvider>
+        <ApolloWrapper>
+          <body
+            className={`${geistSans.variable} ${geistMono.variable} antialiased bg-red-300`}
+          >
+            {/* Next.js automáticamente inyectará el script en el <head> del HTML generado.
+                lazyOnload: Carga el script solo cuando la página haya terminado de cargar completamente.
+                crossOrigin: Indica que el recurso externo permite solicitudes cruzadas. */}
+            <Script
+              src="https://kit.fontawesome.com/cb32582639.js"
+              crossOrigin="anonymous"
+              strategy="lazyOnload"
+            />
+            {children}
+          </body>
+        </ApolloWrapper>
+      </UserProvider>
     </html>
   );
 }

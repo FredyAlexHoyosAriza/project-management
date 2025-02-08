@@ -1,9 +1,9 @@
 import React, { ReactNode } from "react";
-import { UserProvider } from "@/context/UserProvider";
+import { UserEditingProvider } from "@/context/UserEditingProvider";
 
 // Layout de Usuario
 const UserLayout = ({ children }: { children: ReactNode }) => {
-  return <UserProvider>{children}</UserProvider>;
+  return <UserEditingProvider>{children}</UserEditingProvider>;
 };
 
 export default UserLayout;

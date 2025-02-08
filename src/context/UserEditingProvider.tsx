@@ -13,13 +13,13 @@ interface UserContextType {
 // Crear el contexto con un valor inicial
 export const UserContext = createContext<UserContextType | undefined>(undefined);
 
-// Definir las props del UserProvider
+// Definir las props del UserEditingProvider
 interface UserProviderProps {
   children: ReactNode;
 }
 
-// Crear el UserProvider con el nuevo estado
-export const UserProvider = ({ children }: UserProviderProps) => {
+// Crear el UserEditingProvider con el nuevo estado
+export const UserEditingProvider = ({ children }: UserProviderProps) => {
   const [userData, setUserData] = useState<User | null>(null);
   const [shouldGetUsers, setShouldGetUsers] = useState(false);
 
@@ -31,10 +31,10 @@ export const UserProvider = ({ children }: UserProviderProps) => {
 };
 
 // Hook personalizado para acceder al contexto de usuario con seguridad de tipo
-export const useUser = (): UserContextType => {
+export const useUserEditing = (): UserContextType => {
   const context = useContext(UserContext);
   if (!context) {
-    throw new Error("useUser must be used within a UserProvider");
+    throw new Error("useUserEditing must be used within a UserEditingProvider");
   }
   return context;
 };

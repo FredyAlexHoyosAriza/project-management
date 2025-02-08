@@ -1,3 +1,4 @@
+// GraphQL mutation templates
 import { gql } from "@apollo/client";
 // Los input y sus tipos son los mismos definidos en los typeDefs
 

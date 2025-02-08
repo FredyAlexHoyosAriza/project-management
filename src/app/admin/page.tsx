@@ -1,5 +1,5 @@
 // Página principal del panel de administración
-const AdminPage = () => {
+export function AdminPage() {
   return (
     <div>
       <h1>Admin</h1>

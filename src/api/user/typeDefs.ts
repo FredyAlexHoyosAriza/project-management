@@ -13,7 +13,8 @@ export const userTypeDefs = gql`
     AUTHORIZED
     UNAUTHORIZED
   }
-
+  
+  # password nunca en retorno
   type User {
     _id: ID!
     name: String!
@@ -31,6 +32,7 @@ export const userTypeDefs = gql`
 
   input CreateUserInput {
     email: String!
+    # password: String! # en la creación
     idCard: String!
     name: String!
     surname: String!
@@ -40,6 +42,7 @@ export const userTypeDefs = gql`
 
   input UpdateUserInput {
     email: String
+    # password: String # quizá en update
     idCard: String
     name: String
     surname: String

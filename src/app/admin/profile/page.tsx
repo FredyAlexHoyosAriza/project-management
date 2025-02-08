@@ -1,7 +1,13 @@
-import React from 'react'
+import { getSession } from '@auth0/nextjs-auth0';
+import Profile from '@/components/users/Profile';
 
-export default function Profile() {
+export default async function ProfilePage() {
+  const session = await getSession();
+  const user = session?.user;
+
   return (
-    <div>Página de perfil</div>
-  )
+    <div>
+      <Profile user={user} />
+    </div>
+  );
 }

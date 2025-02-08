@@ -5,13 +5,13 @@ import { toast } from 'react-toastify';
 import { useQuery } from '@apollo/client';
 import { GET_USERS } from '@/graphql/user/queries';
 import UserTable from '@/components/users/UserTable';
-import { useUser } from '@/context/UserProvider';
+import { useUserEditing } from '@/context/UserEditingProvider';
 import { RingLoader } from 'react-spinners';
 
 export default function ManageUsers({ initialUsers }: { initialUsers: User[] }) {
 
   // Contexto para disparar la actualización de la tabla
-  const { shouldGetUsers, setShouldGetUsers } = useUser(); // Usa el contexto
+  const { shouldGetUsers, setShouldGetUsers } = useUserEditing (); // Usa el contexto
 
   // Estado local para manejar los usuarios
   const [users, setUsers] = useState<User[]>(initialUsers);
