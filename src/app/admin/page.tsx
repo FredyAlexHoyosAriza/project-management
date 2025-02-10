@@ -1,5 +1,5 @@
 // Página principal del panel de administración
-export function AdminPage() {
+export default function Page() {
   return (
     <div>
       <h1>Admin</h1>
@@ -8,4 +8,3 @@ export function AdminPage() {
   );
 };
 
-export default AdminPage;
