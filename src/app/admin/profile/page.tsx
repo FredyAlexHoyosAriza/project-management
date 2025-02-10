@@ -11,7 +11,13 @@ export default async function ProfilePage() {
     <div>
       <h1>Hola, {user.name}</h1>
       <p>Email: {user.email}</p>
-      <Image src={user.picture ?? '/default-profile.png'} alt="Foto de perfil" />
+      <Image 
+        src={user.picture ?? '/default-profile.png'} 
+        alt="Foto de perfil" 
+        width={100}  // Ajusta el tamaño según lo que necesites
+        height={100} 
+        className="rounded-full object-cover"  // Opcional: Estilo para imagen circular
+      />
     </div>
   );
 }

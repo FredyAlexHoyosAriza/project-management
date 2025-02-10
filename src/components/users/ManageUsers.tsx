@@ -1,6 +1,6 @@
 'use client';
 import { User } from '@/types/user';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { toast } from 'react-toastify';
 import { useQuery } from '@apollo/client';
 import { GET_USERS } from '@/graphql/user/queries';
@@ -9,37 +9,32 @@ import { useUserEditing } from '@/context/UserEditingProvider';
 import { RingLoader } from 'react-spinners';
 
 export default function ManageUsers({ initialUsers }: { initialUsers: User[] }) {
+  const { shouldGetUsers, setShouldGetUsers } = useUserEditing();
 
-  // Contexto para disparar la actualización de la tabla
-  const { shouldGetUsers, setShouldGetUsers } = useUserEditing (); // Usa el contexto
-
-  // Estado local para manejar los usuarios
-  const [users, setUsers] = useState<User[]>(initialUsers);
-
-  // Hook para obtener los usuarios desde el servidor
-  const { loading, refetch } = useQuery(GET_USERS, {
+  // Hook para obtener los usuarios
+  const { data, loading, refetch } = useQuery(GET_USERS, {
     fetchPolicy: 'cache-and-network',
-    skip: true, // Evita que la query se ejecute automáticamente al montar el componente
+    skip: initialUsers.length > 0, // Evita consulta doble si ya tenemos datos desde SSR
   });
-  // Actualización de usuarios cuando cambia `shouldGetUsers`
+
+  // Si hay datos nuevos en Apollo, los usamos; si no, usamos initialUsers de SSR
+  const users = data?.getUsers || initialUsers || [];
+
   useEffect(() => {
     if (shouldGetUsers) {
       refetch()
         .then(({ data }) => {
-          if (data) {
-            setUsers(data.getUsers);
-            toast.success('Lista actualizada con éxito!!!');
+          if (data?.getUsers) {
+            toast.success('Lista actualizada con éxito!');
           } else {
-            toast.error('La lista no pudo ser actualizada');
+            toast.error('No se pudo actualizar la lista.');
           }
         })
         .catch((error) => {
           console.error(error);
-          toast.error('Ocurrió un error al actualizar los usuarios:');
+          toast.error('Error al actualizar los usuarios.');
         })
-        .finally(() => {
-          setShouldGetUsers(false); // Restablece el estado para evitar múltiples llamadas
-        });
+        .finally(() => setShouldGetUsers(false));
     }
   }, [shouldGetUsers, setShouldGetUsers, refetch]);
 
@@ -48,7 +43,7 @@ export default function ManageUsers({ initialUsers }: { initialUsers: User[] }) 
       <h2 className="mx-auto text-xl sm:text-3xl text-center font-bold text-slate-950 my-2">
         Administración de usuarios
       </h2>
-      {loading ? (
+      {loading && !initialUsers ? (
         <div className="w-full h-full grid place-items-center box-content mt-16">
           <RingLoader color='white' size={100} />
         </div>

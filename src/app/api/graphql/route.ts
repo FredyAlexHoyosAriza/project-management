@@ -25,12 +25,7 @@ const server = new ApolloServer({ schema,
         : ApolloServerPluginLandingPageLocalDefault({ footer: false }),//landing page de desarrollo -> apollo sandbox
     ],
  });
-const handler = startServerAndCreateNextHandler(server, {
-  context: async () => {
-    // El middleware ya garantiza que el usuario está autenticado
-    return { user: 'Authenticated User' };
-  },
-});
+const handler = startServerAndCreateNextHandler(server);
 
 // Rutas GET y POST para el endpoint GraphQL
 // Ir a la ruta http://localhost:3000/api/graphql implica hacer un GET al endpoint:
