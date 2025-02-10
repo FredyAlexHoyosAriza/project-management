@@ -13,7 +13,7 @@ import {
 import { AdvanceModel } from "../../database/models/advance";
 import { EnrollmentModel } from "../../database/models/enrollment";
 import { ERole } from "../../database/models/user";
-import { verifyRole } from "../../user/services";
+import { verifyRole } from "../user/services";
 
 export const projectResolvers = {
   Query: {

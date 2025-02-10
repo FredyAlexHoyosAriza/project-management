@@ -3,8 +3,6 @@ import Script from "next/script";
 import "../styles/globals.css";
 import { Metadata } from "next";
 import { ApolloWrapper } from "@/lib/apollo-wrapper";
-import { UserProvider } from "@auth0/nextjs-auth0/client";
-
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
   variable: "--font-geist-sans",
@@ -32,7 +30,6 @@ export default function RootLayout({
         o <meta>. Para scripts externos dinámicos o de carga optimizada, utiliza el componente Script. */}
         {/* <link rel="next-icon" href="/next.svg" /> */}
       </head>
-      <UserProvider>
         <ApolloWrapper>
           <body
             className={`${geistSans.variable} ${geistMono.variable} antialiased bg-red-300`}
@@ -48,7 +45,6 @@ export default function RootLayout({
             {children}
           </body>
         </ApolloWrapper>
-      </UserProvider>
     </html>
   );
 }

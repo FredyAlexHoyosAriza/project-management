@@ -3,7 +3,7 @@ import { EnrollmentModel, IUpdateEnrollment } from "@/api/database/models/enroll
 import { IEnrollment, ICreateEnrollment } from "@/api/database/models/enrollment";
 import { ProjectModel } from "../../database/models/project";
 import { ERole } from "../../database/models/user";
-import { verifyRole } from "../../user/services";
+import { verifyRole } from "../user/services";
 import { handleAcceptance } from "./services";
 
 export const enrollmentResolvers = {

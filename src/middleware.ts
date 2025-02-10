@@ -1,59 +1,42 @@
-// El middleware asegura que las solicitudes a /api/graphql solo pasen si el usuario está autenticado.
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
-import { getSession } from '@auth0/nextjs-auth0/edge';
+import { auth0 } from './lib/auth0';
 
-export async function middleware(req: NextRequest) {
-  const session = await getSession(req, new NextResponse());
+export async function middleware(request: NextRequest) {
+  const { pathname } = request.nextUrl;
 
-  if (!session?.user) {
-    // Redirigir al login si no hay sesión activa
-    return NextResponse.redirect(new URL('/api/auth/login', req.url));
+  // 1. Permitir el acceso al landing page sin autenticación
+  if (pathname === '/' || pathname === '/index.html') {
+    return NextResponse.next();
   }
 
-  // Permitir el acceso si hay sesión activa
+  // 2. Delegar el manejo a las rutas de /auth (login, callback, etc.)
+  if (pathname.startsWith('/auth')) {
+    return auth0.middleware(request);
+  }
+
+  // 3. Verificar si existe una sesión activa
+  const session = await auth0.getSession();//request as any
+  if (!session) {
+    // Si no hay sesión, redirigir al login.
+    // Puedes agregar el parámetro "returnTo" para volver a la ruta actual tras loguearse.
+    const loginUrl = new URL('/auth/login', request.url);
+    loginUrl.searchParams.set('returnTo', pathname);
+    return NextResponse.redirect(loginUrl);
+  }
+
+  // Si está autenticado, permite continuar
   return NextResponse.next();
 }
 
-// Proteger solo la ruta GraphQL
 export const config = {
-  matcher: '/api/graphql/:path*',
+  matcher: [
+    /*
+     * Se aplica a todas las rutas, excepto las que empiecen con:
+     * - _next/static (archivos estáticos)
+     * - _next/image (imágenes optimizadas)
+     * - favicon.ico, sitemap.xml, robots.txt (archivos de metadatos)
+     */
+    '/((?!_next/static|project-management-1.png|_next/image|favicon.ico|sitemap.xml|robots.txt).*)',
+  ],
 };
-
-// import { NextResponse } from "next/server";
-// import type { NextRequest } from "next/server";
-// // import { handleAuthMiddleware } from './app/api/users/auth';
-
-// // Definir las rutas protegidas
-// const protectedRoutes = ["/api/users", "/api/orders"];
-
-// export function middleware(req: NextRequest) {
-//   const token = req.headers.get("authorization");
-
-//   // Verificar si la ruta está protegida
-//   const url = req.nextUrl.pathname;
-//   if (protectedRoutes.some((route) => url.startsWith(route))) {
-//     // Validar el token
-//     if (!token || !isValidToken(token)) {
-//       return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
-//     }
-//   }
-//   //   if (req.nextUrl.pathname.startsWith('/api/users')) {
-//   //     return handleAuthMiddleware(req);
-//   //   }
-
-//   return NextResponse.next();
-// }
-
-// // Función para validar el token (ejemplo)
-// function isValidToken(token: string): boolean {
-//   // Aquí se podría usar un método para verificar el token JWT
-//   // Por ejemplo, con una librería como `jsonwebtoken`
-//   try {
-//     // Ejemplo de validación ficticia
-//     const payload = JSON.parse(atob(token.split(".")[1]));
-//     return payload && payload.exp > Date.now() / 1000;
-//   } catch {// (error)
-//     return false;
-//   }
-// }

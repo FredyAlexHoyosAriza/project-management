@@ -2,14 +2,14 @@ import { makeExecutableSchema } from "@graphql-tools/schema";
 import { mergeResolvers, mergeTypeDefs } from "@graphql-tools/merge";
 
 // Importar los typeDefs
-import { userTypeDefs } from "../user/typeDefs";
+import { userTypeDefs } from "./user/typeDefs";
 import { enrollmentTypeDefs } from "./enrollment/typeDefs";
 import { projectTypeDefs } from "./project/typeDefs";
 import { advanceTypeDefs } from "./advance/typeDefs";
 import { dateTypeDefs }  from "./dateScalar/typeDefs";
 
 // Importar los resolvers
-import { userResolvers } from "../user/resolvers";
+import { userResolvers } from "./user/resolvers";
 import { enrollmentResolvers } from "./enrollment/resolvers";
 import { projectResolvers } from "./project/resolvers";
 import { advanceResolvers } from "./advance/resolvers";

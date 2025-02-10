@@ -1,11 +1,8 @@
 'use client';
-import { UserProfile } from '@auth0/nextjs-auth0/client';
+import { useUser } from '@auth0/nextjs-auth0';
 
-type Props = {
-  user: UserProfile | undefined;
-};
-
-export default function Profile({ user }: Props) {
+export default function Profile() {
+  const { user } = useUser();
   if (!user) return <p>No estás autenticado.</p>;
 
   return (
