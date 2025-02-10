@@ -5,7 +5,6 @@ const Logo = () => {
   return (
     // mx-auto
     <div className="flex flex-col w-full text-center my-2">
-      {/* <Image src='/project-management-1.png' alt='Img Concesionario' className='w-14 h-auto mx-auto mb-1' /> */}
       <Image
         src="/project-management-1.png"
         alt="Gear Image"
@@ -14,6 +13,17 @@ const Logo = () => {
         className="h-auto mx-auto mb-1"
       />
       <h3>Management</h3>
+      {/* <div className="flex flex-col w-full text-center my-2">
+      <div className="relative w-14 h-14 mx-auto">
+        <Image
+          src="/project-management-1.png"
+          alt="Gear Image"
+          fill
+          className="object-contain"
+        />
+      </div>
+      <h3>Management</h3>
+    </div> */}
     </div>
   );
 };

@@ -3,7 +3,7 @@ import SideBar from "@/components/SideBar";
 import { ToastContainer } from "react-toastify";
 
 // Layout para la sección de administración
-export function AdminLayout ({ children }: { children: ReactNode }) {
+export default function Layout ({ children }: { children: ReactNode }) {
   return (
     <div className="flex flex-col w-screen h-screen md:flex-row">
       <SideBar />
@@ -26,4 +26,3 @@ export function AdminLayout ({ children }: { children: ReactNode }) {
   );
 };
 
-export default AdminLayout;
