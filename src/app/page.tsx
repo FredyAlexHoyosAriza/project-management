@@ -1,5 +1,6 @@
 // import NavBar from "@/components/NavBar";
 import React from "react";
+import Image from "next/image";
 import { auth0 } from "@/lib/auth0";
 
 export default async function Home() {
@@ -12,10 +13,12 @@ export default async function Home() {
         <ul className="flex justify-between items-center my-4 px-4">
           <li>
             <a href={user ? '/admin' : '/'} className="hover:scale-110">
-              <img
+              <Image
                 src="/project-management-1.png"
                 alt="Gear Image"
-                className="w-14 h-auto mx-auto mb-1"
+                width={56} // Equivalente a w-14 en Tailwind (14 * 4 = 56px)
+                height={0} // Dejar altura automática
+                className="h-auto mx-auto mb-1"
               />
             </a>
           </li>

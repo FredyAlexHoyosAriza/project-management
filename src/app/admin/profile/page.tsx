@@ -1,5 +1,6 @@
 // import Profile from '@/components/users/Profile';
 import { auth0 } from '@/lib/auth0';
+import Image from 'next/image';
 
 export default async function ProfilePage() {
   const session = await auth0.getSession();
@@ -10,7 +11,7 @@ export default async function ProfilePage() {
     <div>
       <h1>Hola, {user.name}</h1>
       <p>Email: {user.email}</p>
-      <img src={user.picture ?? '/default-profile.png'} alt="Foto de perfil" />
+      <Image src={user.picture ?? '/default-profile.png'} alt="Foto de perfil" />
     </div>
   );
 }
