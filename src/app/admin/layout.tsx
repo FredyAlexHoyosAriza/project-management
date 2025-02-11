@@ -7,7 +7,7 @@ export default function Layout ({ children }: { children: ReactNode }) {
   return (
     <div className="flex flex-col w-screen h-screen md:flex-row">
       <SideBar />
-      <main className="flex-grow flex items-start justify-end md:justify-center w-screen h-auto p-4 bg-blue-400 overflow-y-auto">
+      <main className="flex-grow flex items-start ml-auto w-[calc(100vw-10rem)] justify-end md:justify-center sm:w-screen h-auto p-4 bg-blue-400 overflow-y-auto">
         {children}
         <ToastContainer
         position="bottom-right"
