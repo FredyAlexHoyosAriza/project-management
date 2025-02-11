@@ -12,7 +12,7 @@ export default async function Home() {
     <div className="flex flex-col h-screen justify-around">
       {/* <NavBar /> */}
       <nav className="bg-red-300 shadow-md">
-        <ul className="flex justify-between items-center my-4 px-4">
+        <ul className="flex justify-around flex-wrap items-center my-4 px-4">
           <li>
             <a href={user ? '/admin' : '/'} className="hover:scale-110">
               <Image
