@@ -77,7 +77,7 @@ const SideBar = () => {
           : isAnimating
           ? "-translate-x-full"
           : "hidden"
-        } menu absolute top-10 md:top-0 md:static md:block transition-transform duration-300 ease-in-out`}
+        } menu sm:absolute top-10 md:top-0 md:static md:block transition-transform duration-300 ease-in-out`}
         onTransitionEnd={handleTransitionEnd}
         // Usamos aria-hidden para mejorar accesibilidad
         aria-hidden={!showSidebar}
