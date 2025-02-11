@@ -9,7 +9,7 @@ const UserList: React.FC<UserTableProps> = ({ listaUsuarios }) => {
   const [usuariosBusqueda, setUsuariosBusqueda] = useState([...listaUsuarios]);
 
   useEffect(() => {
-    console.log(busqueda);
+    // console.log(busqueda);
     if (busqueda !== "") {
       setUsuariosBusqueda(
         listaUsuarios.filter((usuario) => {

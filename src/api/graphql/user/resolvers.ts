@@ -210,7 +210,7 @@ export const userResolvers = {
         if (!updatedUser) {
           throw new Error(`User with ID ${id} not found.`);
         }
-        console.log(updatedUser);
+        // console.log(updatedUser);
         return updatedUser;
       } catch (error) {
         console.error(error);

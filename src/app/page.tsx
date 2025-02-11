@@ -4,6 +4,8 @@ import Image from "next/image";
 import { auth0 } from "@/lib/auth0";
 
 export default async function Home() {
+  // auth0.getSession(): este método no solo extrae el token, sino que además realiza la
+  // validación, decodificación y devuelve un objeto con la información del usuario.
   const session = await auth0.getSession();
   const user = session ? session.user : null;
   return (
