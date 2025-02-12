@@ -53,7 +53,7 @@ function makeClient() {
             new SSRMultipartLink({ stripDefer: true, }),
             combinedLink, //Para el front cargado en el navegador window existe
           ])
-        : combinedLink,
+        : httpLink,//combinedLink,
   });
 }
 

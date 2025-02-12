@@ -14,7 +14,7 @@ export default async function Home() {
       <nav className="bg-red-300 shadow-md">
         <ul className="flex justify-around flex-wrap items-center my-4 px-4">
           <li>
-            <a href={user ? '/admin' : '/'} className="hover:scale-110">
+            <a href={user ? "/admin" : "/"} className="hover:scale-110">
               <Image
                 src="/project-management-1.png"
                 alt="Gear Image"
@@ -68,7 +68,22 @@ export default async function Home() {
           </li>
         </ul>
       </nav>
-      <main className="h-screen overflow-y-scroll bg-blue-400"></main>
+      <main className="h-screen overflow-y-scroll bg-blue-400">
+        <div className="relative w-full h-[500px]">
+          <Image
+            src="/Project-Management-Landing-2.jpg"
+            alt="Project Management Landing"
+            fill
+            className="object-cover"
+          />
+          <div className="absolute inset-0 flex items-center justify-center text-white">
+            <h1 className="flex flex-col text-2xl text-center font-bold">
+              <span>Your Vision, Our Mission</span>
+              <span>¡Building Success Together!</span>
+            </h1>
+          </div>
+        </div>
+      </main>
     </div>
     // <div className="container">
     //   <h1>Welcome to project Management!!</h1>
