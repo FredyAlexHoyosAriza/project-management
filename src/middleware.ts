@@ -37,7 +37,6 @@ export const config = {
      * - _next/image (imágenes optimizadas)
      * - favicon.ico, sitemap.xml, robots.txt (archivos de metadatos)
      */
-    '/((?!_next/static|_next/image|favicon.ico|sitemap.xml|robots.txt|api/|public/).*)',
-    // '/((?!_next/static|_next/image|api/|[^/]+\.(png|jpg|ico|xml|txt)).*)'
+    '/((?!_next/static|project-management-1.png|Project-Management-Landing-2.jpg|_next/image|favicon.ico|sitemap.xml|robots.txt|api/).*)',
   ],
 };
