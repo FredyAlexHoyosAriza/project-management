@@ -1,11 +1,11 @@
 "use client";
+// PARA CLIENT COMPONENTS; window != undefined
 
-import { ApolloLink, HttpLink } from "@apollo/client";
+import { HttpLink } from "@apollo/client";
 import {
   ApolloClient,
   ApolloNextAppProvider,
   InMemoryCache,
-  SSRMultipartLink,
 } from "@apollo/experimental-nextjs-app-support";
 import { setContext } from "@apollo/client/link/context";
 import Cookies from "js-cookie";
@@ -24,12 +24,7 @@ function makeClient() {
   // Configuramos un authLink que inyecta el header Authorization.
   const authLink = setContext(async (_, { headers }) => {
     // En el entorno del cliente, usamos js-cookie para obtener el token.
-    let token = "";
-    // Garantiza que solo se ejecute en el cliente
-    if (typeof window !== "undefined") {
-      // Se obtiene el token crudo desde la cookie __session
-      token = Cookies.get('__session') || "";
-    }
+    let token = Cookies.get('__session') || "";
     return {
       headers: {
         ...headers,
@@ -46,17 +41,14 @@ function makeClient() {
   // En el cliente, utilizamos directamente la cadena combinada.
   return new ApolloClient({
     cache: new InMemoryCache({ addTypename: false }),
-    link:
-      typeof window === "undefined" // En el servidor (backend) window es undefined; el request es del lado del servidor
-        ? ApolloLink.from([
-            // El SSRMultipartLink elimina las directivas @defer para consultas en SSR.
-            new SSRMultipartLink({ stripDefer: true, }),
-            combinedLink, //Para el front cargado en el navegador window existe
-          ])
-        : httpLink,//combinedLink,
+    link: combinedLink,
   });
 }
 
+/**
+ * Componente wrapper que utiliza ApolloNextAppProvider para inyectar el Apollo Client.
+ * Este componente se usa en el cliente, por lo que no debe importar nada del código de SSR.
+ */
 export function ApolloWrapper({ children }: React.PropsWithChildren) {
   return (
     <ApolloNextAppProvider makeClient={makeClient}>
@@ -65,10 +57,3 @@ export function ApolloWrapper({ children }: React.PropsWithChildren) {
   );
 }
 
-// import { ApolloProvider } from "@apollo/client";
-// import { getClient } from "@/lib/apolloClient";
-
-// export default function ApolloWrapper({ children }: { children: React.ReactNode }) {
-//   const client = getClient(); // Obtiene la instancia del ApolloClient configurada en el servidor
-//   return <ApolloProvider client={client}>{children}</ApolloProvider>;
-// }

@@ -1,6 +1,6 @@
-// PARA SERVER COMPONENTS (ROUTER COMPONENTS)
+// PARA SERVER COMPONENTS (ROUTER COMPONENTS); window = undefined
 import { ApolloClient, InMemoryCache, HttpLink, ApolloLink } from "@apollo/client";
-import { registerApolloClient } from "@apollo/experimental-nextjs-app-support";
+import { registerApolloClient, SSRMultipartLink } from "@apollo/experimental-nextjs-app-support";
 import { setContext } from "@apollo/client/link/context";
 import { getAuthToken } from "./getAuthToken";
 
@@ -32,11 +32,16 @@ const httpLink = new HttpLink({
 const link = ApolloLink.from([authLink, httpLink]);
 
 // Configura Apollo Client para React Server Components. Salidas: { getClient, query, PreloadQuery }
+  // Para el entorno del servidor (SSR), usamos un SSRMultipartLink para soportar directivas como @defer.
 export const { getClient } = registerApolloClient(() => {
   return new ApolloClient({
     //Automaticamente toma data de caché, entre tanto busca la info en back y al obtenerla actualiza caché
     cache: new InMemoryCache({ addTypename: false }), 
-    link: link,
+    link: ApolloLink.from([
+      // El SSRMultipartLink elimina las directivas @defer para consultas en SSR.
+      new SSRMultipartLink({ stripDefer: true, }),//posible futuro requerimiento
+      link,
+    ]),
   });
 });
 

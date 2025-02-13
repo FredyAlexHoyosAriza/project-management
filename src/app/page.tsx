@@ -69,7 +69,7 @@ export default async function Home() {
         </ul>
       </nav>
       <main className="h-screen overflow-y-scroll bg-blue-400">
-        <div className="relative w-full h-[500px]">
+        <div className="relative w-full h-screen">
           <Image
             src="/Project-Management-Landing-2.jpg"
             alt="Project Management Landing"
@@ -77,19 +77,14 @@ export default async function Home() {
             className="object-cover"
           />
           <div className="absolute inset-0 flex items-center justify-center text-white">
-            <h1 className="flex flex-col text-2xl text-center font-bold">
-              <span>Your Vision, Our Mission</span>
-              <span>¡Building Success Together!</span>
+            <h1 className="text-2xl text-center font-bold">
+              <div>Your Vision, Our Mission</div>
+              <div>¡Building Success Together!</div>
             </h1>
           </div>
         </div>
       </main>
     </div>
-    // <div className="container">
-    //   <h1>Welcome to project Management!!</h1>
-    //   <Link href={'/test'}>
-    //     <Button label="Haz clic aquí" />
-    //   </Link>
-    // </div>
+    //  h-[500px]
   );
 }
