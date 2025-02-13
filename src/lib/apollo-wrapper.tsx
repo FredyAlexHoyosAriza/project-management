@@ -24,7 +24,7 @@ function makeClient() {
   // Configuramos un authLink que inyecta el header Authorization.
   const authLink = setContext(async (_, { headers }) => {
     // En el entorno del cliente, usamos js-cookie para obtener el token.
-    let token = Cookies.get('__session') || "";
+    const token = Cookies.get('__session') || "";
     return {
       headers: {
         ...headers,
