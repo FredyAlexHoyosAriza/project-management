@@ -8,6 +8,8 @@ export default async function Home() {
   // validación, decodificación y devuelve un objeto con la información del usuario.
   const session = await auth0.getSession();
   const user = session ? session.user : null;
+  // type UserProfile = typeof user;
+  console.log('session: ', session);
   return (
     <div className="flex flex-col h-screen justify-around">
       {/* <NavBar /> */}
@@ -19,7 +21,7 @@ export default async function Home() {
                 src="/project-management-1.png"
                 alt="Gear Image"
                 width={56} // Equivalente a w-14 en Tailwind (14 * 4 = 56px)
-                height={0} // Dejar altura automática
+                height={56} // Dejar altura automática
                 className="h-auto mx-auto mb-1"
               />
             </a>

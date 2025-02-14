@@ -7,6 +7,7 @@ import { GET_USERS } from '@/graphql/user/queries';
 import UserTable from '@/components/users/UserTable';
 import { useUserEditing } from '@/context/UserEditingProvider';
 import { RingLoader } from 'react-spinners';
+// import { useUser } from '@auth0/nextjs-auth0';
 
 export default function ManageUsers({ initialUsers }: { initialUsers: User[] }) {
   const { shouldGetUsers, setShouldGetUsers } = useUserEditing();

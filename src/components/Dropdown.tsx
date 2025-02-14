@@ -32,7 +32,7 @@ const Dropdown: React.FC<DropdownProps> = ({
 }) => {
   // Convertimos el objeto options en un array con el formato necesario
   const menuOptions: DropdownOption[] = [
-    { value: "", label: "Seleccione un estado", disabled: true },
+    { value: "", label: "Seleccione una opción", disabled: true },
     ...Object.entries(options).map(([value, label]) => ({ value, label })),
   ];
 
