@@ -2,7 +2,7 @@
 import { ApolloServer } from '@apollo/server';
 import { startServerAndCreateNextHandler } from '@as-integrations/next';
 import { schema } from '@/api/graphql';
-import { NextRequest, NextResponse } from 'next/server';
+import { NextRequest } from 'next/server';
 import { ApolloServerPluginUsageReporting } from '@apollo/server/plugin/usageReporting';
 import { ApolloServerPluginLandingPageLocalDefault, ApolloServerPluginLandingPageProductionDefault } from '@apollo/server/plugin/landingPage/default';
 import { auth0 } from '@/lib/auth0';
@@ -43,7 +43,7 @@ const getCorsHeaders = (req: NextRequest) => {
   const origin = req.headers.get('origin');
   const allowedOrigins = new Set([
     process.env.AUTH0_ISSUER_BASE_URL,
-    process.env.NEXT_PUBLIC_FRONTEND_URL,
+    process.env.NEXT_PUBLICreqe_FRONTEND_URL,
   ]);
 
   const headers = new Headers({
