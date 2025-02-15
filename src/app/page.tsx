@@ -9,7 +9,7 @@ export default async function Home() {
   const session = await auth0.getSession();
   const user = session ? session.user : null;
   // type UserProfile = typeof user;
-  console.log('session: ', session);
+  // console.log("session: ", session);
   return (
     <div className="flex flex-col h-screen justify-around">
       {/* <NavBar /> */}
@@ -26,18 +26,10 @@ export default async function Home() {
               />
             </a>
           </li>
-          <li className="text-lg font-medium hover:scale-110 hover:text-indigo-700 cursor-pointer">
-            About us
-          </li>
-          <li className="text-lg font-medium hover:scale-110 hover:text-indigo-700 cursor-pointer">
-            Contact us
-          </li>
-          <li className="text-lg font-medium hover:scale-110 hover:text-indigo-700 cursor-pointer">
-            Mission
-          </li>
-          <li className="text-lg font-medium hover:scale-110 hover:text-indigo-700 cursor-pointer">
-            Vision
-          </li>
+          <Li label='About us'/>
+          <Li label='Contact us'/>
+          <Li label='Mission'/>
+          <Li label='Vision'/>
           <li className="p-2">
             {!user ? (
               <div>
@@ -90,3 +82,12 @@ export default async function Home() {
     //  h-[500px]
   );
 }
+
+const Li = ({ label }: { label: string }) => {
+  return (
+    <li className="text-lg font-medium hover:scale-110 hover:text-indigo-700 cursor-pointer">
+      {label}
+    </li>
+  );
+};
+

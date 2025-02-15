@@ -15,6 +15,18 @@ export const CREATE_USER = gql`
   }
 `;
 
+export const REGISTER_USER = gql`
+  mutation RegisterUser($input: CreateUserInput!) {
+    createUser(input: $input) {
+      name
+      surname
+      idCard
+      email
+      role
+    }
+  }
+`;
+
 export const UPDATE_USER = gql`
   mutation UpdateUser($id: ID!, $input: UpdateUserInput!) {
     updateUser(id: $id, input: $input) {
@@ -29,3 +41,4 @@ export const UPDATE_USER = gql`
     }
   }
 `;
+

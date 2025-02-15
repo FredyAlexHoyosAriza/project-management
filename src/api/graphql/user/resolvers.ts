@@ -1,5 +1,12 @@
 import { dbConnect } from "@/api/database/mongoose";
-import { IUser, ICreateUser, IUpdateUser, UserModel, EState, ERole } from "@/api/database/models/user";
+import {
+  IUser,
+  ICreateUser,
+  IUpdateUser,
+  UserModel,
+  EState,
+  ERole,
+} from "@/api/database/models/user";
 import { EnrollmentModel } from "../../database/models/enrollment";
 
 export const userResolvers = {
@@ -9,39 +16,11 @@ export const userResolvers = {
       try {
         await dbConnect();
         return await UserModel.find()
-        .populate({
-          path: "leaderships",
-          select: "name budget isActive phase startDate finishDate objectives",
-          populate: [
-            {
-              path: "advances",
-              select: "description leaderRemarks updatedAt",
-              populate: {
-                path: "student",
-                select: "name surname",
-              },
-            },
-            {
-              path: "enrollments",
-              select: "isAccepted entryDate exitDate",
-              populate: {
-                path: "student",
-                select: "name surname",
-              },
-            },
-          ],
-        })
-        .populate({
-          path: "inscriptions",
-          select: "isAccepted entryDate exitDate",
-          populate: {
-            path: "project",
-            select: "name budget isActive phase startDate finishDate objectives",
+          .populate({
+            path: "leaderships",
+            select:
+              "name budget isActive phase startDate finishDate objectives",
             populate: [
-              {
-                path: "leader",
-                select: "name surname",
-              },
               {
                 path: "advances",
                 select: "description leaderRemarks updatedAt",
@@ -50,10 +29,40 @@ export const userResolvers = {
                   select: "name surname",
                 },
               },
+              {
+                path: "enrollments",
+                select: "isAccepted entryDate exitDate",
+                populate: {
+                  path: "student",
+                  select: "name surname",
+                },
+              },
             ],
-          }
-        })
-        .lean<IUser[]>();
+          })
+          .populate({
+            path: "inscriptions",
+            select: "isAccepted entryDate exitDate",
+            populate: {
+              path: "project",
+              select:
+                "name budget isActive phase startDate finishDate objectives",
+              populate: [
+                {
+                  path: "leader",
+                  select: "name surname",
+                },
+                {
+                  path: "advances",
+                  select: "description leaderRemarks updatedAt",
+                  populate: {
+                    path: "student",
+                    select: "name surname",
+                  },
+                },
+              ],
+            },
+          })
+          .lean<IUser[]>();
       } catch (error) {
         console.error(error);
         if (error instanceof Error)
@@ -65,18 +74,20 @@ export const userResolvers = {
     getUsersWithAdvances: async (): Promise<IUser[]> => {
       try {
         await dbConnect();
-        return await UserModel.find().populate({
-          path: 'ownAdvances',
-          select: 'description leaderRemarks updatedAt',
-          populate: {
-            path: 'project',
-            select: 'name budget isActive phase',
+        return await UserModel.find()
+          .populate({
+            path: "ownAdvances",
+            select: "description leaderRemarks updatedAt",
             populate: {
-              path: 'leader',
-              select: 'name surname'
+              path: "project",
+              select: "name budget isActive phase",
+              populate: {
+                path: "leader",
+                select: "name surname",
+              },
             },
-          }
-        }).lean<IUser[]>();
+          })
+          .lean<IUser[]>();
       } catch (error) {
         console.error(error);
         if (error instanceof Error)
@@ -85,21 +96,26 @@ export const userResolvers = {
       }
     },
 
-    getUserWithAdvancesById: async (_: unknown, { id }: { id: string }): Promise<IUser> => {
+    getUserWithAdvancesById: async (
+      _: unknown,
+      { id }: { id: string }
+    ): Promise<IUser> => {
       try {
         await dbConnect();
-        const user = await UserModel.findById(id).populate({
-          path: 'ownAdvances',
-          select: 'description leaderRemarks updatedAt',
-          populate: {
-            path: 'project',
-            select: 'name budget isActive phase startDate finishDate',
+        const user = await UserModel.findById(id)
+          .populate({
+            path: "ownAdvances",
+            select: "description leaderRemarks updatedAt",
             populate: {
-              path: 'leader',
-              select: 'name surname idCard email state'
+              path: "project",
+              select: "name budget isActive phase startDate finishDate",
+              populate: {
+                path: "leader",
+                select: "name surname idCard email state",
+              },
             },
-          }
-        }).lean<IUser>();
+          })
+          .lean<IUser>();
         if (!user) {
           throw new Error(`User with ID ${id} not found`);
         }
@@ -117,48 +133,50 @@ export const userResolvers = {
       try {
         await dbConnect();
         const user = await UserModel.findById(id)
-        .populate({
-          path: "leaderships",
-          select: "name budget isActive phase startDate finishDate objectives",
-          populate: [
-            {
-              path: "advances",
-              select: "description leaderRemarks createdAt updatedAt",
-              populate: {
-                path: "student",
-                select: "name surname idCard email state updatedAt",
-              },
-            },
-            {
-              path: "enrollments",
-              select: "isAccepted entryDate exitDate updatedAt",
-              populate: {
-                path: "student",
-                select: "name surname idCard email state updatedAt",
-              },
-            },
-          ],
-        })
-        .populate({
-          path: "inscriptions",
-          select: "isAccepted entryDate exitDate updatedAt",
-          populate: {
-            path: "project",
-            select: "name budget isActive phase startDate finishDate objectives",
+          .populate({
+            path: "leaderships",
+            select:
+              "name budget isActive phase startDate finishDate objectives",
             populate: [
               {
-                path: "leader",
-                select: "name surname idCard email state updatedAt",
+                path: "advances",
+                select: "description leaderRemarks createdAt updatedAt",
+                populate: {
+                  path: "student",
+                  select: "name surname idCard email state updatedAt",
+                },
               },
               {
-                path: "advances",
-                // match: { student: id },
-                select: "description leaderRemarks updatedAt",
+                path: "enrollments",
+                select: "isAccepted entryDate exitDate updatedAt",
+                populate: {
+                  path: "student",
+                  select: "name surname idCard email state updatedAt",
+                },
               },
             ],
-          }
-        })
-        .lean<IUser>();
+          })
+          .populate({
+            path: "inscriptions",
+            select: "isAccepted entryDate exitDate updatedAt",
+            populate: {
+              path: "project",
+              select:
+                "name budget isActive phase startDate finishDate objectives",
+              populate: [
+                {
+                  path: "leader",
+                  select: "name surname idCard email state updatedAt",
+                },
+                {
+                  path: "advances",
+                  // match: { student: id },
+                  select: "description leaderRemarks updatedAt",
+                },
+              ],
+            },
+          })
+          .lean<IUser>();
         if (!user) {
           throw new Error(`User with ID ${id} not found`);
         }
@@ -174,16 +192,19 @@ export const userResolvers = {
 
   Mutation: {
     // Crear un nuevo usuario
-    createUser: async (_: unknown, { input }: { input: ICreateUser }): Promise<IUser> => {
+    createUser: async (
+      _: unknown,
+      { input }: { input: ICreateUser }
+    ): Promise<IUser> => {
       try {
         await dbConnect();
         const newUser: IUser = new UserModel(input);
         return await newUser.save();
       } catch (error) {
         console.error(error);
-        if (error instanceof Error) 
+        if (error instanceof Error)
           throw new Error(`Error creating user: ${error.message}`);
-        throw new Error("Failed to create user due to an unknown error.");//throw error;
+        throw new Error("Failed to create user due to an unknown error."); //throw error;
       }
     },
     // _: Representa el objeto padre o root en GraphQL. En este caso, no se usa, pero sigue
@@ -193,7 +214,7 @@ export const userResolvers = {
     // Actualizar un usuario existente
     updateUser: async (
       _: unknown,
-      { id, input }: { id: string; input: IUpdateUser }//Partial<IUser>
+      { id, input }: { id: string; input: IUpdateUser } //Partial<IUser>
     ): Promise<IUser> => {
       await dbConnect();
       try {
@@ -206,7 +227,7 @@ export const userResolvers = {
           input,
           { new: true, runValidators: true }
         );
-        
+
         if (!updatedUser) {
           throw new Error(`User with ID ${id} not found.`);
         }
@@ -221,14 +242,19 @@ export const userResolvers = {
     },
 
     // Eliminar un usuario deleted: false
-    setUserState: async (_: unknown, { id, state }: { id: string, state: EState }): Promise<IUser> => {
+    setUserState: async (
+      _: unknown,
+      { id, state }: { id: string; state: EState }
+    ): Promise<IUser> => {
       try {
-        await dbConnect();//UserModel.updateOne({_id: id}, ...)
+        await dbConnect(); //UserModel.updateOne({_id: id}, ...)
 
         const session = await UserModel.startSession();
         session.startTransaction();
         try {
-          const user = await UserModel.findByIdAndUpdate(id, { state },
+          const user = await UserModel.findByIdAndUpdate(
+            id,
+            { state },
             { session }
           ).lean<IUser>();
           if (!user) {
@@ -236,15 +262,17 @@ export const userResolvers = {
           }
           if (user.role === ERole.STUDENT) {
             if (state === EState.UNAUTHORIZED) {
-              await EnrollmentModel.updateMany({ student: id },
-                { $set: { isAccepted: false }},
+              await EnrollmentModel.updateMany(
+                { student: id },
+                { $set: { isAccepted: false } },
                 { session }
-              )
+              );
             } else if (state === EState.AUTHORIZED) {
-              await EnrollmentModel.updateMany({ student: id },
-                { $set: { isAccepted: true }},
+              await EnrollmentModel.updateMany(
+                { student: id },
+                { $set: { isAccepted: true } },
                 { session }
-              )
+              );
             }
           }
           await session.commitTransaction();
@@ -268,7 +296,6 @@ export const userResolvers = {
     },
   },
 };
-
 
 // import { userService } from "./services";
 

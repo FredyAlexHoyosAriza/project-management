@@ -1,5 +1,6 @@
 // Importa el helper para leer cookies en Server Components (Next.js 15+)
-import { cookies } from 'next/headers';
+// import { cookies } from 'next/headers';
+import { auth0 } from './auth0';
 
 /**
  * Función asíncrona para obtener el token de autenticación.
@@ -12,8 +13,9 @@ export async function getAuthToken(): Promise<string | null> {
     // En el servidor (por ejemplo, en rutas o en funciones de carga), usamos `cookies()`
     // Para obtener el token crudo para inyectarlo en los headers lo más directo es leer
     // la cookie con el helper de Next.js
-    const cookieStore = await cookies();
-    const token = cookieStore.get('__session')?.value;
+    // const cookieStore = await cookies();
+    // const token = cookieStore.get('__session')?.value;
+    const token = (await auth0.getAccessToken()).token;
     return token || null;
   } catch (error) {
     // En caso de error, retornamos null

@@ -32,12 +32,11 @@ export const userTypeDefs = gql`
 
   input CreateUserInput {
     email: String!
-    # password: String! # en la creación
-    idCard: String!
     name: String!
-    surname: String!
-    role: ERole!
-    state: EState
+    surname: String! # default: 'Sin asignar'
+    idCard: String! # default: 0000000
+    role: ERole! # default: STUDENT
+    state: EState # default: PENDING
   }
 
   input UpdateUserInput {

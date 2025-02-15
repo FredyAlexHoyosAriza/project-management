@@ -22,10 +22,10 @@ const httpLink = new HttpLink({
   // fetchOptions: { // Método HTTP POST por omisión, también hay soporte para GET
   //   method: "POST", // Cambia a "GET" si lo prefieres
   // },
-  // Solo envía cookies o credenciales si la solicitud se realiza al mismo origen.
+  // credentials: "same-origin", Solo envía cookies o credenciales si la solicitud se realiza al mismo origen.
   // No permite el envío de credenciales a dominios cruzados (CORS).
   // Aplicaciones donde el frontend y el backend están alojados en el mismo dominio.
-  credentials: "same-origin", // Opcional: incluye cookies en solicitudes
+  credentials: "include", // Opcional: incluye cookies en solicitudes
 });
 
 // Combina authLink y httpLink para formar la cadena de links.
