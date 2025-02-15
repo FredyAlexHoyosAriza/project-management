@@ -43,7 +43,7 @@ const getCorsHeaders = (req: NextRequest) => {
   const origin = req.headers.get('origin');
   const allowedOrigins = new Set([
     process.env.AUTH0_ISSUER_BASE_URL,
-    process.env.NEXT_PUBLICreqe_FRONTEND_URL,
+    process.env.NEXT_PUBLIC_FRONTEND_URL,
   ]);
 
   const headers = new Headers({
