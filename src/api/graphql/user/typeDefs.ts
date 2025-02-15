@@ -31,6 +31,7 @@ export const userTypeDefs = gql`
   }
 
   input CreateUserInput {
+    # user_id: String
     email: String!
     name: String!
     surname: String! # default: 'Sin asignar'
