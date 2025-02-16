@@ -32,7 +32,7 @@ const httpLink = new HttpLink({
 const link = ApolloLink.from([authLink, httpLink]);
 
 // Configura Apollo Client para React Server Components. Salidas: { getClient, query, PreloadQuery }
-  // Para el entorno del servidor (SSR), usamos un SSRMultipartLink para soportar directivas como @defer.
+// Para el entorno del servidor (SSR), usamos un SSRMultipartLink para soportar directivas como @defer.
 export const { getClient } = registerApolloClient(() => {
   return new ApolloClient({
     //Automaticamente toma data de caché, entre tanto busca la info en back y al obtenerla actualiza caché
