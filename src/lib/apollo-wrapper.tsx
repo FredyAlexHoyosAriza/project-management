@@ -8,8 +8,8 @@ import {
   InMemoryCache,
 } from "@apollo/experimental-nextjs-app-support";
 import { setContext } from "@apollo/client/link/context";
-// import Cookies from "js-cookie";
-import { useAuthToken } from '@/hooks/useAuthToken';
+import Cookies from "js-cookie";
+// import { useAuthToken } from '@/hooks/useAuthToken';
 
 /**
  * Función para crear el Apollo Client.
@@ -25,8 +25,8 @@ function makeClient() {
   // Configuramos un authLink que inyecta el header Authorization.
   const authLink = setContext(async (_, { headers }) => {
     // En el entorno del cliente, usamos js-cookie para obtener el token.
-    // const token = Cookies.get('__session') || "";
-    const { token } = useAuthToken();
+    const token = Cookies.get('__session') || "";
+    // const { token } = useAuthToken();
     return {
       headers: {
         ...headers,
