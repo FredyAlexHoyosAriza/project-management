@@ -10,6 +10,7 @@ const getPublicKey = async (): Promise<KeyLike> => {
     const res = await fetch(
       `${process.env.AUTH0_ISSUER_BASE_URL!}/.well-known/jwks.json`
     );
+    console.log('res:     ', res);
     const { keys } = (await res.json()) as { keys: JWK[] };
     if (!keys.length) throw new Error("No keys found in JWKS");
     const importedKey = await importJWK(keys[0], auth0Alg);
@@ -48,10 +49,10 @@ export const contextFunction = async (req: NextRequest) => {
 
   const token = authHeader.split(" ")[1];
   const user = await verifyToken(token);
-  console.log(user);
-  // if (!user) {
-  //   throw new Error("Unauthorized: Invalid token");
-  // }
+  console.log('User:     ',user);
+  if (!user) {
+    throw new Error("Unauthorized: Invalid token");
+  }
 
   return { user }; // 🚀 Siempre devuelve { user?: JWTPayload } evitando null
 };
