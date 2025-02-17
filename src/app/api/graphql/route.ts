@@ -6,6 +6,7 @@ import { NextRequest } from 'next/server';
 import { ApolloServerPluginUsageReporting } from '@apollo/server/plugin/usageReporting';
 import { ApolloServerPluginLandingPageLocalDefault, ApolloServerPluginLandingPageProductionDefault } from '@apollo/server/plugin/landingPage/default';
 import { auth0 } from '@/lib/auth0';
+import { contextFunction } from '@/api/auth/contextFunction';
 
 // En la arquitectura MVC este archivo representaría una VISTA de un solo endpoint
 // Inicialización del servidor Apollo
@@ -28,13 +29,7 @@ const server = new ApolloServer({ schema,
  });
  // Creamos el handler usando el helper experimental para Next.js.
 const handler = startServerAndCreateNextHandler(server, {
-  // context: async (req: NextRequest) => {
-  //   const session = await auth0.getSession();
-  //   if (!session) {
-  //     throw new Error('Unauthorized');
-  //   }
-  //   return { user: session.user };
-  // },
+  context: contextFunction
 });
 
 //-------------------------------------------------------------
@@ -82,15 +77,12 @@ export async function GET(req: NextRequest): Promise<Response> {
 }
 
 export async function POST(req: NextRequest): Promise<Response> {
-  // try {
-  //   const session = await auth0.getSession();
-  //   if (!session) {
-  //     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-  //   }
-    return handler(req);
-  // } catch (err) {
-  //   if (err instanceof Error)
-  //     return NextResponse.json({ error: err.message || 'Internal server error' }, { status: 500 });
-  //   return NextResponse.json({ error:'Internal server error' }, { status: 500 });
+  // const session = await auth0.getSession();
+  // if (!session) {
+  //   return new Response(JSON.stringify({ error: "Unauthorized" }), {
+  //     status: 401,
+  //     headers: getCorsHeaders(req),
+  //   });
   // }
+    return handler(req);
 }

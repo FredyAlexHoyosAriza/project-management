@@ -14,6 +14,7 @@ import { AdvanceModel } from "../../database/models/advance";
 import { EnrollmentModel } from "../../database/models/enrollment";
 import { ERole } from "../../database/models/user";
 import { verifyRole } from "../user/services";
+import { JWTPayload } from "jose";
 
 export const projectResolvers = {
   Query: {
@@ -326,7 +327,10 @@ export const projectResolvers = {
     },
 
     // Eliminar un proyecto
-    deleteProject: async (_: unknown, { id }: { id: string }): Promise<IProject> => {
+    deleteProject: async (_: unknown, { id }: { id: string }, { user }: { user: JWTPayload}): Promise<IProject> => {
+      if (!user) {
+        throw new Error("Unauthorized: You need to log in");
+      }
       try {
         await dbConnect();
         const session = await ProjectModel.startSession();

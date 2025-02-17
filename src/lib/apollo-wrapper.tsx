@@ -25,8 +25,11 @@ function makeClient(token: string | null) {
   // Configuramos un authLink que inyecta el header Authorization.
   const authLink = setContext(async (_, { headers }) => {
     return {
+      // Apollo establece automáticamente el header "Content-Type": "application/json"
+      // para solicitudes que envían un cuerpo JSON
       headers: {
         ...headers,
+        // "Content-Type": "application/json",
         // Si hay token, lo inyectamos como Bearer token; de lo contrario, enviamos cadena vacía.
         authorization: token ? `Bearer ${token}` : "",
       },
