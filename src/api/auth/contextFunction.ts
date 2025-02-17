@@ -48,10 +48,10 @@ export const contextFunction = async (req: NextRequest) => {
 
   const token = authHeader.split(" ")[1];
   const user = await verifyToken(token);
-  // console.log(user);
-  if (!user) {
-    throw new Error("Unauthorized: Invalid token");
-  }
+  console.log(user);
+  // if (!user) {
+  //   throw new Error("Unauthorized: Invalid token");
+  // }
 
   return { user }; // 🚀 Siempre devuelve { user?: JWTPayload } evitando null
 };
