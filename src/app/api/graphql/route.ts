@@ -1,53 +1,63 @@
 // Este endpoint se encarga de la lógica de negocio.
-import { ApolloServer } from '@apollo/server';
-import { startServerAndCreateNextHandler } from '@as-integrations/next';
-import { schema } from '@/api/graphql';
-import { NextRequest } from 'next/server';
-import { ApolloServerPluginUsageReporting } from '@apollo/server/plugin/usageReporting';
-import { ApolloServerPluginLandingPageLocalDefault, ApolloServerPluginLandingPageProductionDefault } from '@apollo/server/plugin/landingPage/default';
-import { auth0 } from '@/lib/auth0';
-import { contextFunction } from '@/api/auth/contextFunction';
+import { ApolloServer } from "@apollo/server";
+import { startServerAndCreateNextHandler } from "@as-integrations/next";
+import { schema } from "@/api/graphql";
+import { NextRequest } from "next/server";
+import { ApolloServerPluginUsageReporting } from "@apollo/server/plugin/usageReporting";
+import {
+  ApolloServerPluginLandingPageLocalDefault,
+  ApolloServerPluginLandingPageProductionDefault,
+} from "@apollo/server/plugin/landingPage/default";
+// import { auth0 } from '@/lib/auth0';
+import { contextFunction } from "@/api/auth/contextFunction";
 
 // En la arquitectura MVC este archivo representaría una VISTA de un solo endpoint
 // Inicialización del servidor Apollo
-const server = new ApolloServer({ schema,
-   introspection: true,//permite uso apollo sandbox
-    // plugins: [
-    //   ApolloServerPluginUsageReporting(),//permite registro de métricas; estadística
-    //   ApolloServerPluginLandingPageLocalDefault({ embed: true }), // Activa el sandbox incluso en producción; vercel despliegue
-    // ],
-    plugins: [
-      ApolloServerPluginUsageReporting(),
-      // Install a landing page plugin based on NODE_ENV
-      process.env.NODE_ENV === 'production'
-        ? ApolloServerPluginLandingPageProductionDefault({//landing page de producción que
-            graphRef: 'PMG-7o2qaf@current',//se puede redirigir a este grafo en apollo studio
-            footer: false,
-          })
-        : ApolloServerPluginLandingPageLocalDefault({ footer: false }),//landing page de desarrollo -> apollo sandbox
-    ],
- });
- // Creamos el handler usando el helper experimental para Next.js.
-const handler = startServerAndCreateNextHandler(server, {
-  context: contextFunction
+const server = new ApolloServer({
+  schema,
+  introspection: true, //permite uso apollo sandbox
+  // plugins: [
+  //   ApolloServerPluginUsageReporting(),//permite registro de métricas; estadística
+  //   ApolloServerPluginLandingPageLocalDefault({ embed: true }), // Activa el sandbox incluso en producción; vercel despliegue
+  // ],
+  plugins: [
+    ApolloServerPluginUsageReporting(),
+    // Install a landing page plugin based on NODE_ENV
+    process.env.NODE_ENV === "production"
+      ? ApolloServerPluginLandingPageProductionDefault({
+          //landing page de producción que
+          graphRef: "PMG-7o2qaf@current", //se puede redirigir a este grafo en apollo studio
+          footer: false,
+        })
+      : ApolloServerPluginLandingPageLocalDefault({ footer: false }), //landing page de desarrollo -> apollo sandbox
+  ],
+});
+// Creamos el handler usando el helper experimental para Next.js.
+const handler = startServerAndCreateNextHandler<NextRequest>(server, {
+  context: contextFunction,
+  // context: async (req) => {
+  //   const token = req.headers.get("authorization");
+  //   // const token = (await auth0.getAccessToken()).token;
+  //   return { token }
+  // },
 });
 
 //-------------------------------------------------------------
 // Función para manejar CORS dinámico
 const getCorsHeaders = (req: NextRequest) => {
-  const origin = req.headers.get('origin');
+  const origin = req.headers.get("origin");
   const allowedOrigins = new Set([
     process.env.AUTH0_ISSUER_BASE_URL,
     process.env.NEXT_PUBLIC_FRONTEND_URL,
   ]);
 
   const headers = new Headers({
-    'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
-    'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+    "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
+    "Access-Control-Allow-Headers": "Content-Type, Authorization",
   });
 
   if (origin && allowedOrigins.has(origin)) {
-    headers.set('Access-Control-Allow-Origin', origin);
+    headers.set("Access-Control-Allow-Origin", origin);
   }
 
   return headers;
@@ -65,24 +75,18 @@ export const OPTIONS = async (req: NextRequest) =>
 // Ir a la ruta http://localhost:3000/api/graphql implica hacer un GET al endpoint:
 // El metodo GET se requiere para abrir el Apollo SANDBOX
 export async function GET(req: NextRequest): Promise<Response> {
-  const session = await auth0.getSession();
-  if (!session) {
-    return new Response(JSON.stringify({ error: 'Unauthorized' }), {
-      status: 401,
-      headers: getCorsHeaders(req),
-    });
-  }
-
+  // Aparentemente la petición GET no se usa
   return handler(req);
 }
 
 export async function POST(req: NextRequest): Promise<Response> {
+  // Los clientes de GraphQL (como Apollo Client) suelen hacer peticiones POST por defecto.
   // const session = await auth0.getSession();
   // if (!session) {
-  //   return new Response(JSON.stringify({ error: "Unauthorized" }), {
-  //     status: 401,
-  //     headers: getCorsHeaders(req),
-  //   });
+  //   return new Response(
+  //     JSON.stringify({ message: "Unauthorized: Invalid token", code: 401 }),
+  //     { status: 401, headers: { "Content-Type": "application/json" } }
+  //   );
   // }
-    return handler(req);
+  return handler(req);
 }

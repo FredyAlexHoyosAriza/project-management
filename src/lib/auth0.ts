@@ -4,7 +4,7 @@ import { Auth0Client } from "@auth0/nextjs-auth0/server";
 export const auth0 = new Auth0Client({
   signInReturnToPath: "/admin ",
     authorizationParameters: {
-      scope: "openid profile email",
+      scope: "openid profile email read:data write:data",
       audience: process.env.AUTH0_AUDIENCE,
     },
 //   async onCallback(error, context) {//, session

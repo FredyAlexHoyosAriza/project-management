@@ -1,6 +1,6 @@
 // Importa el helper para leer cookies en Server Components (Next.js 15+)
 // import { cookies } from 'next/headers';
-import { auth0 } from './auth0';
+import { auth0 } from './auth0'; // EN SERVER ES ASÍ
 
 /**
  * Función asíncrona para obtener el token de autenticación.

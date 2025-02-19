@@ -8,6 +8,8 @@ import {
   ERole,
 } from "@/api/database/models/user";
 import { EnrollmentModel } from "../../database/models/enrollment";
+import { JWTPayload } from "jose";
+import { authGuard } from '@/api/graphql/authService'
 
 export const userResolvers = {
   Query: {
@@ -214,8 +216,9 @@ export const userResolvers = {
     // Actualizar un usuario existente
     updateUser: async (
       _: unknown,
-      { id, input }: { id: string; input: IUpdateUser } //Partial<IUser>
+      { id, input }: { id: string; input: IUpdateUser }, { user }: { user: JWTPayload } //Partial<IUser>
     ): Promise<IUser> => {
+      authGuard(user, ['read:data', 'write:data']);
       await dbConnect();
       try {
         if (Object.keys(input).length === 0) {

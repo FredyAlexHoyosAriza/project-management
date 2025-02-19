@@ -8,14 +8,13 @@ import {
   InMemoryCache,
 } from "@apollo/experimental-nextjs-app-support";
 import { setContext } from "@apollo/client/link/context";
-import { useMemo } from "react";
-import { useAccessToken } from "@/hooks/useAccessToken";
+import { getAccessToken } from "@auth0/nextjs-auth0";// EN CLIENT ES ASÍ
 
 /**
  * Función para crear el Apollo Client.
  * Se utiliza un authLink para inyectar el token de autenticación en cada request.
  */
-function makeClient(token: string | null) {
+function makeClient() {
   // Configuramos el HttpLink para conectar con el endpoint GraphQL.
   const httpLink = new HttpLink({
     uri: process.env.NEXT_PUBLIC_GRAPHQL_ENDPOINT,
@@ -24,6 +23,7 @@ function makeClient(token: string | null) {
 
   // Configuramos un authLink que inyecta el header Authorization.
   const authLink = setContext(async (_, { headers }) => {
+    const token = await getAccessToken();
     return {
       // Apollo establece automáticamente el header "Content-Type": "application/json"
       // para solicitudes que envían un cuerpo JSON
@@ -52,13 +52,9 @@ function makeClient(token: string | null) {
  * Este componente se usa en el cliente, por lo que no debe importar nada del código de SSR.
  */
 export function ApolloWrapper({ children }: React.PropsWithChildren) {
-  // const { token, isLoading, isError } = useAuthToken();
-  const token = useAccessToken();
 
-  // Se usa useMemo para no recrear el cliente en cada render
-  const client = useMemo(() => makeClient(token), [token]);
   return (
-    <ApolloNextAppProvider makeClient={() => client}>
+    <ApolloNextAppProvider makeClient={makeClient}>
       {children}
     </ApolloNextAppProvider>
   );

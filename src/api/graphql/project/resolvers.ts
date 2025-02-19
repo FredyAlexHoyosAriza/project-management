@@ -15,6 +15,7 @@ import { EnrollmentModel } from "../../database/models/enrollment";
 import { ERole } from "../../database/models/user";
 import { verifyRole } from "../user/services";
 import { JWTPayload } from "jose";
+import { authGuard } from "../authService";
 
 export const projectResolvers = {
   Query: {
@@ -328,9 +329,8 @@ export const projectResolvers = {
 
     // Eliminar un proyecto
     deleteProject: async (_: unknown, { id }: { id: string }, { user }: { user: JWTPayload}): Promise<IProject> => {
-      if (!user) {
-        throw new Error("Unauthorized: You need to log in");
-      }
+      // verifyPermissions();
+      authGuard(user, ['delete:project']);//solo administradores
       try {
         await dbConnect();
         const session = await ProjectModel.startSession();
