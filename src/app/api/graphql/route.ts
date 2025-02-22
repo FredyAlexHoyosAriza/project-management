@@ -34,7 +34,8 @@ const server = new ApolloServer({
 });
 // Creamos el handler usando el helper experimental para Next.js.
 const handler = startServerAndCreateNextHandler<NextRequest>(server, {
-  context: contextFunction,
+  // CONTEXTO EN EL SERVIDOR
+  context: contextFunction,// función que se ejecuta en cada request
   // context: async (req) => {
   //   const token = req.headers.get("authorization");
   //   // const token = (await auth0.getAccessToken()).token;

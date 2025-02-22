@@ -5,7 +5,7 @@ import { setContext } from "@apollo/client/link/context";
 import { getAuthToken } from "./getAuthToken";
 
 // Crea un authLink que inyecta el header Authorization en cada solicitud.
-const authLink = setContext(async (_, { headers }) => {
+const authLink = setContext(async (_, { headers }) => {// CONTEXTO SSR EN EL CLIENTE
   const token = await getAuthToken();
   return {
     headers: {

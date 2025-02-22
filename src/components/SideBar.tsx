@@ -36,6 +36,17 @@ const CustomNavLink = (props: CustomNavLinkProps) => {
   );
 };
 
+const Logout = () => {
+  return (
+    <a
+      href="/auth/logout"
+      className="bg-slate-500 w-2/3 self-center p-2 border border-slate-900 text-white text-center rounded-lg shadow-md hover:scale-110 hover:bg-slate-700"
+    >
+      Log out
+    </a>
+  );
+};
+
 const SideBar = () => {
   const [showSidebar, setShowSidebar] = useState(true);
   const [isAnimating, setIsAnimating] = useState(false);
@@ -91,6 +102,7 @@ const SideBar = () => {
           <CustomNavLink href="projects" icon="university" />
           <CustomNavLink href="enrollments" icon="mug-hot" />
           <CustomNavLink href="advances" icon="trailer" />
+          <Logout />
         </ul>
       </nav>
     </div>

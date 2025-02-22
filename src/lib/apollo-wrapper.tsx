@@ -22,7 +22,7 @@ function makeClient() {
   });
 
   // Configuramos un authLink que inyecta el header Authorization.
-  const authLink = setContext(async (_, { headers }) => {
+  const authLink = setContext(async (_, { headers }) => {// CONTEXTO CSR EN EL CLIENTE
     const token = await getAccessToken();
     return {
       // Apollo establece automáticamente el header "Content-Type": "application/json"

@@ -15,6 +15,10 @@
   gap: 8px; /* Espacio entre el ícono y el texto */
   padding: 4px 8px;
 }
+.link:hover {
+  transform: scale(1.05);
+  transition: transform 0.3s;
+}
 
 .link.active {/*Aplica a elementos con ambas clases*/
   font-weight: bold;
