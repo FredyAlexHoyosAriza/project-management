@@ -8,6 +8,7 @@ export interface ICreateAdvance {
   // createdAt?: Date;
 }
 export interface IUpdateAdvance {
+  project: string;
   description?: string;
   leaderRemarks?: string;
 }

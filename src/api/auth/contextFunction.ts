@@ -49,9 +49,11 @@ export const contextFunction = async (req: NextRequest) => {
   }
 
   const token = authHeader.split(" ")[1];
-  const user = await verifyToken(token);
+  const payload = await verifyToken(token);
+  if (!payload) return { user: undefined };
+  const user = payload["http://localhost/userInfo"]
 
-  return { user };  // Retornar scopes en el contexto
+  return { user }; // Retornar scopes en el contexto
 };
 
 // import { NextRequest } from "next/server";

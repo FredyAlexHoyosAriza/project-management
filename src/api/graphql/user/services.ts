@@ -177,7 +177,7 @@ export const userService = {
 };
 
 
-export const verifyRole = async (userId: string, role: ERole) => {
+export const verifyUser = async (userId: string, role: ERole) => {
   const user = await UserModel.findOne({
     _id: userId,
     role: role,

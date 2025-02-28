@@ -17,7 +17,8 @@ export interface IProjectEnrollments {
     }
   ]
 }
-enum EProjectPhase {
+
+export enum EProjectPhase {
   STARTED = "STARTED",
   DEVELOPMENT = "DEVELOPMENT",
   FINISHED = "FINISHED",

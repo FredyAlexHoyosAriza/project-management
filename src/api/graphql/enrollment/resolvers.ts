@@ -3,13 +3,16 @@ import { EnrollmentModel, IUpdateEnrollment } from "@/api/database/models/enroll
 import { IEnrollment, ICreateEnrollment } from "@/api/database/models/enrollment";
 import { ProjectModel } from "../../database/models/project";
 import { ERole } from "../../database/models/user";
-import { verifyRole } from "../user/services";
+import { verifyUser } from "../user/services";
 import { handleAcceptance } from "./services";
+import { authGuard } from "../authService";
+import { JWTPayload } from "jose";
 
 export const enrollmentResolvers = {
   Query: {
     // Obtener todas las inscripciones
-    getEnrollments: async (): Promise<IEnrollment[]> => {
+    getEnrollments: async (_parent: unknown, _args: unknown, { user }: { user: JWTPayload }): Promise<IEnrollment[]> => {
+      authGuard(user, ERole.STUDENT + ERole.LEADER + ERole.MANAGER);
       try {
         await dbConnect();
         return await EnrollmentModel.find()
@@ -32,7 +35,8 @@ export const enrollmentResolvers = {
     },
 
     // Obtener una inscripción por ID
-    getEnrollmentById: async (_: unknown, { id }: { id: string }): Promise<IEnrollment> => {
+    getEnrollmentById: async (_: unknown, { id }: { id: string }, { user }: { user: JWTPayload }): Promise<IEnrollment> => {
+      authGuard(user, ERole.STUDENT + ERole.LEADER + ERole.MANAGER);
       try {
         await dbConnect();
         const enrollment = await EnrollmentModel.findById(id)
@@ -61,10 +65,11 @@ export const enrollmentResolvers = {
 
   Mutation: {
     // Crear una nueva inscripción
-    createEnrollment: async (_: unknown, { input }: { input: ICreateEnrollment }): Promise<IEnrollment> => {
+    createEnrollment: async (_: unknown, { input }: { input: ICreateEnrollment }, { user }: { user: JWTPayload }): Promise<IEnrollment> => {
       try {
         await dbConnect();
-        await verifyRole(<string>input.student, ERole.STUDENT);
+        authGuard(user, ERole.STUDENT);
+        await verifyUser(<string>input.student, ERole.STUDENT);
         let newEnrollment: IEnrollment = new EnrollmentModel(handleAcceptance(input, true));
         // Aplicar operaciones en pasos separados
         const session = await EnrollmentModel.startSession();
@@ -100,8 +105,9 @@ export const enrollmentResolvers = {
     // Actualizar una inscripción existente
     updateEnrollment: async (
       _: unknown,
-      { id, input }: { id: string; input: IUpdateEnrollment }//: Partial<IEnrollment>
+      { id, input }: { id: string; input: IUpdateEnrollment }, { user }: { user: JWTPayload } //: Partial<IEnrollment>
     ): Promise<IEnrollment> => {
+      authGuard(user, ERole.LEADER + ERole.MANAGER);
       try {
         if (Object.keys(input).length === 0) {
           throw new Error("the update object is empty.");
@@ -127,7 +133,8 @@ export const enrollmentResolvers = {
     },
 
     // Eliminar una inscripción
-    deleteEnrollment: async (_: unknown, { id }: { id: string }): Promise<IEnrollment> => {
+    deleteEnrollment: async (_: unknown, { id }: { id: string }, { user }: { user: JWTPayload }): Promise<IEnrollment> => {
+      authGuard(user, ERole.LEADER + ERole.MANAGER);
       try {
         await dbConnect();
         const session = await EnrollmentModel.startSession();

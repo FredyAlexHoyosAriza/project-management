@@ -14,7 +14,8 @@ import { authGuard } from '@/api/graphql/authService'
 export const userResolvers = {
   Query: {
     // Obtener todos los usuarios
-    getUsers: async (): Promise<IUser[]> => {
+    getUsers: async (_parent: unknown, _args: unknown, { user }: { user: JWTPayload }): Promise<IUser[]> => {
+      authGuard(user, ERole.LEADER + ERole.MANAGER);
       try {
         await dbConnect();
         return await UserModel.find()
@@ -73,7 +74,8 @@ export const userResolvers = {
       }
     },
 
-    getUsersWithAdvances: async (): Promise<IUser[]> => {
+    getUsersWithAdvances: async (_parent: unknown, _args: unknown, { user }: { user: JWTPayload }): Promise<IUser[]> => {
+      authGuard(user, ERole.LEADER + ERole.MANAGER);
       try {
         await dbConnect();
         return await UserModel.find()
@@ -100,8 +102,9 @@ export const userResolvers = {
 
     getUserWithAdvancesById: async (
       _: unknown,
-      { id }: { id: string }
+      { id }: { id: string }, { user }: { user: JWTPayload }
     ): Promise<IUser> => {
+      authGuard(user, ERole.LEADER + ERole.MANAGER);
       try {
         await dbConnect();
         const user = await UserModel.findById(id)
@@ -131,7 +134,8 @@ export const userResolvers = {
     },
 
     // Obtener un usuario por ID
-    getUserById: async (_: unknown, { id }: { id: string }): Promise<IUser> => {
+    getUserById: async (_: unknown, { id }: { id: string }, { user }: { user: JWTPayload }): Promise<IUser> => {
+      authGuard(user, ERole.LEADER + ERole.MANAGER);
       try {
         await dbConnect();
         const user = await UserModel.findById(id)
@@ -196,8 +200,9 @@ export const userResolvers = {
     // Crear un nuevo usuario
     createUser: async (
       _: unknown,
-      { input }: { input: ICreateUser }
+      { input }: { input: ICreateUser }, { user }: { user: JWTPayload }
     ): Promise<IUser> => {
+      authGuard(user, ERole.STUDENT + ERole.LEADER + ERole.MANAGER);
       try {
         await dbConnect();
         const newUser: IUser = new UserModel(input);
@@ -218,7 +223,7 @@ export const userResolvers = {
       _: unknown,
       { id, input }: { id: string; input: IUpdateUser }, { user }: { user: JWTPayload } //Partial<IUser>
     ): Promise<IUser> => {
-      authGuard(user, ['read:data', 'write:data']);
+      authGuard(user, ERole.STUDENT + ERole.LEADER + ERole.MANAGER);//['read:data', 'write:data']
       await dbConnect();
       try {
         if (Object.keys(input).length === 0) {
@@ -247,8 +252,9 @@ export const userResolvers = {
     // Eliminar un usuario deleted: false
     setUserState: async (
       _: unknown,
-      { id, state }: { id: string; state: EState }
+      { id, state }: { id: string; state: EState }, { user }: { user: JWTPayload }
     ): Promise<IUser> => {
+      authGuard(user, ERole.LEADER + ERole.MANAGER);
       try {
         await dbConnect(); //UserModel.updateOne({_id: id}, ...)
 

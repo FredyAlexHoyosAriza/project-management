@@ -9,6 +9,7 @@ export interface ICreateEnrollment {
 }
 
 export interface IUpdateEnrollment {
+  project: string;
   isAccepted?: boolean;
   // entryDate: Date, //automática
   exitDate?: Date;

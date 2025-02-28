@@ -2,11 +2,13 @@ import {
   ICreateEnrollment,
   IUpdateEnrollment,
 } from "@/api/database/models/enrollment";
+import { verifyProject } from "../project/services";
 
 export const handleAcceptance = async (
   input: ICreateEnrollment | IUpdateEnrollment,
   isCreating: boolean
 ) => {
+  verifyProject(input.project);
   if (input.isAccepted === true) {
     // Asigna un objeto Date con la fecha y hora actuales
     const entryDate = new Date();

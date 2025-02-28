@@ -1,6 +1,8 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 import { auth0 } from './lib/auth0';
+import { jwtDecode } from 'jwt-decode';
+// import { ERole } from './api/database/models/user';
 
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
@@ -23,6 +25,20 @@ export async function middleware(request: NextRequest) {
     const loginUrl = new URL('/auth/login', request.url);
     loginUrl.searchParams.set('returnTo', pathname);
     return NextResponse.redirect(loginUrl);
+  }
+
+  type customJwtPayload = {
+    "http://localhost/userInfo": { role: string };
+  };
+
+  const role = jwtDecode<customJwtPayload>(session.tokenSet.accessToken)[
+    "http://localhost/userInfo"
+  ].role
+
+  // Proteger la ruta /admin/users (solo "admin" puede acceder)
+  if (pathname.startsWith("/admin/users") && role !== 'MANAGER' && role !== 'LEADER') {
+    const previousUrl = request.headers.get("referer") || `${process.env.NEXT_PUBLIC_FRONTEND_URL}/admin`; // Si no hay referer, redirige a /admin
+    return NextResponse.redirect(previousUrl); // Redirigir a la ruta anterior
   }
 
   // Si está autenticado, permite continuar

@@ -6,12 +6,16 @@ import {
   IUpdateAdvance,
 } from "@/api/database/models/advance";
 import { IProjectEnrollments, ProjectModel } from "../../database/models/project";
-import { EState } from "@/api/database/models/user";
+import { ERole, EState } from "@/api/database/models/user";
+import { JWTPayload } from "jose";
+import { authGuard } from "../authService";
+import { verifyProject } from "../project/services";
 
 export const advanceResolvers = {
   Query: {
     // Obtener todos los avances
-    getAdvances: async (): Promise<IAdvance[]> => {
+    getAdvances: async (_parent: unknown, _args: unknown, { user }: { user: JWTPayload }): Promise<IAdvance[]> => {
+      authGuard(user, ERole.STUDENT + ERole.LEADER + ERole.MANAGER);
       try {
         await dbConnect();
         return await AdvanceModel.find()
@@ -35,8 +39,9 @@ export const advanceResolvers = {
     // Obtener un avance por su ID
     getAdvanceById: async (
       _: unknown,
-      { id }: { id: string }
+      { id }: { id: string }, { user }: { user: JWTPayload }
     ): Promise<IAdvance> => {
+      authGuard(user, ERole.STUDENT + ERole.LEADER + ERole.MANAGER);
       try {
         await dbConnect();
         const advance = await AdvanceModel.findById(id)
@@ -67,8 +72,9 @@ export const advanceResolvers = {
     // Crear un nuevo avance
     createAdvance: async (
       _: unknown,
-      { input }: { input: ICreateAdvance }
+      { input }: { input: ICreateAdvance }, { user }: { user: JWTPayload }
     ): Promise<IAdvance> => {
+      authGuard(user, ERole.STUDENT);
       try {
         await dbConnect();
         // el estudiante debe estar inscrito y aceptado en el proyecto para el que hace el avance
@@ -104,7 +110,7 @@ export const advanceResolvers = {
         //   throw new Error(`Project ID ${input.project} does not exist in the database.`);
         // }
 
-        const project = await ProjectModel.findById(input.project)
+        const project = await ProjectModel.findOne({ _id: input.project, isActive: true })
         .select("enrollments")
         .populate({
           path: "enrollments",
@@ -117,7 +123,7 @@ export const advanceResolvers = {
           },
         }).lean<IProjectEnrollments>();
         if (!project) {
-          throw new Error(`Project ID ${input.project} does not exist in the database.`);
+          throw new Error(`Project ID ${input.project} does not exist in the database or isn't active.`);
         }
         const { enrollments } = project;
         if (!enrollments.some(({ student }) => student)) {
@@ -154,13 +160,15 @@ export const advanceResolvers = {
     // Actualizar un avance existente // Partial<IAdvance>
     updateAdvance: async (
       _: unknown,
-      { id, input }: { id: string; input: IUpdateAdvance }
+      { id, input }: { id: string; input: IUpdateAdvance }, { user }: { user: JWTPayload }
     ): Promise<IAdvance> => {
+      authGuard(user, ERole.STUDENT + ERole.LEADER);
       try {
         if (Object.keys(input).length === 0) {
           throw new Error("the update object is empty.");
         }
         await dbConnect();
+        verifyProject(input.project)
         const updatedAdvance = await AdvanceModel.findByIdAndUpdate(id, input, {
           new: true,
           runValidators: true,
@@ -181,8 +189,9 @@ export const advanceResolvers = {
     // Eliminar un avance
     deleteAdvance: async (
       _: unknown,
-      { id }: { id: string }
+      { id }: { id: string }, { user }: { user: JWTPayload }
     ): Promise<IAdvance> => {
+      authGuard(user, ERole.STUDENT + ERole.LEADER);
       try {
         await dbConnect();
         const session = await AdvanceModel.startSession();

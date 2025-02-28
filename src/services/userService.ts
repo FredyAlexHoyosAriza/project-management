@@ -7,9 +7,10 @@ export const fetchUsers = async () => {
     const client = getClient();
     const { data } = await client.query({ query: GET_USERS });
     return data?.getUsers || [];
-  } catch (error) {
-    console.error(error);
-    throw new Error('Error al hacer fetch a colección users');
+  } catch { // (error)
+    // console.error(error);
+    // throw new Error('Error al hacer fetch a colección users');
+    return [];
   }
 };
 

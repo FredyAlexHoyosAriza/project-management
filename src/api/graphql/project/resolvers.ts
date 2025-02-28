@@ -4,6 +4,7 @@ import {
   ICreateProject,
   IUpdateProject,
   ProjectModel,
+  EProjectPhase,
 } from "@/api/database/models/project";
 // import { IResolvers } from "@graphql-tools/utils";
 import {
@@ -13,14 +14,16 @@ import {
 import { AdvanceModel } from "../../database/models/advance";
 import { EnrollmentModel } from "../../database/models/enrollment";
 import { ERole } from "../../database/models/user";
-import { verifyRole } from "../user/services";
+import { verifyUser } from "../user/services";
 import { JWTPayload } from "jose";
 import { authGuard } from "../authService";
+import { ObjectId } from "mongoose";
 
 export const projectResolvers = {
   Query: {
     // Obtener todos los proyectos
-    getProjects: async (): Promise<IProject[]> => {
+    getProjects: async (_parent: unknown, _args: unknown, { user }: { user: JWTPayload}): Promise<IProject[]> => {
+      authGuard(user, ERole.LEADER + ERole.MANAGER);
       try {
         await dbConnect();
         return await ProjectModel.find()
@@ -53,8 +56,9 @@ export const projectResolvers = {
     // Obtener un proyecto por ID
     getProjectById: async (
       _: unknown,
-      { id }: { id: string }
+      { id }: { id: string }, { user }: { user: JWTPayload }
     ): Promise<IProject> => {
+      authGuard(user, ERole.LEADER + ERole.MANAGER)
       try {
         await dbConnect();
         const project = await ProjectModel.findById(id)
@@ -93,12 +97,13 @@ export const projectResolvers = {
     // Crear un nuevo proyecto
     createProject: async (
       _: unknown,
-      { input }: { input: ICreateProject }
+      { input }: { input: ICreateProject }, { user }: { user: JWTPayload }
     ): Promise<IProject> => {
+      authGuard(user, ERole.MANAGER)
       try {
         await dbConnect();
         let newProject: IProject = new ProjectModel(input);
-        await verifyRole(<string>input.leader, ERole.LEADER);
+        await verifyUser(<string>input.leader, ERole.LEADER);
         newProject = await newProject.save(); //.lean() solo puede usarse con funciones: find, findOne
         // await UserModel.updateOne(
         //   { _id: input.leader },
@@ -116,8 +121,9 @@ export const projectResolvers = {
 
     updateProject: async (
       _: unknown,
-      { id, input }: { id: string; input: IUpdateProject }
+      { id, input }: { id: string; input: IUpdateProject }, { user }: { user: JWTPayload}
     ): Promise<IProject> => {
+      authGuard(user, ERole.LEADER + ERole.MANAGER);
       try {
         if (Object.keys(input).length === 0) {
           throw new Error("El objeto de actualización está vacío.");
@@ -130,9 +136,9 @@ export const projectResolvers = {
         //documento de mongoose; tal que esta posteriormente sea reconocida por TypeScript como
         //un documento de mongoose y no como un objeto del tipo especificado, ejemplo:
         // const project = await ProjectModel.findById(id);
-        const project = await ProjectModel.findById(id).lean<IProject>();
+        const project = await ProjectModel.findOne({ _id: id, isActive: true }).lean<IProject>();
         if (!project) {
-          throw new Error(`Project with id ${id} not found`);
+          throw new Error(`Project with id ${id} not found or unactive`);
         }
 
         //Sintaxis específica para definir objetos dinámicos con claves de tipo string y
@@ -207,10 +213,7 @@ export const projectResolvers = {
         const hasNewObjectives = newObjectives.length > 0 ? 1 : 0;
         const hasObjectivesToRemove = objectivesToRemove.length > 0 ? 1 : 0;
 
-        if (
-          hasObjectivesToUpdate + hasNewObjectives + hasObjectivesToRemove <
-          2
-        ) {
+        if (hasObjectivesToUpdate + hasNewObjectives + hasObjectivesToRemove < 2) {
           //{ [key: string]: unknown } -> tipo de dato objeto js para el que las key son string y
           // los value son unknown
           // Construir la operación de actualización
@@ -242,7 +245,7 @@ export const projectResolvers = {
             ).lean<IProject>()) as IProject;
             
             if (input.leader) {
-              await verifyRole(<string>input.leader, ERole.LEADER);
+              await verifyUser(<string>input.leader, ERole.LEADER);
               // await UserModel.updateOne(
               //   { _id: input.leader },
               //   { $addToSet: { assignedProjects: id } },
@@ -298,7 +301,7 @@ export const projectResolvers = {
             }
 
             if (input.leader) {
-              await verifyRole(<string>input.leader, ERole.LEADER);
+              await verifyUser(<string>input.leader, ERole.LEADER);
               // await UserModel.updateOne(
               //   { _id: input.leader },
               //   { $addToSet: { assignedProjects: id } },
@@ -327,10 +330,31 @@ export const projectResolvers = {
       }
     },
 
+    finishProject: async (_: unknown, { id }: { id: string }, { user }: { user: JWTPayload}): Promise<IProject> => {
+      authGuard(user, ERole.MANAGER);
+      try {
+        const deletedProject = await ProjectModel.findOneAndUpdate({ _id: id, isActive: true }, { finishDate: new Date(), isActive: false, phase: EProjectPhase.FINISHED } , {
+          new: true,
+          runValidators: true,
+        } ).lean<IProject>();//IProject
+        if (!deletedProject) {
+          throw new Error(`Project with id ${id} not found or is already finished`);
+        }
+        
+        return deletedProject;
+      } catch (error) {
+        console.error(error);
+        if (error instanceof Error)
+          throw new Error(`Error finishing project: ${error.message}`);
+        throw new Error("Failed to finish project due to an unknown error.");
+      }
+
+    },
+
     // Eliminar un proyecto
-    deleteProject: async (_: unknown, { id }: { id: string }, { user }: { user: JWTPayload}): Promise<IProject> => {
+    deleteProject: async (_: unknown, { id }: { id: string }, { user }: { user: JWTPayload}): Promise<{_id: ObjectId}> => {
       // verifyPermissions();
-      authGuard(user, ['delete:project']);//solo administradores
+      authGuard(user, ERole.MANAGER);//solo administradores
       try {
         await dbConnect();
         const session = await ProjectModel.startSession();
@@ -338,7 +362,7 @@ export const projectResolvers = {
         try {
           const deletedProject = await ProjectModel.findByIdAndDelete(id, {
             session,
-          }).select('_id').lean<IProject>();
+          }).select('_id').lean<{_id: ObjectId}>();//IProject
           if (!deletedProject) {
             throw new Error(`Project with id ${id} not found`);
           }
