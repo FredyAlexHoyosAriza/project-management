@@ -16,13 +16,13 @@ export default async function Home() {
       <nav className="bg-red-300 shadow-md">
         <ul className="flex justify-around flex-wrap items-center my-4 px-4">
           <li>
-            <a href={user ? "/admin" : "/"} className="hover:scale-110">
+            <a href={user ? "/admin" : "/"}>
               <Image
                 src="/project-management-1.png"
                 alt="Gear Image"
                 width={56} // Equivalente a w-14 en Tailwind (14 * 4 = 56px)
                 height={56} // Dejar altura automática
-                className="h-auto mx-auto mb-1"
+                className="h-auto mx-auto mb-1 hover:scale-110"
               />
             </a>
           </li>
