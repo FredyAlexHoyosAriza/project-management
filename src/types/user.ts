@@ -47,6 +47,10 @@ export const State: Record<string, string> = {
   PENDING: 'pendiente'
 }
 
+export type customJwtPayload = {
+  "http://localhost/userInfo": { role: string };
+};
+
 // export const stateOptions = [
 //   { value: "", label: "Seleccione un rol", disabled: true },
 //   { value: "AUTHORIZED", label: "autorizado" },

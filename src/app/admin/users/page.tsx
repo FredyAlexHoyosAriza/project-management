@@ -33,7 +33,6 @@ export default async function Users() {
   const users: User[] = session ? await fetchUsers() : [];
   return (
     <div>
-      {/* <h1>Gestión de Usuarios</h1> */}
       <ManageUsers initialUsers={users} />
     </div>
   );

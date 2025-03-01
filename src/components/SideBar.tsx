@@ -5,6 +5,7 @@ import Logo from "./Logo";
 import { ReactNode } from "react";
 import Link from "next/link";
 import useActiveRoute from "@/hooks/useActiveRoute";
+import PrivateComponent from "./PrivateComponent";
 
 // Tipos explícitos para las props
 // href: string; Ruta a la que apunta el enlace
@@ -98,7 +99,9 @@ const SideBar = () => {
         <ul className="menu__list">
           <CustomNavLink href="" label={<Logo />} />
           <CustomNavLink href="profile" icon="user" />
-          <CustomNavLink href="users" icon="users" />
+          <PrivateComponent roles={['MANAGER', 'LEADER']}>
+            <CustomNavLink href="users" icon="users" />
+          </PrivateComponent>
           <CustomNavLink href="projects" icon="university" />
           <CustomNavLink href="enrollments" icon="mug-hot" />
           <CustomNavLink href="advances" icon="trailer" />

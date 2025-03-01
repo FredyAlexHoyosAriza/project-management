@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 import { auth0 } from './lib/auth0';
 import { jwtDecode } from 'jwt-decode';
+import { customJwtPayload } from './types/user';
 // import { ERole } from './api/database/models/user';
 
 export async function middleware(request: NextRequest) {
@@ -26,10 +27,6 @@ export async function middleware(request: NextRequest) {
     loginUrl.searchParams.set('returnTo', pathname);
     return NextResponse.redirect(loginUrl);
   }
-
-  type customJwtPayload = {
-    "http://localhost/userInfo": { role: string };
-  };
 
   const role = jwtDecode<customJwtPayload>(session.tokenSet.accessToken)[
     "http://localhost/userInfo"
