@@ -19,7 +19,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     const token = await getAccessToken();
       if (token) {
         const decodedToken = jwtDecode<customJwtPayload>(token)["http://localhost/userInfo"];
-        console.log('Token decodificado: ', decodedToken);
+        // console.log('Token decodificado: ', decodedToken);
         const role = decodedToken.role;
         const state = decodedToken.state;
         setUserRole(role);

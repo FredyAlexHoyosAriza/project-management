@@ -13,7 +13,14 @@ export const authGuard = (user: JWTPayload, admittedRoles: string) => {
     });
   }
 
-  if (Object.keys(user).length === 0) return; // token de app no de usuario
+  if (user.gty) {
+    if (user.scope === "read:data write:data") return;
+    else {
+      throw new GraphQLError("Forbidden: Insufficient scopes", {
+        extensions: { code: "FORBIDDEN" } //code: 403
+      });
+    }
+  } // token de app no de usuario
 
   if (user.state !== EState.AUTHORIZED) {
     console.log('Dentro de verificación de estado');
