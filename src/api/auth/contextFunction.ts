@@ -34,6 +34,7 @@ const verifyToken = async (token: string): Promise<JWTPayload | undefined> => {
       issuer: auth0Issuer,
       audience: auth0Audience!,
     });
+    console.log('Payload: ', payload);
     return payload;
   } catch (error) {
     console.error("Token verification failed:", error);
@@ -44,6 +45,7 @@ const verifyToken = async (token: string): Promise<JWTPayload | undefined> => {
 // Contexto de Apollo con validación de token
 export const contextFunction = async (req: NextRequest) => {
   const authHeader = req.headers.get("authorization");
+  console.log('authHeader', authHeader);
   if (!authHeader || !authHeader.startsWith("Bearer ")) {
     return { user: undefined };
   }
