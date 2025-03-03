@@ -9,51 +9,27 @@ import {
 } from "@/api/database/models/user";
 import { EnrollmentModel } from "../../database/models/enrollment";
 import { JWTPayload } from "jose";
-import { authGuard } from '@/api/graphql/authService'
+import { authGuard } from "@/api/graphql/authService";
+import { GraphQLError } from "graphql";
 
 export const userResolvers = {
   Query: {
     // Obtener todos los usuarios
-    getUsers: async (_parent: unknown, _args: unknown, { user }: { user: JWTPayload }): Promise<IUser[]> => {
+    getUsers: async (
+      _parent: unknown,
+      _args: unknown,
+      { user }: { user: JWTPayload }
+    ): Promise<IUser[]> => {
       authGuard(user, ERole.LEADER + ERole.MANAGER);
       try {
         await dbConnect();
         return await UserModel.find()
-          .populate({
-            path: "leaderships",
-            select:
-              "name budget isActive phase startDate finishDate objectives",
-            populate: [
-              {
-                path: "advances",
-                select: "description leaderRemarks updatedAt",
-                populate: {
-                  path: "student",
-                  select: "name surname",
-                },
-              },
-              {
-                path: "enrollments",
-                select: "isAccepted entryDate exitDate",
-                populate: {
-                  path: "student",
-                  select: "name surname",
-                },
-              },
-            ],
-          })
-          .populate({
-            path: "inscriptions",
-            select: "isAccepted entryDate exitDate",
-            populate: {
-              path: "project",
+          .populate([
+            {
+              path: "leaderships",
               select:
                 "name budget isActive phase startDate finishDate objectives",
               populate: [
-                {
-                  path: "leader",
-                  select: "name surname",
-                },
                 {
                   path: "advances",
                   select: "description leaderRemarks updatedAt",
@@ -62,19 +38,59 @@ export const userResolvers = {
                     select: "name surname",
                   },
                 },
+                {
+                  path: "enrollments",
+                  select: "isAccepted entryDate exitDate",
+                  populate: {
+                    path: "student",
+                    select: "name surname",
+                  },
+                },
               ],
             },
-          })
+            {
+              path: "inscriptions",
+              select: "isAccepted entryDate exitDate",
+              populate: {
+                path: "project",
+                select:
+                  "name budget isActive phase startDate finishDate objectives",
+                populate: [
+                  {
+                    path: "leader",
+                    select: "name surname",
+                  },
+                  {
+                    path: "advances",
+                    select: "description leaderRemarks updatedAt",
+                    populate: {
+                      path: "student",
+                      select: "name surname",
+                    },
+                  },
+                ],
+              },
+            },
+          ])
           .lean<IUser[]>();
       } catch (error) {
         console.error(error);
-        if (error instanceof Error)
-          throw new Error(`Error fetching users: ${error.message}`);
-        throw new Error("Failed to fetch users due to an unknown error.");
+        throw new GraphQLError(
+          error instanceof Error
+            ? `Error fetching users: ${error.message}`
+            : "Failed to fetch users due to an unknown error.",
+          {
+            extensions: { code: "INTERNAL_SERVER_ERROR" },
+          }
+        );
       }
     },
 
-    getUsersWithAdvances: async (_parent: unknown, _args: unknown, { user }: { user: JWTPayload }): Promise<IUser[]> => {
+    getUsersWithAdvances: async (
+      _parent: unknown,
+      _args: unknown,
+      { user }: { user: JWTPayload }
+    ): Promise<IUser[]> => {
       authGuard(user, ERole.LEADER + ERole.MANAGER);
       try {
         await dbConnect();
@@ -94,15 +110,21 @@ export const userResolvers = {
           .lean<IUser[]>();
       } catch (error) {
         console.error(error);
-        if (error instanceof Error)
-          throw new Error(`Error fetching users: ${error.message}`);
-        throw new Error("Failed to fetch users due to an unknown error.");
+        throw new GraphQLError(
+          error instanceof Error
+            ? `Error fetching users: ${error.message}`
+            : "Failed to fetch users due to an unknown error.",
+          {
+            extensions: { code: "INTERNAL_SERVER_ERROR" },
+          }
+        );
       }
     },
 
     getUserWithAdvancesById: async (
       _: unknown,
-      { id }: { id: string }, { user }: { user: JWTPayload }
+      { id }: { id: string },
+      { user }: { user: JWTPayload }
     ): Promise<IUser> => {
       authGuard(user, ERole.LEADER + ERole.MANAGER);
       try {
@@ -127,61 +149,72 @@ export const userResolvers = {
         return user;
       } catch (error) {
         console.error(error);
-        if (error instanceof Error)
-          throw new Error(`Error fetching users: ${error.message}`);
-        throw new Error("Failed to fetch users due to an unknown error.");
+        throw new GraphQLError(
+          error instanceof Error
+            ? `Error fetching users: ${error.message}`
+            : "Failed to fetch users due to an unknown error.",
+          {
+            extensions: { code: "INTERNAL_SERVER_ERROR" },
+          }
+        );
       }
     },
 
     // Obtener un usuario por ID
-    getUserById: async (_: unknown, { id }: { id: string }, { user }: { user: JWTPayload }): Promise<IUser> => {
+    getUserById: async (
+      _: unknown,
+      { id }: { id: string },
+      { user }: { user: JWTPayload }
+    ): Promise<IUser> => {
       authGuard(user, ERole.LEADER + ERole.MANAGER);
       try {
         await dbConnect();
         const user = await UserModel.findById(id)
-          .populate({
-            path: "leaderships",
-            select:
-              "name budget isActive phase startDate finishDate objectives",
-            populate: [
-              {
-                path: "advances",
-                select: "description leaderRemarks createdAt updatedAt",
-                populate: {
-                  path: "student",
-                  select: "name surname idCard email state updatedAt",
-                },
-              },
-              {
-                path: "enrollments",
-                select: "isAccepted entryDate exitDate updatedAt",
-                populate: {
-                  path: "student",
-                  select: "name surname idCard email state updatedAt",
-                },
-              },
-            ],
-          })
-          .populate({
-            path: "inscriptions",
-            select: "isAccepted entryDate exitDate updatedAt",
-            populate: {
-              path: "project",
+          .populate([
+            {
+              path: "leaderships",
               select:
                 "name budget isActive phase startDate finishDate objectives",
               populate: [
                 {
-                  path: "leader",
-                  select: "name surname idCard email state updatedAt",
+                  path: "advances",
+                  select: "description leaderRemarks createdAt updatedAt",
+                  populate: {
+                    path: "student",
+                    select: "name surname idCard email state updatedAt",
+                  },
                 },
                 {
-                  path: "advances",
-                  // match: { student: id },
-                  select: "description leaderRemarks updatedAt",
+                  path: "enrollments",
+                  select: "isAccepted entryDate exitDate updatedAt",
+                  populate: {
+                    path: "student",
+                    select: "name surname idCard email state updatedAt",
+                  },
                 },
               ],
             },
-          })
+            {
+              path: "inscriptions",
+              select: "isAccepted entryDate exitDate updatedAt",
+              populate: {
+                path: "project",
+                select:
+                  "name budget isActive phase startDate finishDate objectives",
+                populate: [
+                  {
+                    path: "leader",
+                    select: "name surname idCard email state updatedAt",
+                  },
+                  {
+                    path: "advances",
+                    // match: { student: id },
+                    select: "description leaderRemarks updatedAt",
+                  },
+                ],
+              },
+            },
+          ])
           .lean<IUser>();
         if (!user) {
           throw new Error(`User with ID ${id} not found`);
@@ -189,9 +222,14 @@ export const userResolvers = {
         return user;
       } catch (error) {
         console.error(error);
-        if (error instanceof Error)
-          throw new Error(`Error fetching the user: ${error.message}`);
-        throw new Error(`Failed to fetch the user due to an unknown error.`);
+        throw new GraphQLError(
+          error instanceof Error
+            ? `Error fetching the user: ${error.message}`
+            : "Failed to fetch the user due to an unknown error.",
+          {
+            extensions: { code: "INTERNAL_SERVER_ERROR" },
+          }
+        );
       }
     },
   },
@@ -200,7 +238,8 @@ export const userResolvers = {
     // Crear un nuevo usuario
     createUser: async (
       _: unknown,
-      { input }: { input: ICreateUser }, { user }: { user: JWTPayload }
+      { input }: { input: ICreateUser },
+      { user }: { user: JWTPayload }
     ): Promise<IUser> => {
       authGuard(user, ERole.STUDENT + ERole.LEADER + ERole.MANAGER);
       try {
@@ -209,9 +248,14 @@ export const userResolvers = {
         return await newUser.save();
       } catch (error) {
         console.error(error);
-        if (error instanceof Error)
-          throw new Error(`Error creating user: ${error.message}`);
-        throw new Error("Failed to create user due to an unknown error."); //throw error;
+        throw new GraphQLError(
+          error instanceof Error
+            ? `Error creating user: ${error.message}`
+            : "Failed to create user due to an unknown error.",
+          {
+            extensions: { code: "INTERNAL_SERVER_ERROR" },
+          }
+        );
       }
     },
     // _: Representa el objeto padre o root en GraphQL. En este caso, no se usa, pero sigue
@@ -221,9 +265,10 @@ export const userResolvers = {
     // Actualizar un usuario existente
     updateUser: async (
       _: unknown,
-      { id, input }: { id: string; input: IUpdateUser }, { user }: { user: JWTPayload } //Partial<IUser>
+      { id, input }: { id: string; input: IUpdateUser },
+      { user }: { user: JWTPayload } //Partial<IUser>
     ): Promise<IUser> => {
-      authGuard(user, ERole.STUDENT + ERole.LEADER + ERole.MANAGER);//['read:data', 'write:data']
+      authGuard(user, ERole.STUDENT + ERole.LEADER + ERole.MANAGER); //['read:data', 'write:data']
       await dbConnect();
       try {
         if (Object.keys(input).length === 0) {
@@ -243,16 +288,22 @@ export const userResolvers = {
         return updatedUser;
       } catch (error) {
         console.error(error);
-        if (error instanceof Error)
-          throw new Error(`Error updating user: ${error.message}`);
-        throw new Error("Failed to update user due to an unknown error.");
+        throw new GraphQLError(
+          error instanceof Error
+            ? `Error updating user: ${error.message}`
+            : "Failed to update user due to an unknown error.",
+          {
+            extensions: { code: "INTERNAL_SERVER_ERROR" },
+          }
+        );
       }
     },
 
     // Eliminar un usuario deleted: false
     setUserState: async (
       _: unknown,
-      { id, state }: { id: string; state: EState }, { user }: { user: JWTPayload }
+      { id, state }: { id: string; state: EState },
+      { user }: { user: JWTPayload }
     ): Promise<IUser> => {
       authGuard(user, ERole.LEADER + ERole.MANAGER);
       try {
@@ -298,9 +349,14 @@ export const userResolvers = {
         }
       } catch (error) {
         console.error(error);
-        if (error instanceof Error)
-          throw new Error(`Error deleting user: ${error.message}`);
-        throw new Error("Failed to delete user due to an unknown error.");
+        throw new GraphQLError(
+          error instanceof Error
+            ? `Error disabling user: ${error.message}`
+            : "Failed to disable the user due to an unknown error.",
+          {
+            extensions: { code: "INTERNAL_SERVER_ERROR" },
+          }
+        );
       }
     },
   },

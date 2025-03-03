@@ -48,7 +48,7 @@ export const State: Record<string, string> = {
 }
 
 export type customJwtPayload = {
-  "http://localhost/userInfo": { role: string };
+  "http://localhost/userInfo": { role: string, state: string };
 };
 
 // export const stateOptions = [

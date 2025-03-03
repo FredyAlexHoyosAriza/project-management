@@ -61,8 +61,8 @@ export const projectTypeDefs = gql`
     objectives: [CreateObjectiveInput!]
     # advances: [ID!] se agregan automáticamente al crear un avance
     # enrollments: [ID!] se agregan automáticamente al crear una inscripción
-    startDate: Date
-    finishDate: Date
+    # startDate: Date
+    # finishDate: Date
   }
 
   input UpdateProjectInput {
@@ -72,8 +72,8 @@ export const projectTypeDefs = gql`
     isActive: Boolean
     phase: EProjectPhase
     objectives: [UpdateObjectiveInput!]
-    startDate: Date
-    finishDate: Date
+    # startDate: Date
+    # finishDate: Date
   }
 
   type Query {

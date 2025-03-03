@@ -149,8 +149,8 @@ UserSchema.virtual('inscriptions', {
 
 UserSchema.virtual('ownAdvances', {
   ref: 'Advance',
-  localField: '_id',
-  foreignField: 'student',
+  localField: '_id',//el _id del estudiante en cuestión se almacena como el campo foráneo 
+  foreignField: 'student',// student en los Advance que el student haya realizado
   justOne: false
 });
 

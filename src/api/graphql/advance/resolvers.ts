@@ -5,56 +5,77 @@ import {
   ICreateAdvance,
   IUpdateAdvance,
 } from "@/api/database/models/advance";
-import { IProjectEnrollments, ProjectModel } from "../../database/models/project";
+import {
+  IProjectEnrollments,
+  ProjectModel,
+} from "../../database/models/project";
 import { ERole, EState } from "@/api/database/models/user";
 import { JWTPayload } from "jose";
 import { authGuard } from "../authService";
 import { verifyProject } from "../project/services";
+import { GraphQLError } from "graphql";
 
 export const advanceResolvers = {
   Query: {
     // Obtener todos los avances
-    getAdvances: async (_parent: unknown, _args: unknown, { user }: { user: JWTPayload }): Promise<IAdvance[]> => {
+    getAdvances: async (
+      _parent: unknown,
+      _args: unknown,
+      { user }: { user: JWTPayload }
+    ): Promise<IAdvance[]> => {
       authGuard(user, ERole.STUDENT + ERole.LEADER + ERole.MANAGER);
       try {
         await dbConnect();
         return await AdvanceModel.find()
-          .populate({
-            path: "project",
-            select: "name",
-            populate: {
-              path: "leader",
-              select: "name surname",
+          .populate([
+            {
+              path: "project",
+              select: "name",
+              populate: {
+                path: "leader",
+                select: "name surname",
+              },
             },
-          })
-          .populate("student", "name surname")
+            { path: "student", select: "name surname" },
+          ])
           .lean<IAdvance[]>();
       } catch (error) {
         console.error(error);
-        if (error instanceof Error)
-          throw new Error(`Error fetching advances: ${error.message}`);
-        throw new Error("Failed to fetch advances due to an unknown error.");
+        throw new GraphQLError(
+          error instanceof Error
+            ? `Error fetching advances: ${error.message}`
+            : "Failed to fetch advances due to an unknown error.",
+          {
+            extensions: { code: "INTERNAL_SERVER_ERROR" },
+          }
+        );
       }
     },
     // Obtener un avance por su ID
     getAdvanceById: async (
       _: unknown,
-      { id }: { id: string }, { user }: { user: JWTPayload }
+      { id }: { id: string },
+      { user }: { user: JWTPayload }
     ): Promise<IAdvance> => {
       authGuard(user, ERole.STUDENT + ERole.LEADER + ERole.MANAGER);
       try {
         await dbConnect();
         const advance = await AdvanceModel.findById(id)
-          .populate({
-            path: "project",
-            select:
-              "name objectives budget isActive phase startDate finishDate updatedAt",
-            populate: {
-              path: "leader",
+          .populate([
+            {
+              path: "project",
+              select:
+                "name objectives budget isActive phase startDate finishDate updatedAt",
+              populate: {
+                path: "leader",
+                select: "name surname email idCard state updatedAt",
+              },
+            },
+            {
+              path: "student",
               select: "name surname email idCard state updatedAt",
             },
-          })
-          .populate("student", "name surname email idCard state updatedAt")
+          ])
           .lean<IAdvance>();
         if (!advance) {
           throw new Error(`Advance with ID ${id} not found`);
@@ -62,9 +83,14 @@ export const advanceResolvers = {
         return advance;
       } catch (error) {
         console.error(error);
-        if (error instanceof Error)
-          throw new Error(`Error fetching the advance: ${error.message}`);
-        throw new Error(`Failed to fetch the advance due to an unknown error.`);
+        throw new GraphQLError(
+          error instanceof Error
+            ? `Error fetching the advance: ${error.message}`
+            : "Failed to fetch the advance due to an unknown error.",
+          {
+            extensions: { code: "INTERNAL_SERVER_ERROR" },
+          }
+        );
       }
     },
   },
@@ -72,7 +98,8 @@ export const advanceResolvers = {
     // Crear un nuevo avance
     createAdvance: async (
       _: unknown,
-      { input }: { input: ICreateAdvance }, { user }: { user: JWTPayload }
+      { input }: { input: ICreateAdvance },
+      { user }: { user: JWTPayload }
     ): Promise<IAdvance> => {
       authGuard(user, ERole.STUDENT);
       try {
@@ -110,24 +137,33 @@ export const advanceResolvers = {
         //   throw new Error(`Project ID ${input.project} does not exist in the database.`);
         // }
 
-        const project = await ProjectModel.findOne({ _id: input.project, isActive: true })
-        .select("enrollments")
-        .populate({
-          path: "enrollments",
-          match: { isAccepted: true }, // Filtra solo inscripciones aceptadas
-          select: "_id",// solo se trae _id
-          populate: {// students que incumplan filtro serán null
-            path: "student",
-            match: { _id: input.student, state: EState.AUTHORIZED }, // Filtra estudiantes autorizados
-            select: "_id", // Solo recupera el ID del estudiante
-          },
-        }).lean<IProjectEnrollments>();
+        const project = await ProjectModel.findOne({
+          _id: input.project,
+          isActive: true,
+        })
+          .select("enrollments")
+          .populate({
+            path: "enrollments",
+            match: { isAccepted: true }, // Filtra solo inscripciones aceptadas
+            select: "_id", // solo se trae _id
+            populate: {
+              // students que incumplan filtro serán null
+              path: "student",
+              match: { _id: input.student, state: EState.AUTHORIZED }, // Filtra estudiantes autorizados
+              select: "_id", // Solo recupera el ID del estudiante
+            },
+          })
+          .lean<IProjectEnrollments>();
         if (!project) {
-          throw new Error(`Project ID ${input.project} does not exist in the database or isn't active.`);
+          throw new Error(
+            `Project ID ${input.project} does not exist in the database or isn't active.`
+          );
         }
         const { enrollments } = project;
         if (!enrollments.some(({ student }) => student)) {
-          throw new Error(`Student ID ${input.student} not enrolled or not accepted in project ID ${input.project} or simply not authorized in app`)
+          throw new Error(
+            `Student ID ${input.student} not enrolled or not accepted in project ID ${input.project} or simply not authorized in app`
+          );
         }
 
         let newAdvance: IAdvance = new AdvanceModel(input);
@@ -151,16 +187,22 @@ export const advanceResolvers = {
         }
       } catch (error) {
         console.error(error);
-        if (error instanceof Error)
-          throw new Error(`Error creating advance: ${error.message}`);
-        throw new Error("Failed to create advance due to an unknown error."); //throw error;
+        throw new GraphQLError(
+          error instanceof Error
+            ? `Error creating advance: ${error.message}`
+            : "Failed to create advance due to an unknown error.",
+          {
+            extensions: { code: "INTERNAL_SERVER_ERROR" },
+          }
+        );
       }
     },
 
     // Actualizar un avance existente // Partial<IAdvance>
     updateAdvance: async (
       _: unknown,
-      { id, input }: { id: string; input: IUpdateAdvance }, { user }: { user: JWTPayload }
+      { id, input }: { id: string; input: IUpdateAdvance },
+      { user }: { user: JWTPayload }
     ): Promise<IAdvance> => {
       authGuard(user, ERole.STUDENT + ERole.LEADER);
       try {
@@ -168,7 +210,7 @@ export const advanceResolvers = {
           throw new Error("the update object is empty.");
         }
         await dbConnect();
-        verifyProject(input.project)
+        verifyProject(input.project);
         const updatedAdvance = await AdvanceModel.findByIdAndUpdate(id, input, {
           new: true,
           runValidators: true,
@@ -180,16 +222,22 @@ export const advanceResolvers = {
         return updatedAdvance;
       } catch (error) {
         console.error(error);
-        if (error instanceof Error)
-          throw new Error(`Error updating advance: ${error.message}`);
-        throw new Error("Failed to update advance due to an unknown error.");
+        throw new GraphQLError(
+          error instanceof Error
+            ? `Error updating advance: ${error.message}`
+            : "Failed to update advance due to an unknown error.",
+          {
+            extensions: { code: "INTERNAL_SERVER_ERROR" },
+          }
+        );
       }
     },
 
     // Eliminar un avance
     deleteAdvance: async (
       _: unknown,
-      { id }: { id: string }, { user }: { user: JWTPayload }
+      { id }: { id: string },
+      { user }: { user: JWTPayload }
     ): Promise<IAdvance> => {
       authGuard(user, ERole.STUDENT + ERole.LEADER);
       try {
@@ -223,9 +271,14 @@ export const advanceResolvers = {
         }
       } catch (error) {
         console.error(error);
-        if (error instanceof Error)
-          throw new Error(`Error deleting advance: ${error.message}`);
-        throw new Error("Failed to delete advance due to an unknown error.");
+        throw new GraphQLError(
+          error instanceof Error
+            ? `Error deleting advance: ${error.message}`
+            : "Failed to delete advance due to an unknown error.",
+          {
+            extensions: { code: "INTERNAL_SERVER_ERROR" },
+          }
+        );
       }
     },
   },

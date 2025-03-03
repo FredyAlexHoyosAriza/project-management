@@ -3,7 +3,6 @@ import type { NextRequest } from 'next/server';
 import { auth0 } from './lib/auth0';
 import { jwtDecode } from 'jwt-decode';
 import { customJwtPayload } from './types/user';
-// import { ERole } from './api/database/models/user';
 
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;

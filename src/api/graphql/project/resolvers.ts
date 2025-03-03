@@ -18,67 +18,88 @@ import { verifyUser } from "../user/services";
 import { JWTPayload } from "jose";
 import { authGuard } from "../authService";
 import { ObjectId } from "mongoose";
+import { GraphQLError } from "graphql";
 
 export const projectResolvers = {
   Query: {
     // Obtener todos los proyectos
-    getProjects: async (_parent: unknown, _args: unknown, { user }: { user: JWTPayload}): Promise<IProject[]> => {
+    getProjects: async (
+      _parent: unknown,
+      _args: unknown,
+      { user }: { user: JWTPayload }
+    ): Promise<IProject[]> => {
       authGuard(user, ERole.LEADER + ERole.MANAGER);
       try {
         await dbConnect();
         return await ProjectModel.find()
-          .populate("leader", "name surname idCard email state updatedAt")
-          .populate({
-            path: "advances",
-            select: "description leaderRemarks updatedAt",
-            populate: {
-              path: "student",
-              select: "name surname",
+          .populate([
+            {
+              path: "leader",
+              select: "name surname idCard email state updatedAt",
             },
-          })
-          .populate({
-            path: "enrollments",
-            select: "isAccepted entryDate exitDate updatedAt",
-            populate: {
-              path: "student",
-              select: "name surname",
+            {
+              path: "advances",
+              select: "description leaderRemarks updatedAt",
+              populate: {
+                path: "student",
+                select: "name surname",
+              },
             },
-          })
+            {
+              path: "enrollments",
+              select: "isAccepted entryDate exitDate updatedAt",
+              populate: {
+                path: "student",
+                select: "name surname",
+              },
+            },
+          ])
           .lean<IProject[]>();
       } catch (error) {
         console.error(error);
-        if (error instanceof Error)
-          throw new Error(`Error fetching projects: ${error.message}`);
-        throw new Error("Failed to fetch projects due to an unknown error.");
+        throw new GraphQLError(
+          error instanceof Error
+            ? `Error fetching projects: ${error.message}`
+            : "Failed to fetch projects due to an unknown error.",
+          {
+            extensions: { code: "INTERNAL_SERVER_ERROR" },
+          }
+        );
       }
     },
 
     // Obtener un proyecto por ID
     getProjectById: async (
       _: unknown,
-      { id }: { id: string }, { user }: { user: JWTPayload }
+      { id }: { id: string },
+      { user }: { user: JWTPayload }
     ): Promise<IProject> => {
-      authGuard(user, ERole.LEADER + ERole.MANAGER)
+      authGuard(user, ERole.LEADER + ERole.MANAGER);
       try {
         await dbConnect();
         const project = await ProjectModel.findById(id)
-          .populate("leader", "name surname idCard email state updatedAt")
-          .populate({
-            path: "advances",
-            select: "description leaderRemarks createdAt updatedAt",
-            populate: {
-              path: "student",
-              select: "name surname email idCard state updatedAt",
+          .populate([
+            {
+              path: "leader",
+              select: "name surname idCard email state updatedAt",
             },
-          })
-          .populate({
-            path: "enrollments",
-            select: "isAccepted entryDate exitDate updatedAt",
-            populate: {
-              path: "student",
-              select: "name surname email idCard state updatedAt",
+            {
+              path: "advances",
+              select: "description leaderRemarks createdAt updatedAt",
+              populate: {
+                path: "student",
+                select: "name surname email idCard state updatedAt",
+              },
             },
-          })
+            {
+              path: "enrollments",
+              select: "isAccepted entryDate exitDate updatedAt",
+              populate: {
+                path: "student",
+                select: "name surname email idCard state updatedAt",
+              },
+            },
+          ])
           .lean<IProject>();
         if (!project) {
           throw new Error(`Project with ID ${id} not found`);
@@ -86,9 +107,14 @@ export const projectResolvers = {
         return project;
       } catch (error) {
         console.error(error);
-        if (error instanceof Error)
-          throw new Error(`Error fetching the project: ${error.message}`);
-        throw new Error(`Failed to fetch the project due to an unknown error.`);
+        throw new GraphQLError(
+          error instanceof Error
+            ? `Error fetching the project: ${error.message}`
+            : "Failed to fetch the project due to an unknown error.",
+          {
+            extensions: { code: "INTERNAL_SERVER_ERROR" },
+          }
+        );
       }
     },
   },
@@ -97,9 +123,23 @@ export const projectResolvers = {
     // Crear un nuevo proyecto
     createProject: async (
       _: unknown,
-      { input }: { input: ICreateProject }, { user }: { user: JWTPayload }
+      { input }: { input: ICreateProject },
+      { user }: { user: JWTPayload }
     ): Promise<IProject> => {
-      authGuard(user, ERole.MANAGER)
+      authGuard(user, ERole.MANAGER);
+      if (input.phase) {
+        if (input.phase === EProjectPhase.STARTED) {
+          input.startDate = new Date();
+          if (!input.isActive) input.isActive = true;
+        }
+        // else if (input.phase === EProjectPhase.EMPTY) {}
+        else {
+          throw Error(
+            "If a project is created with a phase field, it must be set to STARTED"
+          );
+        }
+      }
+
       try {
         await dbConnect();
         let newProject: IProject = new ProjectModel(input);
@@ -113,15 +153,21 @@ export const projectResolvers = {
         return newProject;
       } catch (error) {
         console.error(error);
-        if (error instanceof Error)
-          throw new Error(`Error creating project: ${error.message}`);
-        throw new Error("Failed to create project due to an unknown error."); //throw error;
+        throw new GraphQLError(
+          error instanceof Error
+            ? `Error creating project: ${error.message}`
+            : "Failed to create project due to an unknown error.",
+          {
+            extensions: { code: "INTERNAL_SERVER_ERROR" },
+          }
+        );
       }
     },
 
     updateProject: async (
       _: unknown,
-      { id, input }: { id: string; input: IUpdateProject }, { user }: { user: JWTPayload}
+      { id, input }: { id: string; input: IUpdateProject },
+      { user }: { user: JWTPayload }
     ): Promise<IProject> => {
       authGuard(user, ERole.LEADER + ERole.MANAGER);
       try {
@@ -136,9 +182,16 @@ export const projectResolvers = {
         //documento de mongoose; tal que esta posteriormente sea reconocida por TypeScript como
         //un documento de mongoose y no como un objeto del tipo especificado, ejemplo:
         // const project = await ProjectModel.findById(id);
-        const project = await ProjectModel.findOne({ _id: id, isActive: true }).lean<IProject>();
+        const project = await ProjectModel.findOne({
+          _id: id,
+          phase: { $ne: EProjectPhase.FINISHED }, // Filtra proyectos donde phase no sea FINISHED
+        }).lean<IProject>();
         if (!project) {
-          throw new Error(`Project with id ${id} not found or unactive`);
+          throw new Error(`Project with id ${id} not found or finished`);
+        }
+
+        if (input.leader) {
+          await verifyUser(<string>input.leader, ERole.LEADER);
         }
 
         //Sintaxis específica para definir objetos dinámicos con claves de tipo string y
@@ -167,11 +220,18 @@ export const projectResolvers = {
 
               if (objective.description || objective.type) {
                 // Actualizar los campos del objetivo; se agregan campos dinámicamente a updates
-                updates[`objectives.${index}.description`] =
-                  objective.description ??
-                  project.objectives[index].description;
-                updates[`objectives.${index}.type`] =
-                  objective.type ?? project.objectives[index].type;
+                if (
+                  objective.description &&
+                  objective.description !==
+                    project.objectives[index].description
+                )
+                  updates[`objectives.${index}.description`] =
+                    objective.description;
+                if (
+                  objective.type &&
+                  objective.type !== project.objectives[index].type
+                )
+                  updates[`objectives.${index}.type`] = objective.type;
               } else {
                 // Marcar el objetivo para eliminación
                 objectivesToRemove.push(objective._id);
@@ -192,28 +252,55 @@ export const projectResolvers = {
           });
         }
 
+        const hasObjectivesToUpdate = Object.keys(updates).length > 0 ? 1 : 0;
+        const hasNewObjectives = newObjectives.length > 0 ? 1 : 0;
+        const hasObjectivesToRemove = objectivesToRemove.length > 0 ? 1 : 0;
+
+        let setEnrollmentsExit = false;
+        if ("isActive" in input) {
+          if (input.isActive === false) {
+            if (project.isActive) setEnrollmentsExit = true;
+          } else if (!project.isActive) {
+            updates["isActive"] = true;
+          }
+        }
+
         // Actualizar otros campos
+        if (input.phase && input.phase !== project.phase) {
+          updates["phase"] = input.phase;
+          if (
+            input.phase === EProjectPhase.STARTED &&
+            project.phase === EProjectPhase.EMPTY
+          ) {
+            updates["startDate"] = new Date();
+            if (!project.isActive && !("isActive" in input))
+              updates["isActive"] = true;
+          } else if (input.phase === EProjectPhase.FINISHED) {
+            throw Error("To finish a project use the finisProject mutation");
+          }
+        }
+
         const updatableFields: (keyof IUpdateProject)[] = [
           "name",
           "budget",
-          "isActive",
-          "phase",
-          "startDate",
-          "finishDate",
+          // "isActive",
+          // "phase",
+          // "startDate",
+          // "finishDate",
           "leader",
         ];
 
         updatableFields.forEach((key) => {
           if (key in input) {
             //En updates se agregan claves y valores dinámicamente
-            updates[key] = input[key];
+            if (input[key] !== project[key]) updates[key] = input[key];
           }
         });
-        const hasObjectivesToUpdate = Object.keys(updates).length > 0 ? 1 : 0;
-        const hasNewObjectives = newObjectives.length > 0 ? 1 : 0;
-        const hasObjectivesToRemove = objectivesToRemove.length > 0 ? 1 : 0;
 
-        if (hasObjectivesToUpdate + hasNewObjectives + hasObjectivesToRemove < 2) {
+        if (
+          hasObjectivesToUpdate + hasNewObjectives + hasObjectivesToRemove <
+          2
+        ) {
           //{ [key: string]: unknown } -> tipo de dato objeto js para el que las key son string y
           // los value son unknown
           // Construir la operación de actualización
@@ -241,17 +328,17 @@ export const projectResolvers = {
             const updatedProject = (await ProjectModel.findByIdAndUpdate(
               id,
               updateOperation,
-              { session }
+              { new: true, session }
             ).lean<IProject>()) as IProject;
-            
-            if (input.leader) {
-              await verifyUser(<string>input.leader, ERole.LEADER);
-              // await UserModel.updateOne(
-              //   { _id: input.leader },
-              //   { $addToSet: { assignedProjects: id } },
-              //   { session }
-              // );
+
+            if (setEnrollmentsExit) {
+              await EnrollmentModel.updateMany(
+                { project: id, isAccepted: true, exitDate: { $eq: null } },
+                { $set: { exitDate: new Date() } },
+                { session }
+              );
             }
+
             await session.commitTransaction();
             return updatedProject;
           } catch (error) {
@@ -300,13 +387,12 @@ export const projectResolvers = {
               );
             }
 
-            if (input.leader) {
-              await verifyUser(<string>input.leader, ERole.LEADER);
-              // await UserModel.updateOne(
-              //   { _id: input.leader },
-              //   { $addToSet: { assignedProjects: id } },
-              //   { session }
-              // );
+            if (setEnrollmentsExit) {
+              await EnrollmentModel.updateMany(
+                { project: id, isAccepted: true, exitDate: { $eq: null } },
+                { $set: { exitDate: new Date() } },
+                { session }
+              );
             }
 
             await session.commitTransaction();
@@ -324,59 +410,57 @@ export const projectResolvers = {
         }
       } catch (error) {
         console.error(error);
-        if (error instanceof Error)
-          throw new Error(`Failed to update project: ${error.message}`);
-        throw new Error("Failed to update project due to an unknown error.");
+        throw new GraphQLError(
+          error instanceof Error
+            ? `Failed to update project: ${error.message}`
+            : "Failed to update project due to an unknown error.",
+          {
+            extensions: { code: "INTERNAL_SERVER_ERROR" },
+          }
+        );
       }
     },
 
-    finishProject: async (_: unknown, { id }: { id: string }, { user }: { user: JWTPayload}): Promise<IProject> => {
+    finishProject: async (
+      _: unknown,
+      { id }: { id: string },
+      { user }: { user: JWTPayload }
+    ): Promise<IProject> => {
       authGuard(user, ERole.MANAGER);
-      try {
-        const deletedProject = await ProjectModel.findOneAndUpdate({ _id: id, isActive: true }, { finishDate: new Date(), isActive: false, phase: EProjectPhase.FINISHED } , {
-          new: true,
-          runValidators: true,
-        } ).lean<IProject>();//IProject
-        if (!deletedProject) {
-          throw new Error(`Project with id ${id} not found or is already finished`);
-        }
-        
-        return deletedProject;
-      } catch (error) {
-        console.error(error);
-        if (error instanceof Error)
-          throw new Error(`Error finishing project: ${error.message}`);
-        throw new Error("Failed to finish project due to an unknown error.");
-      }
-
-    },
-
-    // Eliminar un proyecto
-    deleteProject: async (_: unknown, { id }: { id: string }, { user }: { user: JWTPayload}): Promise<{_id: ObjectId}> => {
-      // verifyPermissions();
-      authGuard(user, ERole.MANAGER);//solo administradores
       try {
         await dbConnect();
         const session = await ProjectModel.startSession();
         session.startTransaction();
+        const currentDate = new Date();
         try {
-          const deletedProject = await ProjectModel.findByIdAndDelete(id, {
-            session,
-          }).select('_id').lean<{_id: ObjectId}>();//IProject
-          if (!deletedProject) {
-            throw new Error(`Project with id ${id} not found`);
+          const finishedProject = await ProjectModel.findOneAndUpdate(
+            { _id: id, isActive: true },
+            {
+              finishDate: currentDate,
+              isActive: false,
+              phase: EProjectPhase.FINISHED,
+            },
+            {
+              new: true,
+              runValidators: true,
+              session,
+            }
+          ).lean<IProject>(); //IProject
+          if (!finishedProject) {
+            throw new Error(
+              `Project with id ${id} not found or is already finished`
+            );
           }
-          await AdvanceModel.deleteMany({ project: deletedProject._id });
-          await EnrollmentModel.deleteMany({ project: deletedProject._id });
-          // await UserModel.updateMany(
-          //   //Al ser un arreglo de referencias (ObjectId), no se necesita utilizar { _id: ... }
-          //   { assignedProjects: deletedProject._id },
-          //   { $pull: { assignedProjects: deletedProject._id } }, // Elimina el ObjectId del arreglo
-          //   { session }
-          // );
+
+          await EnrollmentModel.updateMany(
+            { project: id },
+            { $set: { exitDate: currentDate } },
+            { session }
+          );
 
           await session.commitTransaction();
-          return deletedProject;
+
+          return finishedProject;
         } catch (error) {
           await session.abortTransaction();
           throw new Error(
@@ -389,9 +473,79 @@ export const projectResolvers = {
         }
       } catch (error) {
         console.error(error);
-        if (error instanceof Error)
-          throw new Error(`Error deleting project: ${error.message}`);
-        throw new Error("Failed to delete project due to an unknown error.");
+        throw new GraphQLError(
+          error instanceof Error
+            ? `Error finishing project: ${error.message}`
+            : "Failed to finish project due to an unknown error.",
+          {
+            extensions: { code: "INTERNAL_SERVER_ERROR" },
+          }
+        );
+      }
+    },
+
+    // Eliminar un proyecto
+    deleteProject: async (
+      _: unknown,
+      { id }: { id: string },
+      { user }: { user: JWTPayload }
+    ): Promise<{ _id: ObjectId }> => {
+      // verifyPermissions();
+      authGuard(user, ERole.MANAGER); //solo administradores
+      try {
+        await dbConnect();
+        const session = await ProjectModel.startSession();
+        session.startTransaction();
+        try {
+          const deletedProject = await ProjectModel.findByIdAndDelete(id, {
+            session,
+          })
+            .select("_id")
+            .lean<{ _id: ObjectId }>(); //IProject
+          if (!deletedProject) {
+            throw new Error(`Project with id ${id} not found`);
+          }
+          await AdvanceModel.deleteMany(
+            { project: deletedProject._id },
+            { session }
+          );
+          await EnrollmentModel.deleteMany(
+            { project: deletedProject._id },
+            { session }
+          );
+          // await UserModel.updateMany(
+          //   //Al ser un arreglo de referencias (ObjectId), no se necesita utilizar { _id: ... }
+          //   { assignedProjects: deletedProject._id },
+          //   { $pull: { assignedProjects: deletedProject._id } }, // Elimina el ObjectId del arreglo
+          //   { session }
+          // );
+
+          await session.commitTransaction();
+          return deletedProject;
+        } catch (error) {
+          await session
+            .abortTransaction() // .catch: usualmente se requiere para casos muy raros; se puede omitir
+            .catch((err) => console.error("Error aborting transaction:", err));
+          throw new Error(
+            error instanceof Error
+              ? `Transaction aborted: ${error.message}`
+              : "Transaction aborted due to an unknown error."
+          );
+        } finally {
+          await session
+            .endSession()
+            .catch((err) => console.error("Error ending session:", err));
+        }
+      } catch (error) {
+        console.error(error);
+        throw new GraphQLError(
+          error instanceof Error
+            ? `Error deleting project: ${error.message}`
+            : "Failed to delete project due to an unknown error.",
+          {
+            extensions: { code: "INTERNAL_SERVER_ERROR" },
+          }
+        );
       }
     },
   },
