@@ -9,10 +9,10 @@ const PrivateComponent = ({
   roles: string[];
   children: React.ReactNode;
 }) => {
-  const { userRole } = useAuth();
+  const { userInfo } = useAuth();
 
   // Si el usuario no esta definido o no tiene permiso, no se muestra nada
-  if (!userRole || !roles.includes(userRole)) return null; // Oculta el contenido si el usuario no tiene permiso  
+  if (!userInfo || !roles.includes(userInfo.role)) return null; // Oculta el contenido si el usuario no tiene permiso  
 
   return children;
 };

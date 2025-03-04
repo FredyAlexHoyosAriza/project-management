@@ -36,20 +36,37 @@ export interface UserRowProps {
 }
 
 export const Role: Record<string, string> = {
-  STUDENT: 'estudiante',
-  LEADER: 'líder',
-  MANAGER: 'administrador',
-}
+  STUDENT: "estudiante",
+  LEADER: "líder",
+  MANAGER: "administrador",
+};
 
 export const State: Record<string, string> = {
-  AUTHORIZED: 'autorizado',
-  UNAUTHORIZED: 'no autorizado',
-  PENDING: 'pendiente'
-}
-
-export type customJwtPayload = {
-  "http://localhost/userInfo": { role: string, state: string };
+  AUTHORIZED: "autorizado",
+  UNAUTHORIZED: "no autorizado",
+  PENDING: "pendiente",
 };
+
+export const USER_INFO_KEY = "http://localhost/userInfo" as const;
+
+export type UserInfo = {
+  created_at: string;
+  email: string;
+  email_verified: boolean;
+  name: string;
+  nickname: string;
+  picture: string;
+  role: string;
+  state: string;
+  theme_preference: string;
+  updated_at: string;
+  user_id: string;
+};
+
+export type CustomJwtPayload = {
+  [USER_INFO_KEY]: UserInfo;
+};
+
 
 // export const stateOptions = [
 //   { value: "", label: "Seleccione un rol", disabled: true },

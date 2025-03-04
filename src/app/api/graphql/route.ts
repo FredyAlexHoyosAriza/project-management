@@ -16,14 +16,12 @@ import { contextFunction } from "@/api/auth/contextFunction";
 const server = new ApolloServer({
   schema,
   introspection: true, //permite uso apollo sandbox
-  // plugins: [
-  //   ApolloServerPluginUsageReporting(),//permite registro de métricas; estadística
-  //   ApolloServerPluginLandingPageLocalDefault({ embed: true }), // Activa el sandbox incluso en producción; vercel despliegue
-  // ],
   plugins: [
+    //permite registro de métricas; estadística
     ApolloServerPluginUsageReporting(),
     // Install a landing page plugin based on NODE_ENV
     process.env.NODE_ENV === "production"
+    // Activa el sandbox incluso en producción; vercel despliegue
       ? ApolloServerPluginLandingPageProductionDefault({
           //landing page de producción que
           graphRef: "PMG-7o2qaf@current", //se puede redirigir a este grafo en apollo studio

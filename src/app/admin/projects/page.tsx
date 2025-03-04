@@ -1,7 +1,10 @@
+import AuthorizedRoute from '@/components/AuthorizedRoute'
 import React from 'react'
 
 export default function Projects() {
   return (
-    <div>Página de proyectos</div>
+    <AuthorizedRoute>
+      <div>Página de proyectos</div>
+    </AuthorizedRoute>
   )
 }

@@ -6,6 +6,7 @@ import { ReactNode } from "react";
 import Link from "next/link";
 import useActiveRoute from "@/hooks/useActiveRoute";
 import PrivateComponent from "./PrivateComponent";
+import AuthorizedRoute from "./AuthorizedComponent";
 
 // Tipos explícitos para las props
 // href: string; Ruta a la que apunta el enlace
@@ -53,7 +54,7 @@ const SideBar = () => {
   const [isAnimating, setIsAnimating] = useState(false);
 
   const handleTransitionEnd = () => {
-      setIsAnimating(false);
+    setIsAnimating(false);
   };
 
   const handleMenu = () => {
@@ -62,8 +63,8 @@ const SideBar = () => {
     else setTimeout(() => setShowSidebar(true), 0);
     //Se agrega setTimeOut para dar tiempo al cambio de clase de hidden a -translate-x-full; tal que pueda
     //ocurrir la transición del sidebar de cerrado a abierto entre 2 estados no ocultos; -x-full y x-0
-    // Usamos setTimeout con tiempo 0 para diferir el cambio de estado. 
-    // Esto permite que React primero procese la transición de clases (-translate-x-full) 
+    // Usamos setTimeout con tiempo 0 para diferir el cambio de estado.
+    // Esto permite que React primero procese la transición de clases (-translate-x-full)
     // antes de mostrar el menú (translate-x-0), asegurando que las transiciones funcionen correctamente.
   };
 
@@ -85,10 +86,10 @@ const SideBar = () => {
       <nav
         className={`${
           showSidebar
-          ? "translate-x-0"
-          : isAnimating
-          ? "-translate-x-full"
-          : "hidden"
+            ? "translate-x-0"
+            : isAnimating
+            ? "-translate-x-full"
+            : "hidden"
         } menu sm:absolute top-10 md:top-0 md:static md:block transition-transform duration-300 ease-in-out`}
         onTransitionEnd={handleTransitionEnd}
         // Usamos aria-hidden para mejorar accesibilidad
@@ -99,12 +100,14 @@ const SideBar = () => {
         <ul className="menu__list">
           <CustomNavLink href="" label={<Logo />} />
           <CustomNavLink href="profile" icon="user" />
-          <PrivateComponent roles={['MANAGER', 'LEADER']}>
-            <CustomNavLink href="users" icon="users" />
-          </PrivateComponent>
-          <CustomNavLink href="projects" icon="university" />
-          <CustomNavLink href="enrollments" icon="mug-hot" />
-          <CustomNavLink href="advances" icon="trailer" />
+          <AuthorizedRoute>
+            <PrivateComponent roles={["MANAGER", "LEADER"]}>
+              <CustomNavLink href="users" icon="users" />
+            </PrivateComponent>
+            <CustomNavLink href="projects" icon="university" />
+            <CustomNavLink href="enrollments" icon="mug-hot" />
+            <CustomNavLink href="advances" icon="trailer" />
+          </AuthorizedRoute>
           <Logout />
         </ul>
       </nav>
@@ -113,4 +116,3 @@ const SideBar = () => {
 };
 
 export default SideBar;
-
