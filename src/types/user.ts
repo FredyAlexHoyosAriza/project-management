@@ -4,6 +4,7 @@
 // type State = "AUTHORIZED" | "UNAUTHORIZED" | "PENDING";
 export interface User {
   _id: string;
+  user_id: string;
   name?: string;
   surname?: string;
   idCard?: string;
@@ -15,6 +16,7 @@ export interface User {
 }
 
 export interface UpdateUser {
+  user_id: string,
   name?: string;
   surname?: string;
   idCard?: string;

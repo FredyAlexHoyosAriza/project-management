@@ -167,6 +167,7 @@ const EditUser = () => {
   const [formValues, setFormValues] = useState(
     userData ?? {
       _id: "",
+      user_id: '',
       name: "",
       surname: "",
       idCard: "",
@@ -208,7 +209,7 @@ const EditUser = () => {
     const formData = new FormData(e.currentTarget);
     const editedUser = Object.fromEntries(formData.entries());
 
-    updateUser({ variables: { id: userData?._id, input: editedUser } }).catch(
+    updateUser({ variables: { id: userData?._id, input: { user_id: userData?.user_id, ...editedUser} } }).catch(
       (err) => {
         toast.error(`Error desconocido al actualizar usuario: ${err.message}`);
       }
