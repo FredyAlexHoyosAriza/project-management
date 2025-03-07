@@ -14,7 +14,6 @@ const getManagementToken = async (): Promise<string> => {
         //para posteriores requests hacia ese mismo audience
         audience: `https://${process.env.AUTH0_DOMAIN}/api/v2/`,
         grant_type: "client_credentials",
-        scope: process.env.AUTH0_SCOPE,
       }),
     }
   );

@@ -14,7 +14,8 @@ export const authGuard = (admittedRoles: string, user?: JWTPayload) => {
   }
 
   if (user.gty) {
-    if (user.scope === process.env.AUTH0_REGISTER_SCOPE) return;
+    const scope = user.scope as string;
+    if (scope.includes(process.env.AUTH0_REGISTER_SCOPE!)) return;
     else {
       throw new GraphQLError("Forbidden: Insufficient scopes", {
         extensions: { code: "FORBIDDEN" } //code: 403

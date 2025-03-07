@@ -23,6 +23,7 @@ export const REGISTER_USER = gql`
       idCard
       email
       role
+      state
     }
   }
 `;
@@ -31,6 +32,7 @@ export const UPDATE_USER = gql`
   mutation UpdateUser($id: ID!, $input: UpdateUserInput!) {
     updateUser(id: $id, input: $input) {
       _id
+      user_id
       name
       surname
       idCard
