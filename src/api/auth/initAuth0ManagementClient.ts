@@ -22,6 +22,9 @@ const getManagementToken = async (): Promise<string> => {
  // El audience indica donde se enviaría el token una vez fuese obtenido
 
   if (!response.ok) {
+    console.error("Error obteniendo response:", response);
+    const data = await response.json();
+    console.error('Error obteniendo data ', data);
     throw new Error("Error obteniendo el token de Auth0");
   }
 
