@@ -86,10 +86,8 @@ const UserSchema = new Schema<IUser>(
       type: String,
       required: true,
       unique: true,
-      maxlength: 20,
-      minlength: 7,
       trim: true,
-      match: [/^\d+$/, "ID Card should only contain numbers"],
+      match: [/^\d{4,10}$/, "ID Card should only contain numbers between 4 and 10"],
     },
     email: {
       type: String, // tipo string de propio de mongoose

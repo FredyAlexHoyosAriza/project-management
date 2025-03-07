@@ -2,9 +2,9 @@ import { JWTPayload } from "jose";
 import { ERole, EState } from "../database/models/user";
 import { GraphQLError } from "graphql";
 
-// const checkScope = (tokenScope: string[], neededScope: string[]) => {
-//     return neededScope.every(scope => tokenScope.includes(scope));
-// };
+const checkScope = (tokenScope: string[], neededScope: string[]) => {
+    return neededScope.every(scope => tokenScope.includes(scope));
+};
 
 export const authGuard = (admittedRoles: string, user?: JWTPayload) => {
   if (!user) {
@@ -14,8 +14,10 @@ export const authGuard = (admittedRoles: string, user?: JWTPayload) => {
   }
 
   if (user.gty) {
-    const scope = user.scope as string;
-    if (scope.includes(process.env.AUTH0_REGISTER_SCOPE!)) return;
+    // const scope = user.scope as string;
+    const scope = (user.scope as string).split(' ');
+    const neededScope = process.env.AUTH0_REGISTER_SCOPE!.split(' ');
+    if (checkScope(scope, neededScope)) return;
     else {
       throw new GraphQLError("Forbidden: Insufficient scopes", {
         extensions: { code: "FORBIDDEN" } //code: 403
