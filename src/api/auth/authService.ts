@@ -6,7 +6,7 @@ import { GraphQLError } from "graphql";
 //     return neededScope.every(scope => tokenScope.includes(scope));
 // };
 
-export const authGuard = (user: JWTPayload, admittedRoles: string) => {
+export const authGuard = (admittedRoles: string, user?: JWTPayload) => {
   if (!user) {
     throw new GraphQLError("Unauthorized: Invalid token", {
       extensions: { code: "UNAUTHENTICATED" }, //code: 401
@@ -14,7 +14,7 @@ export const authGuard = (user: JWTPayload, admittedRoles: string) => {
   }
 
   if (user.gty) {
-    if (user.scope === "read:data write:data") return;
+    if (user.scope === process.env.AUTH0_REGISTER_SCOPE) return;
     else {
       throw new GraphQLError("Forbidden: Insufficient scopes", {
         extensions: { code: "FORBIDDEN" } //code: 403
@@ -30,7 +30,7 @@ export const authGuard = (user: JWTPayload, admittedRoles: string) => {
   }
   // Extraer scopes del token JWT
   // const tScope = (user?.scope as string)?.split(" ") || [];
-  const tRole = <ERole>user.role || "";
+  const tRole = user.role as ERole;
   if (!admittedRoles.includes(tRole)) {
     throw new GraphQLError("Forbidden: Insufficient scopes", {
       extensions: { code: "FORBIDDEN" } //code: 403

@@ -1371,9 +1371,10 @@ asynckit@^0.4.0:
   resolved "https://registry.yarnpkg.com/asynckit/-/asynckit-0.4.0.tgz#c79ed97f7f34cb8f2ba1bc9790bcc366474b4b79"
   integrity sha512-Oei9OH4tRh0YqU3GxhX79dM/mwVgvbZJaSNaRk+bshkj0S5cfHcgYakreBjrHwatXKbz+IoIdYLxrKim2MjW0Q==
 
-auth0@auth0/node-auth0:
+auth0@^4.18.0:
   version "4.18.0"
-  resolved "https://codeload.github.com/auth0/node-auth0/tar.gz/0afc6460ea35f4e58d381c364e7134beece19dbe"
+  resolved "https://registry.yarnpkg.com/auth0/-/auth0-4.18.0.tgz#bde8326c7d6e249592a67c2f574d13ba8d88627f"
+  integrity sha512-KuS5JhL3SBySTcJOW5Ksd8WyM5oZ3WXS9sX2PD/r6MqtSoYGjpky1FGlE5wX2jMe5VSQZva72ilUoyiXtaVgJg==
   dependencies:
     jose "^4.13.2"
     undici-types "^6.15.0"

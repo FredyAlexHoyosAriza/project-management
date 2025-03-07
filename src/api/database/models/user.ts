@@ -29,6 +29,7 @@ export interface ICreateUser {
   surname: string;
   role: ERole;
   state?: EState;
+  user_id: string;
 }
 
 export interface IUpdateUser {
@@ -38,6 +39,7 @@ export interface IUpdateUser {
   surname?: string;
   role?: ERole;
   state?: EState;
+  user_id: string;
 }
 
 // Definimos la interfaz para el modelo de usuario
@@ -111,18 +113,15 @@ const UserSchema = new Schema<IUser>(
       enum: EState,
       default: EState.PENDING,
     },
-    // assignedProjects: {// Cada que user se asigna a un proyecto con cualquier role aqui se pone _id
-    //   type: [{ type: Schema.Types.ObjectId, ref: "Project" }],
-    //   default: [],
-    // },
-    // deleted: {
-    //   type: Boolean,
-    //   default: false,
-    // }
-    // createdAt: {
-    //   type: Date,
-    //   default: Date.now,
-    // }
+    user_id: {
+      type: String,
+      required: [true, "El user_id es obligatorio."],
+      validator: function (user_id: string) {
+        return /^[a-zA-Z0-9_-]+\|[a-zA-Z0-9]+$/.test(user_id);
+      },
+      message:
+        "El user_id debe seguir el formato proveedor|identificador, por ejemplo, auth0|1234567890abcdef.", 
+    }
   },
   {
     timestamps: true,

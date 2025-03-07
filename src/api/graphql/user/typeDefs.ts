@@ -17,6 +17,7 @@ export const userTypeDefs = gql`
   # password nunca en retorno
   type User {
     _id: ID!
+    user_id: ID!
     name: String!
     surname: String!
     idCard: String!
@@ -31,16 +32,17 @@ export const userTypeDefs = gql`
   }
 
   input CreateUserInput {
-    # user_id: String
     email: String!
     name: String!
     surname: String! # default: 'Sin asignar'
     idCard: String! # default: 0000000
     role: ERole! # default: STUDENT
     state: EState # default: PENDING
+    user_id: String!
   }
 
   input UpdateUserInput {
+    user_id: ID!
     email: String
     # password: String # quizá en update
     idCard: String

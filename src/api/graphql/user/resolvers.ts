@@ -9,8 +9,9 @@ import {
 } from "@/api/database/models/user";
 import { EnrollmentModel } from "../../database/models/enrollment";
 import { JWTPayload } from "jose";
-import { authGuard } from "@/api/graphql/authService";
+import { authGuard } from "@/api/auth/authService";
 import { GraphQLError } from "graphql";
+import updateAuth0User from "@/api/auth/updateAuth0User";
 
 export const userResolvers = {
   Query: {
@@ -18,9 +19,9 @@ export const userResolvers = {
     getUsers: async (
       _parent: unknown,
       _args: unknown,
-      { user }: { user: JWTPayload }
+      { user }: { user?: JWTPayload }
     ): Promise<IUser[]> => {
-      authGuard(user, ERole.LEADER + ERole.MANAGER);
+      authGuard(ERole.LEADER + ERole.MANAGER, user);
       try {
         await dbConnect();
         return await UserModel.find()
@@ -89,9 +90,9 @@ export const userResolvers = {
     getUsersWithAdvances: async (
       _parent: unknown,
       _args: unknown,
-      { user }: { user: JWTPayload }
+      { user }: { user?: JWTPayload }
     ): Promise<IUser[]> => {
-      authGuard(user, ERole.LEADER + ERole.MANAGER);
+      authGuard(ERole.LEADER + ERole.MANAGER, user);
       try {
         await dbConnect();
         return await UserModel.find()
@@ -124,9 +125,9 @@ export const userResolvers = {
     getUserWithAdvancesById: async (
       _: unknown,
       { id }: { id: string },
-      { user }: { user: JWTPayload }
+      { user }: { user?: JWTPayload }
     ): Promise<IUser> => {
-      authGuard(user, ERole.LEADER + ERole.MANAGER);
+      authGuard(ERole.LEADER + ERole.MANAGER, user);
       try {
         await dbConnect();
         const user = await UserModel.findById(id)
@@ -164,9 +165,9 @@ export const userResolvers = {
     getUserById: async (
       _: unknown,
       { id }: { id: string },
-      { user }: { user: JWTPayload }
+      { user }: { user?: JWTPayload }
     ): Promise<IUser> => {
-      authGuard(user, ERole.LEADER + ERole.MANAGER);
+      authGuard(ERole.LEADER + ERole.MANAGER, user);
       try {
         await dbConnect();
         const user = await UserModel.findById(id)
@@ -239,9 +240,9 @@ export const userResolvers = {
     createUser: async (
       _: unknown,
       { input }: { input: ICreateUser },
-      { user }: { user: JWTPayload }
+      { user }: { user?: JWTPayload }
     ): Promise<IUser> => {
-      authGuard(user, ERole.STUDENT + ERole.LEADER + ERole.MANAGER);
+      authGuard(ERole.STUDENT + ERole.LEADER + ERole.MANAGER, user);
       try {
         await dbConnect();
         const newUser: IUser = new UserModel(input);
@@ -266,15 +267,19 @@ export const userResolvers = {
     updateUser: async (
       _: unknown,
       { id, input }: { id: string; input: IUpdateUser },
-      { user }: { user: JWTPayload } //Partial<IUser>
+      { user }: { user?: JWTPayload } //Partial<IUser>
     ): Promise<IUser> => {
-      authGuard(user, ERole.STUDENT + ERole.LEADER + ERole.MANAGER); //['read:data', 'write:data']
+      authGuard(ERole.STUDENT + ERole.LEADER + ERole.MANAGER, user); //['read:data', 'write:data']
       await dbConnect();
       try {
         if (Object.keys(input).length === 0) {
           throw new Error("the update object is empty.");
         }
-        await dbConnect();
+
+        if (input.role || input.state) {
+          await updateAuth0User(input);
+        }
+
         const updatedUser = await UserModel.findByIdAndUpdate<IUser>(
           id,
           input,
@@ -303,9 +308,9 @@ export const userResolvers = {
     setUserState: async (
       _: unknown,
       { id, state }: { id: string; state: EState },
-      { user }: { user: JWTPayload }
+      { user }: { user?: JWTPayload }
     ): Promise<IUser> => {
-      authGuard(user, ERole.LEADER + ERole.MANAGER);
+      authGuard(ERole.LEADER + ERole.MANAGER, user);
       try {
         await dbConnect(); //UserModel.updateOne({_id: id}, ...)
 

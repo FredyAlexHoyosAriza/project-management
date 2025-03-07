@@ -16,7 +16,7 @@ import { EnrollmentModel } from "../../database/models/enrollment";
 import { ERole } from "../../database/models/user";
 import { verifyUser } from "../user/services";
 import { JWTPayload } from "jose";
-import { authGuard } from "../authService";
+import { authGuard } from "@/api/auth/authService";
 import { ObjectId } from "mongoose";
 import { GraphQLError } from "graphql";
 
@@ -26,9 +26,9 @@ export const projectResolvers = {
     getProjects: async (
       _parent: unknown,
       _args: unknown,
-      { user }: { user: JWTPayload }
+      { user }: { user?: JWTPayload }
     ): Promise<IProject[]> => {
-      authGuard(user, ERole.LEADER + ERole.MANAGER);
+      authGuard(ERole.LEADER + ERole.MANAGER, user);
       try {
         await dbConnect();
         return await ProjectModel.find()
@@ -72,9 +72,9 @@ export const projectResolvers = {
     getProjectById: async (
       _: unknown,
       { id }: { id: string },
-      { user }: { user: JWTPayload }
+      { user }: { user?: JWTPayload }
     ): Promise<IProject> => {
-      authGuard(user, ERole.LEADER + ERole.MANAGER);
+      authGuard(ERole.LEADER + ERole.MANAGER, user);
       try {
         await dbConnect();
         const project = await ProjectModel.findById(id)
@@ -124,9 +124,9 @@ export const projectResolvers = {
     createProject: async (
       _: unknown,
       { input }: { input: ICreateProject },
-      { user }: { user: JWTPayload }
+      { user }: { user?: JWTPayload }
     ): Promise<IProject> => {
-      authGuard(user, ERole.MANAGER);
+      authGuard(ERole.MANAGER, user);
       if (input.phase) {
         if (input.phase === EProjectPhase.STARTED) {
           input.startDate = new Date();
@@ -167,9 +167,9 @@ export const projectResolvers = {
     updateProject: async (
       _: unknown,
       { id, input }: { id: string; input: IUpdateProject },
-      { user }: { user: JWTPayload }
+      { user }: { user?: JWTPayload }
     ): Promise<IProject> => {
-      authGuard(user, ERole.LEADER + ERole.MANAGER);
+      authGuard(ERole.LEADER + ERole.MANAGER, user);
       try {
         if (Object.keys(input).length === 0) {
           throw new Error("El objeto de actualización está vacío.");
@@ -424,9 +424,9 @@ export const projectResolvers = {
     finishProject: async (
       _: unknown,
       { id }: { id: string },
-      { user }: { user: JWTPayload }
+      { user }: { user?: JWTPayload }
     ): Promise<IProject> => {
-      authGuard(user, ERole.MANAGER);
+      authGuard(ERole.MANAGER, user);
       try {
         await dbConnect();
         const session = await ProjectModel.startSession();
@@ -488,10 +488,9 @@ export const projectResolvers = {
     deleteProject: async (
       _: unknown,
       { id }: { id: string },
-      { user }: { user: JWTPayload }
+      { user }: { user?: JWTPayload }
     ): Promise<{ _id: ObjectId }> => {
-      // verifyPermissions();
-      authGuard(user, ERole.MANAGER); //solo administradores
+      authGuard(ERole.MANAGER, user); //solo administradores
       try {
         await dbConnect();
         const session = await ProjectModel.startSession();

@@ -11,7 +11,7 @@ import {
 } from "../../database/models/project";
 import { ERole, EState } from "@/api/database/models/user";
 import { JWTPayload } from "jose";
-import { authGuard } from "../authService";
+import { authGuard } from "@/api/auth/authService";
 import { verifyProject } from "../project/services";
 import { GraphQLError } from "graphql";
 
@@ -21,9 +21,9 @@ export const advanceResolvers = {
     getAdvances: async (
       _parent: unknown,
       _args: unknown,
-      { user }: { user: JWTPayload }
+      { user }: { user?: JWTPayload }
     ): Promise<IAdvance[]> => {
-      authGuard(user, ERole.STUDENT + ERole.LEADER + ERole.MANAGER);
+      authGuard(ERole.STUDENT + ERole.LEADER + ERole.MANAGER, user);
       try {
         await dbConnect();
         return await AdvanceModel.find()
@@ -55,9 +55,9 @@ export const advanceResolvers = {
     getAdvanceById: async (
       _: unknown,
       { id }: { id: string },
-      { user }: { user: JWTPayload }
+      { user }: { user?: JWTPayload }
     ): Promise<IAdvance> => {
-      authGuard(user, ERole.STUDENT + ERole.LEADER + ERole.MANAGER);
+      authGuard(ERole.STUDENT + ERole.LEADER + ERole.MANAGER, user);
       try {
         await dbConnect();
         const advance = await AdvanceModel.findById(id)
@@ -99,9 +99,9 @@ export const advanceResolvers = {
     createAdvance: async (
       _: unknown,
       { input }: { input: ICreateAdvance },
-      { user }: { user: JWTPayload }
+      { user }: { user?: JWTPayload }
     ): Promise<IAdvance> => {
-      authGuard(user, ERole.STUDENT);
+      authGuard(ERole.STUDENT, user);
       try {
         await dbConnect();
         // el estudiante debe estar inscrito y aceptado en el proyecto para el que hace el avance
@@ -202,9 +202,9 @@ export const advanceResolvers = {
     updateAdvance: async (
       _: unknown,
       { id, input }: { id: string; input: IUpdateAdvance },
-      { user }: { user: JWTPayload }
+      { user }: { user?: JWTPayload }
     ): Promise<IAdvance> => {
-      authGuard(user, ERole.STUDENT + ERole.LEADER);
+      authGuard(ERole.STUDENT + ERole.LEADER, user);
       try {
         if (Object.keys(input).length === 0) {
           throw new Error("the update object is empty.");
@@ -237,9 +237,9 @@ export const advanceResolvers = {
     deleteAdvance: async (
       _: unknown,
       { id }: { id: string },
-      { user }: { user: JWTPayload }
+      { user }: { user?: JWTPayload }
     ): Promise<IAdvance> => {
-      authGuard(user, ERole.STUDENT + ERole.LEADER);
+      authGuard(ERole.STUDENT + ERole.LEADER, user);
       try {
         await dbConnect();
         const session = await AdvanceModel.startSession();

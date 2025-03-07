@@ -11,7 +11,7 @@ import { ProjectModel } from "../../database/models/project";
 import { ERole } from "../../database/models/user";
 import { verifyUser } from "../user/services";
 import { handleAcceptance } from "./services";
-import { authGuard } from "../authService";
+import { authGuard } from "@/api/auth/authService";
 import { JWTPayload } from "jose";
 import { GraphQLError } from "graphql";
 
@@ -21,9 +21,9 @@ export const enrollmentResolvers = {
     getEnrollments: async (
       _parent: unknown,
       _args: unknown,
-      { user }: { user: JWTPayload }
+      { user }: { user?: JWTPayload }
     ): Promise<IEnrollment[]> => {
-      authGuard(user, ERole.STUDENT + ERole.LEADER + ERole.MANAGER);
+      authGuard(ERole.STUDENT + ERole.LEADER + ERole.MANAGER, user);
       try {
         await dbConnect();
         return await EnrollmentModel.find()
@@ -56,9 +56,9 @@ export const enrollmentResolvers = {
     getEnrollmentById: async (
       _: unknown,
       { id }: { id: string },
-      { user }: { user: JWTPayload }
+      { user }: { user?: JWTPayload }
     ): Promise<IEnrollment> => {
-      authGuard(user, ERole.STUDENT + ERole.LEADER + ERole.MANAGER);
+      authGuard(ERole.STUDENT + ERole.LEADER + ERole.MANAGER, user);
       try {
         await dbConnect();
         const enrollment = await EnrollmentModel.findById(id)
@@ -101,11 +101,11 @@ export const enrollmentResolvers = {
     createEnrollment: async (
       _: unknown,
       { input }: { input: ICreateEnrollment },
-      { user }: { user: JWTPayload }
+      { user }: { user?: JWTPayload }
     ): Promise<IEnrollment> => {
       try {
         await dbConnect();
-        authGuard(user, ERole.STUDENT);
+        authGuard(ERole.STUDENT, user);
         await verifyUser(<string>input.student, ERole.STUDENT);
         let newEnrollment: IEnrollment = new EnrollmentModel(
           handleAcceptance(input, true)
@@ -150,9 +150,9 @@ export const enrollmentResolvers = {
     updateEnrollment: async (
       _: unknown,
       { id, input }: { id: string; input: IUpdateEnrollment },
-      { user }: { user: JWTPayload } //: Partial<IEnrollment>
+      { user }: { user?: JWTPayload } //: Partial<IEnrollment>
     ): Promise<IEnrollment> => {
-      authGuard(user, ERole.LEADER + ERole.MANAGER);
+      authGuard(ERole.LEADER + ERole.MANAGER, user);
       try {
         if (Object.keys(input).length === 0) {
           throw new Error("the update object is empty.");
@@ -187,9 +187,9 @@ export const enrollmentResolvers = {
     deleteEnrollment: async (
       _: unknown,
       { id }: { id: string },
-      { user }: { user: JWTPayload }
+      { user }: { user?: JWTPayload }
     ): Promise<IEnrollment> => {
-      authGuard(user, ERole.LEADER + ERole.MANAGER);
+      authGuard(ERole.LEADER + ERole.MANAGER, user);
       try {
         await dbConnect();
         const session = await EnrollmentModel.startSession();
