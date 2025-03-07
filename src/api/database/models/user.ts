@@ -39,7 +39,6 @@ export interface IUpdateUser {
   surname?: string;
   role?: ERole;
   state?: EState;
-  user_id: string;
 }
 
 // Definimos la interfaz para el modelo de usuario

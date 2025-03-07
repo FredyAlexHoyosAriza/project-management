@@ -38,11 +38,10 @@ export const userTypeDefs = gql`
     idCard: String! # default: 0000000
     role: ERole! # default: STUDENT
     state: EState # default: PENDING
-    user_id: String!
+    user_id: ID!
   }
 
   input UpdateUserInput {
-    user_id: String!
     email: String
     # password: String # quizá en update
     idCard: String
@@ -61,7 +60,7 @@ export const userTypeDefs = gql`
 
   type Mutation {
     createUser(input: CreateUserInput!): User!
-    updateUser(id: ID!, input: UpdateUserInput!): User!
-    setUserState(id: ID!, state: EState): User!
+    updateUser(id: ID!, user_id: ID!, input: UpdateUserInput!): User!
+    setUserState(id: ID!, user_id: ID!, state: EState): User!
   }
 `;

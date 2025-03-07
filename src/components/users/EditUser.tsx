@@ -208,12 +208,16 @@ const EditUser = () => {
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
     const editedUser = Object.fromEntries(formData.entries());
-
-    updateUser({ variables: { id: userData?._id, input: { user_id: userData?.user_id, ...editedUser} } }).catch(
-      (err) => {
-        toast.error(`Error desconocido al actualizar usuario: ${err.message}`);
-      }
-    );
+    
+    if (userData) {
+      updateUser({ variables: { id: userData._id, user_id: userData.user_id, input: editedUser } }).catch(
+        (err) => {
+          toast.error(`Error desconocido al actualizar usuario: ${err.message}`);
+        }
+      );
+    } else {
+      throw new Error('The editing user context is empty');
+    }
   };
 
   const esKeys = ["Nombre:", "Apellido:", "Cédula:", "Email:"];

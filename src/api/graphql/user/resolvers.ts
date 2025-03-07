@@ -266,7 +266,7 @@ export const userResolvers = {
     // Actualizar un usuario existente
     updateUser: async (
       _: unknown,
-      { id, input }: { id: string; input: IUpdateUser },
+      { id, user_id, input }: { id: string; user_id: string, input: IUpdateUser },
       { user }: { user?: JWTPayload } //Partial<IUser>
     ): Promise<IUser> => {
       authGuard(ERole.STUDENT + ERole.LEADER + ERole.MANAGER, user); //['read:data', 'write:data']
@@ -277,7 +277,7 @@ export const userResolvers = {
         }
 
         if (input.role || input.state) {
-          await updateAuth0User(input);
+          await updateAuth0User(user_id, input);
         }
 
         const updatedUser = await UserModel.findByIdAndUpdate<IUser>(
@@ -307,13 +307,13 @@ export const userResolvers = {
     // Eliminar un usuario deleted: false
     setUserState: async (
       _: unknown,
-      { id, state }: { id: string; state: EState },
+      { id, user_id, state }: { id: string; user_id: string; state: EState },
       { user }: { user?: JWTPayload }
     ): Promise<IUser> => {
       authGuard(ERole.LEADER + ERole.MANAGER, user);
       try {
         await dbConnect(); //UserModel.updateOne({_id: id}, ...)
-
+        await updateAuth0User(user_id, { state });
         const session = await UserModel.startSession();
         session.startTransaction();
         try {

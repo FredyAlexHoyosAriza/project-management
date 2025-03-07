@@ -10,9 +10,9 @@ import { initAuth0ManagementClient } from "./initAuth0ManagementClient";
 //     }
 //   | { blocked: boolean };
 
-async function updateAuth0User(input: IUpdateUser) {
+async function updateAuth0User(user_id: string ,input: IUpdateUser) {
   //{ user_id, blocked, ...attributes }
-  const { user_id, role, state } = input;
+  const { role, state } = input;
 
   try {
     const auth0 = await initAuth0ManagementClient(); // Inicializa el cliente con el token
