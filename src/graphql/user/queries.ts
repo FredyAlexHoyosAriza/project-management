@@ -5,6 +5,7 @@ export const GET_USERS = gql`
 query GetUsers {
     getUsers {
       _id
+      user_id
       name
       surname
       idCard

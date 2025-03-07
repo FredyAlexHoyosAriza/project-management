@@ -13,13 +13,8 @@ interface UserContextType {
 // Crear el contexto con un valor inicial
 export const UserContext = createContext<UserContextType | undefined>(undefined);
 
-// Definir las props del UserEditingProvider
-interface UserProviderProps {
-  children: ReactNode;
-}
-
 // Crear el UserEditingProvider con el nuevo estado
-export const UserEditingProvider = ({ children }: UserProviderProps) => {
+export const UserEditingProvider = ({ children }: { children: ReactNode }) => {
   const [userData, setUserData] = useState<User | null>(null);
   const [shouldGetUsers, setShouldGetUsers] = useState(false);
 
