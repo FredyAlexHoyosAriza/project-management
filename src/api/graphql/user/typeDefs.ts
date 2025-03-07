@@ -42,7 +42,7 @@ export const userTypeDefs = gql`
   }
 
   input UpdateUserInput {
-    user_id: ID!
+    user_id: String!
     email: String
     # password: String # quizá en update
     idCard: String
