@@ -44,7 +44,7 @@ export const UPDATE_USER = gql`
   }
 `;
 export const SET_USER_STATE = gql`
-  SetUserState($id: ID!, $user_id: ID!, $state: EState) {
+  mutation SetUserState($id: ID!, $user_id: ID!, $state: EState) {
     setUserState(id: $id, user_id: $user_id, state: $state) {
       _id
       user_id
