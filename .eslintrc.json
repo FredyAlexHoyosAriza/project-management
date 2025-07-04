@@ -10,4 +10,4 @@
   ]
 }
 
-// Para usar ESling ejecutar en terminal: yarn eslint --ext ".ts,.tsx" .
+// Para usar ESlint ejecutar en terminal: yarn eslint src --ext ".ts,.tsx" .

@@ -1,21 +1,23 @@
 import React, { useEffect, useState } from "react";
-import { Role, State, User, UserRowProps, UserTableProps } from "@/types/user";
+import { Role, State, User, UserTableProps } from "@/types/user";
 import Link from "next/link";
 import { useUserEditing } from "@/context/UserEditingProvider";
 
 //React.FC (Function Component): Es un tipo que se usa para tipar componentes funcionales en React.
-const UserList: React.FC<UserTableProps> = ({ listaUsuarios }) => {
+const UserList = ({ listaUsuarios }: UserTableProps) => {
   const [busqueda, setBusqueda] = useState("");
-  const [usuariosBusqueda, setUsuariosBusqueda] = useState([...listaUsuarios]);
+  const [usuariosBusqueda, setUsuariosBusqueda] = useState([...listaUsuarios]); //Se pasa copia para no alterar prop listaUsuarios
 
   useEffect(() => {
     // console.log(busqueda);
     if (busqueda !== "") {
       setUsuariosBusqueda(
         listaUsuarios.filter((usuario) => {
-          return JSON.stringify(usuario)
-            .toLowerCase()
-            .includes(busqueda.toLowerCase());
+          return Object.values(usuario).some((valor) =>
+            String(valor ?? "")
+              .toLowerCase()
+              .includes(busqueda.toLowerCase())
+          );
         })
       );
     } else {
@@ -32,7 +34,7 @@ const UserList: React.FC<UserTableProps> = ({ listaUsuarios }) => {
         className="rounded-lg block mx-auto border border-gray-700 px-4 py-2"
       />
       <legend className="text-center font-extrabold my-2">
-        Todas las cuentas de usuario
+        Cuentas de usuario encontradas
       </legend>
       <div className="hidden lg:block">
         <table className="w-full min-w-96">
@@ -68,7 +70,9 @@ const UserList: React.FC<UserTableProps> = ({ listaUsuarios }) => {
               <span>Cédula: {user.idCard} </span>
               <span>Rol: {Role[user.role]} </span>
               <span>Estado: {State[user.state]} </span>
-              <span>Editar: <EditUserLink user={user} /> </span>
+              <span>
+                Editar: <EditUserLink user={user} />{" "}
+              </span>
             </div>
           );
         })}
@@ -77,7 +81,7 @@ const UserList: React.FC<UserTableProps> = ({ listaUsuarios }) => {
   );
 };
 
-const UserRow: React.FC<UserRowProps> = ({ user }) => {
+const UserRow = ({ user }: { user: User }) => {
   //---------------------------------------------------------------------
   return (
     <tr className="">
@@ -86,13 +90,15 @@ const UserRow: React.FC<UserRowProps> = ({ user }) => {
       <td>{user.idCard}</td>
       <td>{Role[user.role]}</td>
       <td>{State[user.state]}</td>
-      <td className="text-center"><EditUserLink user={user} /></td>
+      <td className="text-center">
+        <EditUserLink user={user} />
+      </td>
     </tr>
   );
 };
 
 const EditUserLink = ({ user }: { user: User }) => {
-  const { setUserData } = useUserEditing ();
+  const { setUserData } = useUserEditing();
   return (
     <Link href={`/admin/users/edit:${user.name?.replaceAll(" ", "-")}`}>
       <i

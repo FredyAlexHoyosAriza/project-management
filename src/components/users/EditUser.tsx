@@ -232,7 +232,7 @@ const EditUser = () => {
   return userData ? (
     <div>
       <GoBack />
-      <form id="user" onSubmit={handleSubmit} className="text-xl lg:w-5/5">
+      <form id="user" onSubmit={handleSubmit} className="text-xl lg:w-full">
         <legend className="font-bold my-2 text-center">
           Edición de {Role[userData.role]}
         </legend>
