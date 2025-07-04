@@ -29,7 +29,7 @@ export const REGISTER_USER = gql`
 `;
 
 export const UPDATE_USER = gql`
-  mutation UpdateUser($id: ID!, $input: UpdateUserInput!) {
+  mutation UpdateUser($id: ID!, $user_id: ID!, $input: UpdateUserInput!) {
     updateUser(id: $id, user_id: $user_id, input: $input) {
       _id
       user_id
